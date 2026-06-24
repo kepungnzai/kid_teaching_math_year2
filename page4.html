@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Pizza Leftover Challenge!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    .pizza-pile { position: relative; width: 100%; height: 120px; margin-bottom: 2rem; background: radial-gradient(ellipse at center, rgba(244, 67, 54, 0.1) 0%, transparent 70%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; gap: 0.2rem; flex-wrap: wrap; }
+    .pizza-slice { font-size: 2rem; display: inline-block; position: absolute; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.12)); }
+    .people-row { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; }
+    .person-item { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.6rem 0.8rem; background-color: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 2px solid #FFCDD2; min-width: 80px; transition: transform 0.2s ease; }
+    .person-item:hover { transform: translateY(-3px); }
+    .person-emoji { font-size: 2.5rem; line-height: 1; }
+    .person-label { font-size: 0.8rem; font-weight: 700; color: var(--color-text-light); }
+    .person-slice-display { font-size: 1rem; min-height: 1.5rem; }
+    .mini-slice { display: inline-block; font-size: 1.2rem; animation: popIn 0.25s ease; }
+    .leftover-area { text-align: center; padding: 1rem; margin-top: 1rem; background: #FFF3E0; border-radius: var(--radius-md); border: 2px dashed var(--color-orange); }
+    .leftover-text { font-size: 1.2rem; font-weight: 700; color: #E65100; }
+    .leftover-slices { display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: center; margin-top: 0.5rem; }
+    .leftover-slice-item { font-size: 1.8rem; animation: popIn 0.4s ease; }
+    .btn-share { font-size: 1.3rem; padding: 1rem 2.5rem; background-color: #F44336; color: white; box-shadow: 0 8px 20px rgba(244, 67, 54, 0.3); }
+    .btn-share:hover { background-color: #D32F2F; transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 25px rgba(244, 67, 54, 0.4); }
+    .remainder-display { text-align: center; margin-top: 0.75rem; padding: 0.5rem 1rem; background: #FBE9E7; border-radius: var(--radius-md); display: inline-block; }
+    .remainder-display span { font-weight: 800; color: #D32F2F; font-size: 1.2rem; }
+    @media (max-width: 768px) {
+      .person-item { min-width: 65px; padding: 0.4rem 0.6rem; }
+      .person-emoji { font-size: 2rem; }
+      .pizza-slice { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page4.html" class="active">Adventure 3</a></li>
+        <li><a href="page5.html">Adventure 4</a></li>
+        <li><a href="page6.html">Adventure 5</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🍕 Pizza Leftover Challenge! 🧩</h2>
+
+      <div class="story-box">
+        <p><span class="story-icon">📖</span><strong>The Pizza Leftover Challenge</strong></p>
+        <p>Your family orders pizza for movie night! 🎬 There are <strong>13 people</strong> at your house, but each large pizza only has <strong>8 slices</strong>. You buy <strong>2 pizzas</strong> (that's <strong>16 slices</strong> total).</p>
+        <p><strong>The Question:</strong> If everyone gets exactly 1 slice, how many slices are left over?</p>
+        <p>🧮 <strong>The Division:</strong> You have <strong>16 slices</strong> and <strong>13 people</strong>. Each person gets 1 slice, and there's a <strong>remainder</strong>!</p>
+        <p>This is called <strong>division with a remainder</strong> — super useful in real life! 🎉</p>
+      </div>
+
+      <section class="adventure-display">
+        <div class="equation-box">
+          <span class="equation-number" id="eqTotal">16</span>
+          <span class="equation-symbol">÷</span>
+          <span class="equation-number" id="eqPeople">13</span>
+          <span class="equation-symbol">=</span>
+          <span class="equation-number" id="eqResult">1</span>
+        </div>
+        <p class="result-text" id="resultText">Each person gets 1 slice! 🍕</p>
+        <div class="remainder-display">
+          <span id="remainderText">+ <strong>3</strong> left over (remainder of 3) 🎉</span>
+        </div>
+      </section>
+
+      <div class="thinking-steps">
+        <h4>🧠 Let's Think Step by Step!</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text" id="step1Text"><strong>16 slices</strong> total, <strong>13 people</strong>.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text" id="step2Text">13 fits into 16 exactly <strong>1 time</strong>. 13 &times; 1 = 13.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text" id="step3Text">Subtract: <strong>16 &minus; 13 = 3</strong> leftover slices! ✅</span>
+        </div>
+      </div>
+
+      <div class="answer-reveal">
+        <p>🎯 <strong>The Answer:</strong></p>
+        <div class="big-answer" id="bigAnswer">Everyone gets 1 slice + 3 leftover! 🍕</div>
+        <p id="answerDetail">The remainder is 3. You have leftover pizza for breakfast tomorrow! 🥳</p>
+        <div class="fun-fact" id="funFact">💡 Fun Fact: 13 &times; 1 + 3 = 16. The remainder is what's left when numbers don't divide evenly!</div>
+      </div>
+
+      <section class="controls-section">
+        <h3>🎮 Try It Yourself!</h3>
+        <p style="font-size:1.1rem; color:var(--color-text-light); margin-bottom:1.5rem;">Change the numbers and see the quotient and remainder!</p>
+        <div class="controls-row">
+          <div class="control-group">
+            <label for="totalSlices">Total Slices 🍕</label>
+            <input type="number" id="totalSlices" min="1" max="40" value="16">
+            <span class="control-hint">(1 to 40)</span>
+          </div>
+          <div class="control-group">
+            <label for="peopleCount">Number of People 👥</label>
+            <input type="number" id="peopleCount" min="1" max="30" value="13">
+            <span class="control-hint">(1 to 30)</span>
+          </div>
+        </div>
+        <button id="resetBtn" class="btn btn-secondary btn-reset">🔄 Reset</button>
+      </section>
+
+      <div class="action-buttons">
+        <button id="shareBtn" class="btn btn-share">🍕 Share the Pizza! 🍕</button>
+        <p class="adventure-counter" id="slicesCounter">Slices given out: 0</p>
+      </div>
+
+      <section class="animation-area" id="animationArea" style="min-height:380px;">
+        <div class="pizza-pile" id="pizzaPile"></div>
+        <div class="people-row" id="peopleRow"></div>
+        <div class="leftover-area" id="leftoverArea" style="display:none;">
+          <div class="leftover-text">🍕 Leftover Slices 🍕</div>
+          <div class="leftover-slices" id="leftoverSlices"></div>
+        </div>
+      </section>
+
+      <section class="quiz-section">
+        <h3>🧠 Remainder Challenge Quiz!</h3>
+
+        <div class="quiz-card">
+          <p class="quiz-question">1. 🎂 22 cupcakes for 5 friends. Each gets the same number. How many <strong>left over</strong>?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q1', this)">Show Answer 💡</button>
+          <div id="q1" class="quiz-answer">✨ 22 &divide; 5 = <strong>4 each, 2 left over</strong>! 5 &times; 4 = 20, 22 &minus; 20 = 2 🧁</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">2. 🎒 30 pencils for 7 students. Equal share. How many <strong>remain</strong>?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q2', this)">Show Answer 💡</button>
+          <div id="q2" class="quiz-answer">✨ 30 &divide; 7 = <strong>4 each, 2 remain</strong>! 7 &times; 4 = 28, 30 &minus; 28 = 2 ✏️</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">3. 🐶 19 dog treats for 6 dogs. Same per dog. How many <strong>remainder</strong>?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q3', this)">Show Answer 💡</button>
+          <div id="q3" class="quiz-answer">✨ 19 &divide; 6 = <strong>3 each, 1 remainder</strong>! 6 &times; 3 = 18, 19 &minus; 18 = 1 🦴</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">4. 🎈 37 party balloons for 8 kids. Equal share. What's the <strong>remainder</strong>?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q4', this)">Show Answer 💡</button>
+          <div id="q4" class="quiz-answer">✨ 37 &divide; 8 = <strong>4 each, 5 remainder</strong>! 8 &times; 4 = 32, 37 &minus; 32 = 5 🎈🎈🎈🎈🎈 Great job!</div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <script>
+    var totalSlices = 16;
+    var peopleCount = 13;
+    var isAnimating = false;
+
+    var slicesInput = document.getElementById('totalSlices');
+    var peopleInput = document.getElementById('peopleCount');
+    var shareBtn = document.getElementById('shareBtn');
+    var resetBtn = document.getElementById('resetBtn');
+    var pizzaPile = document.getElementById('pizzaPile');
+    var peopleRow = document.getElementById('peopleRow');
+    var leftoverArea = document.getElementById('leftoverArea');
+    var leftoverSlices = document.getElementById('leftoverSlices');
+    var eqTotal = document.getElementById('eqTotal');
+    var eqPeople = document.getElementById('eqPeople');
+    var eqResult = document.getElementById('eqResult');
+    var resultText = document.getElementById('resultText');
+    var remainderText = document.getElementById('remainderText');
+    var step1Text = document.getElementById('step1Text');
+    var step2Text = document.getElementById('step2Text');
+    var step3Text = document.getElementById('step3Text');
+    var bigAnswer = document.getElementById('bigAnswer');
+    var answerDetail = document.getElementById('answerDetail');
+    var funFact = document.getElementById('funFact');
+
+    var personEmojis = ['👨','👩','👧','👦','👶','🧑','👴','👵','🧒','👨‍🦰','👩‍🦱','👨‍🦳','👩‍🦰','👧🏽','👦🏼','👨🏾','👩🏿','👶🏽','👴🏼','👵🏾','🧑🏻','👨🏻','👩🏻','👧🏻','👦🏻','👶🏻','👴🏻','👵🏻','🧒🏿','👨🏿'];
+    function init() { updateDisplay(); generatePizzas(); generatePeople(); setupEventListeners(); }
+    function setupEventListeners() {
+      slicesInput.addEventListener('input', handleInputChange);
+      peopleInput.addEventListener('input', handleInputChange);
+      shareBtn.addEventListener('click', startShare);
+      resetBtn.addEventListener('click', resetGame);
+    }
+    function handleInputChange() {
+      if (isAnimating) return;
+      var slices = parseInt(slicesInput.value) || 1;
+      var people = parseInt(peopleInput.value) || 1;
+      slices = Math.max(1, Math.min(40, slices));
+      people = Math.max(1, Math.min(30, people));
+      slicesInput.value = slices;
+      peopleInput.value = people;
+      totalSlices = slices;
+      peopleCount = people;
+      updateDisplay();
+      generatePizzas();
+      generatePeople();
+      leftoverArea.style.display = 'none';
+    }
+    function updateDisplay() {
+      eqTotal.textContent = totalSlices;
+      eqPeople.textContent = peopleCount;
+      var quotient = Math.floor(totalSlices / peopleCount);
+      var remainder = totalSlices % peopleCount;
+      eqResult.textContent = quotient;
+
+      if (peopleCount <= totalSlices) {
+        resultText.textContent = quotient === 1 ? 'Each person gets 1 slice! 🍕' : 'Each person gets ' + quotient + ' slices! 🍕';
+        remainderText.innerHTML = '+ <strong>' + remainder + '</strong> left over (remainder of ' + remainder + ') 🎉';
+        step1Text.innerHTML = '<strong>' + totalSlices + ' slices</strong> total, <strong>' + peopleCount + ' people</strong>.';
+        step2Text.innerHTML = peopleCount + ' fits into ' + totalSlices + ' exactly <strong>' + quotient + ' time' + (quotient !== 1 ? 's' : '') + '</strong>. ' + peopleCount + ' &times; ' + quotient + ' = ' + (peopleCount * quotient) + '.';
+        step3Text.innerHTML = 'Subtract: <strong>' + totalSlices + ' &minus; ' + (peopleCount * quotient) + ' = ' + remainder + '</strong> leftover slice' + (remainder !== 1 ? 's' : '') + '! ✅';
+        bigAnswer.textContent = 'Everyone gets ' + quotient + ' slice' + (quotient !== 1 ? 's' : '') + ' + ' + remainder + ' leftover! 🍕';
+        answerDetail.textContent = 'The remainder is ' + remainder + '. ' + (remainder > 0 ? 'You have ' + remainder + ' leftover slice' + (remainder !== 1 ? 's' : '') + ' for later!' : 'No leftovers - perfect division!');
+        funFact.textContent = 'Fun Fact: ' + peopleCount + ' × ' + quotient + ' + ' + remainder + ' = ' + totalSlices + '. The remainder is what is left when numbers do not divide evenly!';
+      } else {
+        eqResult.textContent = '?';
+        resultText.textContent = 'Only ' + totalSlices + ' slices for ' + peopleCount + ' people? Not enough for everyone to get 1!';
+        remainderText.innerHTML = 'Increase the slices to at least ' + peopleCount + '.';
+        step1Text.innerHTML = '<strong>' + totalSlices + ' slices</strong> total, <strong>' + peopleCount + ' people</strong>.';
+        step2Text.innerHTML = 'Not enough slices for each person to get 1! We need at least ' + peopleCount + ' slices.';
+        step3Text.innerHTML = 'Try a bigger number of slices!';
+        bigAnswer.textContent = 'Not enough slices!';
+        answerDetail.textContent = totalSlices + ' slices ÷ ' + peopleCount + ' people - not enough for everyone.';
+        funFact.textContent = 'Tip: Make sure you have at least as many slices as people!';
+      }
+    }
+    function generatePizzas() {
+      pizzaPile.innerHTML = '';
+      for (var i = 0; i < totalSlices; i++) {
+        var s = document.createElement('div');
+        s.className = 'pizza-slice';
+        s.textContent = '🍕';
+        s.dataset.index = i;
+        var ox = (Math.random() - 0.5) * 45;
+        var oy = (Math.random() - 0.5) * 25;
+        s.style.left = 'calc(50% + ' + ox + 'px)';
+        s.style.top = 'calc(50% + ' + oy + 'px)';
+        s.style.transform = 'translate(-50%, -50%) rotate(' + ((Math.random() - 0.5) * 30) + 'deg)';
+        s.style.opacity = '1';
+        s.style.pointerEvents = 'none';
+        pizzaPile.appendChild(s);
+      }
+    }
+    function generatePeople() {
+      peopleRow.innerHTML = '';
+      for (var i = 0; i < peopleCount; i++) {
+        var p = document.createElement('div');
+        p.className = 'person-item';
+        p.dataset.index = i;
+        var emoji = personEmojis[i % personEmojis.length];
+        p.innerHTML = '<div class="person-emoji">' + emoji + '</div><div class="person-label">Person ' + (i + 1) + '</div><div class="person-slice-display" id="personSlice' + i + '"></div>';
+        peopleRow.appendChild(p);
+      }
+    }
+    function startShare() {
+      if (isAnimating) return;
+      if (peopleCount > totalSlices) { alert('Not enough slices! Make sure the total slices is at least the number of people.'); return; }
+      isAnimating = true;
+      shareBtn.disabled = true;
+      shareBtn.style.opacity = '0.6';
+      document.getElementById('slicesCounter').textContent = 'Slices given out: 0';
+      leftoverArea.style.display = 'none';
+      leftoverSlices.innerHTML = '';
+      for (var i = 0; i < peopleCount; i++) { var ps = document.getElementById('personSlice' + i); if (ps) ps.innerHTML = ''; }
+      generatePizzas();
+      generatePeople();
+      gsap.set(pizzaPile, { opacity: 1, display: 'block' });
+      var slices = document.querySelectorAll('.pizza-slice');
+      var people = document.querySelectorAll('.person-item');
+      var quotient = Math.floor(totalSlices / peopleCount);
+      var remainder = totalSlices % peopleCount;
+      var tl = gsap.timeline({ onComplete: function() { isAnimating = false; shareBtn.disabled = false; shareBtn.style.opacity = '1'; } });
+      var areaRect = animationArea.getBoundingClientRect();
+      var slicesGiven = 0;
+      var counterEl = document.getElementById('slicesCounter');
+      var sliceIndex = 0;
+      for (var p = 0; p < peopleCount; p++) {
+        for (var s = 0; s < quotient; s++) {
+          if (sliceIndex >= slices.length) break;
+          (function(slice, pi) {
+            var uc = function() { slicesGiven++; counterEl.textContent = 'Slices given out: ' + slicesGiven; };
+            var tp = people[pi]; if (!tp) return;
+            var pr = tp.getBoundingClientRect();
+            var tx = pr.left + pr.width / 2 - areaRect.left;
+            var ty = pr.top + pr.height / 2 - areaRect.top;
+            var srr = slice.getBoundingClientRect();
+            var dx = tx - (srr.left + srr.width / 2 - areaRect.left);
+            var dy = ty - (srr.top + srr.height / 2 - areaRect.top);
+            tl.to(slice, { duration: 0.5, x: dx, y: dy, rotation: 0, ease: "power2.inOut", onComplete: uc }, sliceIndex * 0.3);
+            tl.to(slice, { duration: 0.1, scale: 1.2, ease: "power1.out", yoyo: true, repeat: 1 }, sliceIndex * 0.3 + 0.35);
+            sliceIndex++;
+          })(slices[sliceIndex], p);
+        }
+      }
+      var tat = sliceIndex * 0.3 + 1.0;
+      tl.add(function() {
+        for (var pp = 0; pp < peopleCount; pp++) {
+          var psp = document.getElementById('personSlice' + pp);
+          if (psp) { for (var ss = 0; ss < quotient; ss++) { var ms = document.createElement('span'); ms.textContent = '🍕'; ms.className = 'mini-slice'; psp.appendChild(ms); } }
+        }
+        gsap.to(pizzaPile, { opacity: 0, duration: 0.3 });
+        for (var i = 0; i < sliceIndex; i++) { if (slices[i] && slices[i].parentNode) slices[i].parentNode.removeChild(slices[i]); }
+        if (remainder > 0) {
+          leftoverArea.style.display = 'block';
+          for (var r = 0; r < remainder; r++) { var ls = document.createElement('span'); ls.textContent = '🍕'; ls.className = 'leftover-slice-item'; leftoverSlices.appendChild(ls); }
+        }
+      }, tat);
+    }
+    function toggleAnswer(id, btn) {
+      var a = document.getElementById(id);
+      if (a.classList.contains('show')) { a.classList.remove('show'); btn.textContent = 'Show Answer 💡'; }
+      else { a.classList.add('show'); btn.textContent = 'Hide Answer 🙈'; }
+    }
+    function resetGame() {
+      if (isAnimating) return;
+      document.getElementById('slicesCounter').textContent = 'Slices given out: 0';
+      leftoverArea.style.display = 'none';
+      slicesInput.value = 16; peopleInput.value = 13;
+      totalSlices = 16; peopleCount = 13;
+      updateDisplay(); generatePizzas(); generatePeople();
+      gsap.from('.pizza-slice', { scale: 0, rotation: 180, duration: 0.35, stagger: 0.03, ease: "back.out(1.7)" });
+      gsap.from('.person-item', { y: 20, opacity: 0, duration: 0.35, stagger: 0.05, ease: "back.out(1.7)" });
+    }
+    init();
+  </script>
+</body>
+</html>

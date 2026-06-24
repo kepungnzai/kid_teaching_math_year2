@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Birthday Money Splits!</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- GSAP Animation Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+  </script>
+  <style>
+    /* Page 2 specific styles - Money Splits Theme */
+    .money-pile {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      margin-bottom: 2rem;
+      background: radial-gradient(ellipse at center, rgba(76, 175, 80, 0.1) 0%, transparent 70%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+
+    .dollar-bill {
+      font-size: 2.2rem;
+      display: inline-block;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      transition: transform 0.2s ease;
+    }
+
+    .dollar-bill:hover {
+      transform: scale(1.2) rotate(-5deg);
+    }
+
+    .kids-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+
+    .kid-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 1.25rem;
+      background-color: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      border: 3px solid #C8E6C9;
+      min-width: 120px;
+      transition: transform 0.2s ease;
+    }
+
+    .kid-item:hover {
+      transform: translateY(-4px);
+    }
+
+    .kid-emoji {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .kid-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+    }
+
+    .kid-money {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      justify-content: center;
+      min-height: 2rem;
+      min-width: 80px;
+      padding: 0.5rem;
+      background-color: #E8F5E9;
+      border-radius: var(--radius-sm);
+    }
+
+    .mini-dollar {
+      display: inline-block;
+      font-size: 1.5rem;
+      animation: popIn 0.3s ease;
+    }
+
+    .btn-split {
+      font-size: 1.3rem;
+      padding: 1rem 2.5rem;
+      background-color: var(--color-green);
+      color: white;
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-split:hover {
+      background-color: #388E3C;
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .kid-item {
+        min-width: 100px;
+        padding: 0.75rem 1rem;
+      }
+      .kid-emoji {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html" class="active">Adventure 2</a></li>
+        <li><a href="page4.html">Adventure 3</a></li>
+        <li><a href="page5.html">Adventure 4</a></li>
+        <li><a href="page6.html">Adventure 5</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper" data-theme="money">
+    <!-- Back to Home link -->
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <!-- Fun Learning Article -->
+    <article class="article">
+      <h2>💰 Birthday Money Splits! 🎂</h2>
+
+      <!-- Story Box -->
+      <div class="story-box">
+        <p><span class="story-icon">📖</span><strong>The Birthday Money Splits</strong></p>
+        <p>You and your <strong>3 best friends</strong> find a magical <strong>$20 bill</strong> on the playground! 🎉 You all agree to split it <strong>equally</strong> (fairly).</p>
+        <p><strong>The Question:</strong> How many dollars does each person get?</p>
+        <p>🧮 <strong>The Division:</strong> You have <strong>$20</strong>, and there are <strong>4 people</strong> total (you + 3 friends).</p>
+      </div>
+
+      <!-- Money Display / Equation -->
+      <section class="adventure-display">
+        <div class="equation-box" id="equationBox">
+          <span class="equation-number" id="eqTotal">20</span>
+          <span class="equation-symbol">÷</span>
+          <span class="equation-number" id="eqPeople">4</span>
+          <span class="equation-symbol">=</span>
+          <span class="equation-number" id="eqResult">5</span>
+        </div>
+        <p class="result-text" id="resultText">Each person gets $5! 🎉</p>
+      </section>
+
+      <!-- Thinking Steps -->
+      <div class="thinking-steps" id="thinkingSteps">
+        <h4>🧠 Let's Think Step by Step!</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text" id="step1Text">We have <strong>$20</strong> total and <strong>4</strong> people.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text" id="step2Text">Think: What number times <strong>4</strong> equals <strong>20</strong>?</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text" id="step3Text"><strong>4 × 5 = 20</strong> ✅ So <strong>20 ÷ 4 = 5</strong>!</span>
+        </div>
+      </div>
+
+      <!-- Answer Reveal -->
+      <div class="answer-reveal" id="answerReveal">
+        <p>🎯 <strong>The Answer:</strong></p>
+        <div class="big-answer" id="bigAnswer">Everyone gets $5! 🍦</div>
+        <p id="answerDetail">And you all go buy ice cream together! 🎉</p>
+        <div class="fun-fact" id="funFact">💡 Fun Fact: $5 × 4 people = $20 total. Multiplication checks division!</div>
+      </div>
+
+      <!-- Controls Section -->
+      <section class="controls-section">
+        <h3>🎮 Try It Yourself!</h3>
+        <p style="font-size:1.1rem; color:var(--color-text-light); margin-bottom:1.5rem;">Change the numbers and see how the split works!</p>
+        <div class="controls-row">
+          <div class="control-group">
+            <label for="totalMoney">Total Money 💰</label>
+            <input type="number" id="totalMoney" min="1" max="100" value="20">
+            <span class="control-hint">($1 to $100)</span>
+          </div>
+          <div class="control-group">
+            <label for="peopleCount">Number of People 👥</label>
+            <input type="number" id="peopleCount" min="1" max="10" value="4">
+            <span class="control-hint">(1 to 10)</span>
+          </div>
+        </div>
+        <button id="resetBtn" class="btn btn-secondary btn-reset">🔄 Reset</button>
+      </section>
+
+      <div class="action-buttons">
+        <button id="splitBtn" class="btn btn-split">💰 Let's Split It! 💰</button>
+        <p class="money-counter" id="moneyCounter">Dollars handed out: $0</p>
+      </div>
+
+      <!-- Animation Area -->
+      <section class="animation-area" id="animationArea">
+        <div class="money-pile" id="moneyPile">
+          <!-- Dollar bills will be generated here -->
+        </div>
+        <div class="kids-row" id="kidsRow">
+          <!-- Kids will be generated here -->
+        </div>
+      </section>
+
+      <!-- Quiz Section -->
+      <section class="quiz-section">
+        <h3>🧠 More Money Splits Quiz!</h3>
+
+        <!-- Question 1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1. 🍕 You and 2 friends share $15 equally for pizza. How much does each person pay?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q1', this)">Show Answer 💡</button>
+          <div id="q1" class="quiz-answer">
+            ✨ $15 ÷ 3 = <strong>$5</strong> each! 🍕🍕🍕
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2. 🎮 4 friends win $24 at a game tournament. They split it equally. How much does each get?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q2', this)">Show Answer 💡</button>
+          <div id="q2" class="quiz-answer">
+            ✨ $24 ÷ 4 = <strong>$6</strong> each! 🎮🎮🎮🎮
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3. 🎪 5 kids earn $30 from a lemonade stand. They split it equally. How much does each get?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q3', this)">Show Answer 💡</button>
+          <div id="q3" class="quiz-answer">
+            ✨ $30 ÷ 5 = <strong>$6</strong> each! 🍋🍋🍋🍋🍋
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4. 🎁 3 siblings get $36 from grandma to share equally. How much does each get?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q4', this)">Show Answer 💡</button>
+          <div id="q4" class="quiz-answer">
+            ✨ $36 ÷ 3 = <strong>$12</strong> each! 🎁🎁🎁 Great job! 🌟
+          </div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <script>
+    // ============ State ============
+    let totalMoney = 20;
+    let peopleCount = 4;
+    let isAnimating = false;
+
+    // ============ DOM Elements ============
+    const moneyInput = document.getElementById('totalMoney');
+    const peopleInput = document.getElementById('peopleCount');
+    const splitBtn = document.getElementById('splitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const moneyPile = document.getElementById('moneyPile');
+    const kidsRow = document.getElementById('kidsRow');
+    const equationBox = document.getElementById('equationBox');
+    const eqTotal = document.getElementById('eqTotal');
+    const eqPeople = document.getElementById('eqPeople');
+    const eqResult = document.getElementById('eqResult');
+    const resultText = document.getElementById('resultText');
+    const step1Text = document.getElementById('step1Text');
+    const step2Text = document.getElementById('step2Text');
+    const step3Text = document.getElementById('step3Text');
+    const bigAnswer = document.getElementById('bigAnswer');
+    const answerDetail = document.getElementById('answerDetail');
+    const funFact = document.getElementById('funFact');
+
+    // ============ Kid Emojis ============
+    const kidEmojis = ['🧒', '👧', '👦', '👩', '👨', '🧑', '👶', '👧🏽', '👦🏼', '🧒🏾'];
+
+    // ============ Initialize ============
+    function init() {
+      updateDisplay();
+      generateMoney();
+      generateKids();
+      setupEventListeners();
+    }
+
+    function setupEventListeners() {
+      moneyInput.addEventListener('input', handleInputChange);
+      peopleInput.addEventListener('input', handleInputChange);
+      splitBtn.addEventListener('click', startSplit);
+      resetBtn.addEventListener('click', resetGame);
+    }
+
+    function handleInputChange() {
+      if (isAnimating) return;
+
+      let money = parseInt(moneyInput.value) || 1;
+      let people = parseInt(peopleInput.value) || 1;
+
+      // Clamp values
+      money = Math.max(1, Math.min(100, money));
+      people = Math.max(1, Math.min(10, people));
+
+      moneyInput.value = money;
+      peopleInput.value = people;
+
+      totalMoney = money;
+      peopleCount = people;
+
+      updateDisplay();
+      generateMoney();
+      generateKids();
+    }
+
+    function updateDisplay() {
+      eqTotal.textContent = '$' + totalMoney;
+      eqPeople.textContent = peopleCount;
+
+      // Check if money divides evenly
+      if (totalMoney % peopleCount === 0) {
+        const perPerson = totalMoney / peopleCount;
+        eqResult.textContent = '$' + perPerson;
+
+        if (perPerson === 1) {
+          resultText.textContent = `Each person gets $1! 🎉`;
+        } else {
+          resultText.textContent = `Each person gets $${perPerson}! 🎉`;
+        }
+
+        // Update thinking steps
+        step1Text.innerHTML = `We have <strong>$${totalMoney}</strong> total and <strong>${peopleCount}</strong> people.`;
+        step2Text.innerHTML = `Think: What number times <strong>${peopleCount}</strong> equals <strong>${totalMoney}</strong>?`;
+        step3Text.innerHTML = `<strong>${peopleCount} × ${perPerson} = ${totalMoney}</strong> ✅ So <strong>${totalMoney} ÷ ${peopleCount} = ${perPerson}</strong>!`;
+
+        // Update answer reveal
+        bigAnswer.textContent = `Everyone gets $${perPerson}! 🍦`;
+        answerDetail.textContent = `$${perPerson} × ${peopleCount} people = $${totalMoney} total. Perfect split! 🎉`;
+        funFact.textContent = `💡 Fun Fact: $${perPerson} × ${peopleCount} people = $${totalMoney}. Multiplication checks division!`;
+      } else {
+        eqResult.textContent = '?';
+        resultText.textContent = `🤔 $${totalMoney} ÷ ${peopleCount} people — these numbers don't split evenly! Try different numbers.`;
+
+        // Update thinking steps for uneven split
+        step1Text.innerHTML = `We have <strong>$${totalMoney}</strong> total and <strong>${peopleCount}</strong> people.`;
+        step2Text.innerHTML = `🤔 Hmm, $${totalMoney} doesn't divide evenly by ${peopleCount}.`;
+        step3Text.innerHTML = `Try numbers where the total can be split equally among all people!`;
+
+        // Update answer reveal
+        bigAnswer.textContent = `❌ Can't split evenly!`;
+        answerDetail.textContent = `$${totalMoney} ÷ ${peopleCount} doesn't give a whole number. Try different numbers!`;
+        funFact.textContent = `💡 Tip: For an even split, the total money must be a multiple of the number of people.`;
+      }
+    }
+
+    // ============ Generate Money ============
+    function generateMoney() {
+      moneyPile.innerHTML = '';
+      for (let i = 0; i < totalMoney; i++) {
+        const dollar = document.createElement('span');
+        dollar.className = 'dollar-bill';
+        dollar.textContent = '💵';
+        dollar.dataset.index = i;
+        dollar.style.position = 'absolute';
+        // Random slight offset in the pile for natural look
+        const offsetX = (Math.random() - 0.5) * 40;
+        const offsetY = (Math.random() - 0.5) * 25;
+        dollar.style.left = `calc(50% + ${offsetX}px)`;
+        dollar.style.top = `calc(50% + ${offsetY}px)`;
+        dollar.style.transform = `translate(-50%, -50%) rotate(${(Math.random() - 0.5) * 20}deg)`;
+        dollar.style.opacity = '1';
+        dollar.style.pointerEvents = 'none';
+        moneyPile.appendChild(dollar);
+      }
+    }
+
+    // ============ Generate Kids ============
+    function generateKids() {
+      kidsRow.innerHTML = '';
+      for (let i = 0; i < peopleCount; i++) {
+        const kid = document.createElement('div');
+        kid.className = 'kid-item';
+        kid.dataset.index = i;
+        const emoji = kidEmojis[i % kidEmojis.length];
+        kid.innerHTML = '<div class="kid-emoji">' + emoji + '</div><div class="kid-label">' + getKidLabel(i) + '</div><div class="kid-money" id="kidMoney' + i + '"></div>';
+        kidsRow.appendChild(kid);
+      }
+    }
+
+    function getKidLabel(index) {
+      if (index === 0) return 'You 🏆';
+      const names = ['Friend 1', 'Friend 2', 'Friend 3', 'Friend 4', 'Friend 5', 'Friend 6', 'Friend 7', 'Friend 8', 'Friend 9'];
+      return names[index - 1] || 'Friend ' + index;
+    }
+
+    // ============ Split Animation ============
+    function startSplit() {
+      if (isAnimating) return;
+
+      // Don't allow animation if numbers don't divide evenly
+      if (totalMoney % peopleCount !== 0) {
+        alert('🤔 These numbers don\'t split evenly! Please choose a total amount that can be shared equally among all people.');
+        return;
+      }
+
+      isAnimating = true;
+      splitBtn.disabled = true;
+      splitBtn.style.opacity = '0.6';
+
+      // Reset money counter
+      document.getElementById('moneyCounter').textContent = 'Dollars handed out: $0';
+
+      // Clear any previous kid money
+      for (let i = 0; i < peopleCount; i++) {
+        const kidMoney = document.getElementById('kidMoney' + i);
+        if (kidMoney) kidMoney.innerHTML = '';
+      }
+
+      // Regenerate money for the animation
+      generateMoney();
+
+      // Make sure money pile is visible
+      gsap.set(moneyPile, { opacity: 1, display: 'block' });
+
+      const dollars = document.querySelectorAll('.dollar-bill');
+      const kids = document.querySelectorAll('.kid-item');
+
+      // Calculate distribution
+      const distribution = distributeMoney(totalMoney, peopleCount);
+
+      // Create a timeline for the animation
+      const tl = gsap.timeline({
+        onComplete: animationComplete
+      });
+
+      // Get the animation area's bounding rect for reference
+      const areaRect = animationArea.getBoundingClientRect();
+
+      // Track how many dollars have been handed out
+      let dollarsHanded = 0;
+      const moneyCounterEl = document.getElementById('moneyCounter');
+
+      // Animate each dollar to its target kid with delay between each
+      dollars.forEach((dollar, index) => {
+        // Function to update the counter when this dollar lands
+        const updateCounter = () => {
+          dollarsHanded++;
+          moneyCounterEl.textContent = `Dollars handed out: $${dollarsHanded}`;
+        };
+
+        // Find which kid this dollar goes to
+        let kidIndex = 0;
+        let count = 0;
+        for (let k = 0; k < distribution.length; k++) {
+          if (index < count + distribution[k]) {
+            kidIndex = k;
+            break;
+          }
+          count += distribution[k];
+        }
+
+        const targetKid = kids[kidIndex];
+        const kidRect = targetKid.getBoundingClientRect();
+
+        // Calculate target position relative to the animation area
+        const targetX = kidRect.left + kidRect.width / 2 - areaRect.left;
+        const targetY = kidRect.top + kidRect.height / 2 - areaRect.top;
+
+        // Get dollar's current position relative to the animation area
+        const dollarRect = dollar.getBoundingClientRect();
+        const dollarX = dollarRect.left + dollarRect.width / 2 - areaRect.left;
+        const dollarY = dollarRect.top + dollarRect.height / 2 - areaRect.top;
+
+        // Calculate the distance to travel
+        const deltaX = targetX - dollarX;
+        const deltaY = targetY - dollarY;
+
+        // Animate dollar to kid using transform (relative to its current position)
+        tl.to(dollar, {
+          duration: 0.8,
+          x: deltaX,
+          y: deltaY,
+          rotation: 0,
+          ease: "power2.inOut",
+          onComplete: updateCounter
+        }, index * 0.6);
+
+        // Add bounce effect
+        tl.to(dollar, {
+          duration: 0.15,
+          scale: 1.3,
+          ease: "power1.out",
+          yoyo: true,
+          repeat: 1
+        }, index * 0.6 + 0.6);
+      });
+
+      // After all dollars reach kids, add mini dollars and clean up
+      const totalAnimationTime = dollars.length * 0.6 + 1.0;
+      tl.add(() => {
+        // Add mini dollars to each kid based on distribution
+        distribution.forEach((count, kidIndex) => {
+          const kidMoneyContainer = document.getElementById('kidMoney' + kidIndex);
+          if (kidMoneyContainer) {
+            for (let i = 0; i < count; i++) {
+              const miniDollar = document.createElement('span');
+              miniDollar.textContent = '💵';
+              miniDollar.className = 'mini-dollar';
+              kidMoneyContainer.appendChild(miniDollar);
+            }
+          }
+        });
+
+        // Hide the money pile
+        gsap.to(moneyPile, {
+          opacity: 0,
+          duration: 0.3
+        });
+        
+        // Remove animated dollars from DOM
+        dollars.forEach(dollar => {
+          if (dollar.parentNode) {
+            dollar.parentNode.removeChild(dollar);
+          }
+        });
+      }, totalAnimationTime);
+    }
+
+    function distributeMoney(total, people) {
+      const distribution = [];
+      let remaining = total;
+
+      for (let i = 0; i < people; i++) {
+        const remainingPeople = people - i;
+        const perPerson = Math.ceil(remaining / remainingPeople);
+        distribution.push(Math.min(perPerson, remaining));
+        remaining -= distribution[i];
+      }
+
+      return distribution;
+    }
+
+    // Animation complete - just re-enable the button
+    function animationComplete() {
+      isAnimating = false;
+      splitBtn.disabled = false;
+      splitBtn.style.opacity = '1';
+    }
+
+    // ============ Quiz Toggle ============
+    function toggleAnswer(id, btn) {
+      const answer = document.getElementById(id);
+      if (answer.classList.contains('show')) {
+        answer.classList.remove('show');
+        btn.textContent = 'Show Answer 💡';
+      } else {
+        answer.classList.add('show');
+        btn.textContent = 'Hide Answer 🙈';
+      }
+    }
+
+    // ============ Reset ============
+    function resetGame() {
+      if (isAnimating) return;
+
+      // Reset money counter
+      document.getElementById('moneyCounter').textContent = 'Dollars handed out: $0';
+
+      // Reset inputs
+      moneyInput.value = 20;
+      peopleInput.value = 4;
+      totalMoney = 20;
+      peopleCount = 4;
+
+      // Update display
+      updateDisplay();
+      generateMoney();
+      generateKids();
+
+      // Animate reset
+      gsap.from('.dollar-bill', {
+        scale: 0,
+        rotation: 180,
+        duration: 0.4,
+        stagger: 0.05,
+        ease: "back.out(1.7)"
+      });
+
+      gsap.from('.kid-item', {
+        y: 30,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.1,
+        ease: "back.out(1.7)"
+      });
+    }
+
+    // ============ Start ============
+    init();
+  </script>
+
+</body>
+</html>

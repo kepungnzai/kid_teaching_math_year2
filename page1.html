@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Let's Learn Division!</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- GSAP Animation Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+  </script>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html" class="active">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page4.html">Adventure 3</a></li>
+        <li><a href="page5.html">Adventure 4</a></li>
+        <li><a href="page6.html">Adventure 5</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <!-- Back to Home link -->
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <!-- Fun Learning Article -->
+    <article class="article">
+      <h2>🍎 Let's Learn Division! 🧺</h2>
+
+      <div class="highlight-box explanation-box">
+        <p><strong>What is Division?</strong></p>
+        <p>Division is like <strong>sharing equally</strong>! Imagine you have some yummy apples and some baskets. Division means putting the same number of apples into each basket. It's like being a fair apple-sorter! 🍎➡️🧺</p>
+      </div>
+
+      <!-- Division Display -->
+      <section class="division-display">
+        <div class="equation-box" id="equationBox">
+          <span class="equation-number" id="eqApples">2</span>
+          <span class="equation-symbol">÷</span>
+          <span class="equation-number" id="eqBaskets">2</span>
+          <span class="equation-symbol">=</span>
+          <span class="equation-number" id="eqResult">1</span>
+        </div>
+        <p class="result-text" id="resultText">Each basket gets 1 apple!</p>
+      </section>
+
+      <!-- Controls Section -->
+      <section class="controls-section">
+        <h3>🎮 Let's Play!</h3>
+        <div class="controls-row">
+          <div class="control-group">
+            <label for="appleCount">Number of Apples 🍎</label>
+            <input type="number" id="appleCount" min="1" max="20" value="2">
+            <span class="control-hint">(1 to 20)</span>
+          </div>
+          <div class="control-group">
+            <label for="basketCount">Number of Baskets 🧺</label>
+            <input type="number" id="basketCount" min="1" max="20" value="2">
+            <span class="control-hint">(1 to 20)</span>
+          </div>
+        </div>
+        <button id="resetBtn" class="btn btn-secondary btn-reset">🔄 Reset</button>
+      </section>
+
+      <div class="action-buttons">
+        <button id="divideBtn" class="btn btn-primary btn-divide">✨ Let's Divide! ✨</button>
+        <p class="apple-counter" id="appleCounter">Apples placed in baskets: 0</p>
+      </div>
+
+      <!-- Animation Area -->
+      <section class="animation-area" id="animationArea">
+        <div class="apple-pile" id="applePile">
+          <!-- Apples will be generated here -->
+        </div>
+        <div class="baskets-row" id="basketsRow">
+          <!-- Baskets will be generated here -->
+        </div>
+      </section>
+
+      <!-- Quiz Section -->
+      <section class="quiz-section">
+        <h3>🧠 Division Quiz Time!</h3>
+        
+        <!-- Question 1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1. If you have 6 apples and 3 baskets, how many apples go in each basket?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q1', this)">Show Answer 💡</button>
+          <div id="q1" class="quiz-answer">
+            ✨ 6 ÷ 3 = <strong>2</strong> apples in each basket! 🍎🍎
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2. If you have 8 apples and 2 baskets, how many apples go in each basket?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q2', this)">Show Answer 💡</button>
+          <div id="q2" class="quiz-answer">
+            ✨ 8 ÷ 2 = <strong>4</strong> apples in each basket! 🍎🍎🍎🍎
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3. If you have 12 apples and 3 baskets, how many apples go in each basket?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q3', this)">Show Answer 💡</button>
+          <div id="q3" class="quiz-answer">
+            ✨ 12 ÷ 3 = <strong>4</strong> apples in each basket! 🍎🍎🍎🍎
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4. If you have 20 apples and 4 baskets, how many apples go in each basket?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q4', this)">Show Answer 💡</button>
+          <div id="q4" class="quiz-answer">
+            ✨ 20 ÷ 4 = <strong>5</strong> apples in each basket! 🍎🍎🍎🍎🍎 Great job! 🌟
+          </div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+
+  <script>
+    // ============ State ============
+    let appleCount = 2;
+    let basketCount = 2;
+    let isAnimating = false;
+
+    // ============ DOM Elements ============
+    const appleInput = document.getElementById('appleCount');
+    const basketInput = document.getElementById('basketCount');
+    const divideBtn = document.getElementById('divideBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const applePile = document.getElementById('applePile');
+    const basketsRow = document.getElementById('basketsRow');
+    const equationBox = document.getElementById('equationBox');
+    const eqApples = document.getElementById('eqApples');
+    const eqBaskets = document.getElementById('eqBaskets');
+    const eqResult = document.getElementById('eqResult');
+    const resultText = document.getElementById('resultText');
+
+    // ============ Initialize ============
+    function init() {
+      updateDisplay();
+      generateApples();
+      generateBaskets();
+      setupEventListeners();
+    }
+
+    function setupEventListeners() {
+      appleInput.addEventListener('input', handleInputChange);
+      basketInput.addEventListener('input', handleInputChange);
+      divideBtn.addEventListener('click', startDivision);
+      resetBtn.addEventListener('click', resetGame);
+    }
+
+    function handleInputChange() {
+      if (isAnimating) return;
+
+      let apples = parseInt(appleInput.value) || 1;
+      let baskets = parseInt(basketInput.value) || 1;
+
+      // Clamp values
+      apples = Math.max(1, Math.min(20, apples));
+      baskets = Math.max(1, Math.min(20, baskets));
+
+      appleInput.value = apples;
+      basketInput.value = baskets;
+
+      appleCount = apples;
+      basketCount = baskets;
+
+      updateDisplay();
+      generateApples();
+      generateBaskets();
+    }
+
+    function updateDisplay() {
+      eqApples.textContent = appleCount;
+      eqBaskets.textContent = basketCount;
+
+      // Check if apples divide evenly into baskets
+      if (appleCount % basketCount === 0) {
+        const perBasket = appleCount / basketCount;
+        eqResult.textContent = perBasket;
+
+        if (perBasket === 1) {
+          resultText.textContent = `Each basket gets 1 apple!`;
+        } else {
+          resultText.textContent = `Each basket gets ${perBasket} apples!`;
+        }
+      } else {
+        eqResult.textContent = '?';
+        resultText.textContent = `🤔 ${appleCount} apples ÷ ${basketCount} baskets — these numbers don't divide evenly! Try different numbers.`;
+      }
+    }
+
+    // ============ Generate Apples ============
+    function generateApples() {
+      applePile.innerHTML = '';
+      for (let i = 0; i < appleCount; i++) {
+        const apple = document.createElement('div');
+        apple.className = 'apple-item';
+        apple.textContent = '🍎';
+        apple.dataset.index = i;
+        apple.style.position = 'absolute';
+        // Random slight offset in the pile for natural look
+        const offsetX = (Math.random() - 0.5) * 30;
+        const offsetY = (Math.random() - 0.5) * 20;
+        apple.style.left = `calc(50% + ${offsetX}px)`;
+        apple.style.top = `calc(50% + ${offsetY}px)`;
+        apple.style.fontSize = '2.5rem';
+        apple.style.transform = 'translate(-50%, -50%)';
+        apple.style.opacity = '1';
+        apple.style.pointerEvents = 'none';
+        applePile.appendChild(apple);
+      }
+    }
+
+    // ============ Generate Baskets ============
+    function generateBaskets() {
+      basketsRow.innerHTML = '';
+      for (let i = 0; i < basketCount; i++) {
+        const basket = document.createElement('div');
+        basket.className = 'basket-item';
+        basket.dataset.index = i;
+        basket.innerHTML = '<div class="basket-emoji">🧺</div><div class="basket-label">Basket ' + (i + 1) + '</div><div class="basket-apples" id="basketApples' + i + '"></div>';
+        basketsRow.appendChild(basket);
+      }
+    }
+
+    // ============ Division Animation ============
+    function startDivision() {
+      if (isAnimating) return;
+
+      // Don't allow animation if numbers don't divide evenly
+      if (appleCount % basketCount !== 0) {
+        alert('🤔 These numbers don\'t divide evenly! Please choose numbers where the total apples can be shared equally among all baskets.');
+        return;
+      }
+
+      isAnimating = true;
+      divideBtn.disabled = true;
+      divideBtn.style.opacity = '0.6';
+
+      // Reset apple counter
+      document.getElementById('appleCounter').textContent = 'Apples placed in baskets: 0';
+
+      // Clear any previous basket apples
+      for (let i = 0; i < basketCount; i++) {
+        const basketApples = document.getElementById('basketApples' + i);
+        if (basketApples) basketApples.innerHTML = '';
+      }
+
+      // Regenerate apples for the animation
+      generateApples();
+
+      // Make sure apple pile is visible
+      gsap.set(applePile, { opacity: 1, display: 'block' });
+
+      const apples = document.querySelectorAll('.apple-item');
+      const baskets = document.querySelectorAll('.basket-item');
+
+      // Calculate distribution
+      const distribution = distributeApples(appleCount, basketCount);
+
+      // Create a timeline for the animation
+      const tl = gsap.timeline({
+        onComplete: animationComplete
+      });
+
+      // Get the animation area's bounding rect for reference
+      const areaRect = animationArea.getBoundingClientRect();
+
+      // Track how many apples have reached baskets
+      let applesPlaced = 0;
+      const appleCounterEl = document.getElementById('appleCounter');
+
+      // Animate each apple to its target basket with 1 second delay between each
+      apples.forEach((apple, index) => {
+        // Function to update the counter when this apple lands
+        const updateCounter = () => {
+          applesPlaced++;
+          appleCounterEl.textContent = `Apples placed in baskets: ${applesPlaced}`;
+        };
+        // Find which basket this apple goes to
+        let basketIndex = 0;
+        let count = 0;
+        for (let b = 0; b < distribution.length; b++) {
+          if (index < count + distribution[b]) {
+            basketIndex = b;
+            break;
+          }
+          count += distribution[b];
+        }
+
+        const targetBasket = baskets[basketIndex];
+        const basketRect = targetBasket.getBoundingClientRect();
+
+        // Calculate target position relative to the animation area
+        const targetX = basketRect.left + basketRect.width / 2 - areaRect.left;
+        const targetY = basketRect.top + basketRect.height / 2 - areaRect.top;
+
+        // Get apple's current position relative to the animation area
+        const appleRect = apple.getBoundingClientRect();
+        const appleX = appleRect.left + appleRect.width / 2 - areaRect.left;
+        const appleY = appleRect.top + appleRect.height / 2 - areaRect.top;
+
+        // Calculate the distance to travel
+        const deltaX = targetX - appleX;
+        const deltaY = targetY - appleY;
+
+        // Animate apple to basket using transform (relative to its current position)
+        tl.to(apple, {
+          duration: 1.0,
+          x: deltaX,
+          y: deltaY,
+          ease: "power2.inOut",
+          onComplete: updateCounter
+        }, index * 1.0);
+
+        // Add bounce effect
+        tl.to(apple, {
+          duration: 0.2,
+          scale: 1.3,
+          ease: "power1.out",
+          yoyo: true,
+          repeat: 1
+        }, index * 1.0 + 0.8);
+      });
+
+      // After all apples reach baskets, add mini apples and clean up
+      const totalAnimationTime = apples.length * 1.0 + 1.0;
+      tl.add(() => {
+        // Add mini apples to each basket based on distribution
+        distribution.forEach((count, basketIndex) => {
+          const basketApplesContainer = document.getElementById('basketApples' + basketIndex);
+          if (basketApplesContainer) {
+            for (let i = 0; i < count; i++) {
+              const miniApple = document.createElement('span');
+              miniApple.textContent = '🍎';
+              miniApple.className = 'mini-apple';
+              miniApple.style.fontSize = '1.5rem';
+              basketApplesContainer.appendChild(miniApple);
+            }
+          }
+        });
+
+        // Hide the apple pile
+        gsap.to(applePile, {
+          opacity: 0,
+          duration: 0.3
+        });
+        
+        // Remove animated apples from DOM
+        apples.forEach(apple => {
+          if (apple.parentNode) {
+            apple.parentNode.removeChild(apple);
+          }
+        });
+      }, totalAnimationTime);
+    }
+
+    function distributeApples(totalApples, totalBaskets) {
+      const distribution = [];
+      let remaining = totalApples;
+
+      for (let i = 0; i < totalBaskets; i++) {
+        const remainingBaskets = totalBaskets - i;
+        const perBasket = Math.ceil(remaining / remainingBaskets);
+        distribution.push(Math.min(perBasket, remaining));
+        remaining -= distribution[i];
+      }
+
+      return distribution;
+    }
+
+    // Animation complete - just re-enable the button
+    function animationComplete() {
+      isAnimating = false;
+      divideBtn.disabled = false;
+      divideBtn.style.opacity = '1';
+    }
+
+    // ============ Quiz Toggle ============
+    function toggleAnswer(id, btn) {
+      const answer = document.getElementById(id);
+      if (answer.classList.contains('show')) {
+        answer.classList.remove('show');
+        btn.textContent = 'Show Answer 💡';
+      } else {
+        answer.classList.add('show');
+        btn.textContent = 'Hide Answer 🙈';
+      }
+    }
+
+    // ============ Reset ============
+    function resetGame() {
+      if (isAnimating) return;
+
+      // Reset apple counter
+      document.getElementById('appleCounter').textContent = 'Apples placed in baskets: 0';
+
+      // Reset inputs
+      appleInput.value = 2;
+      basketInput.value = 2;
+      appleCount = 2;
+      basketCount = 2;
+
+      // Update display
+      updateDisplay();
+      generateApples();
+      generateBaskets();
+
+      // Animate reset
+      gsap.from('.apple-item', {
+        scale: 0,
+        duration: 0.4,
+        stagger: 0.05,
+        ease: "back.out(1.7)"
+      });
+
+      gsap.from('.basket-item', {
+        y: 30,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.1,
+        ease: "back.out(1.7)"
+      });
+    }
+
+    // ============ Start ============
+    init();
+  </script>
+
+</body>
+</html>

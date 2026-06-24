@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Fractions as Numbers!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Fractions as Numbers Specific Styles ============ */
+    .decimal-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #E8F5E9 100%);
+      border-left: 6px solid #1565C0;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .decimal-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .decimal-intro p:last-child { margin-bottom: 0; }
+
+    .fraction-decimal-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 2rem;
+    }
+    .fraction-decimal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .fraction-decimal-card h4 {
+      font-size: 1.4rem;
+      color: var(--color-primary-dark);
+      margin-bottom: 1.25rem;
+      font-weight: 800;
+    }
+
+    /* Bar visual for fractions */
+    .bar-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 1rem auto;
+      position: relative;
+    }
+    .bar-bg {
+      width: 100%;
+      height: 40px;
+      background: #E8EAF6;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #C5CAE9;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 18px;
+      transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: white;
+    }
+    .bar-fill.half-fill { background: linear-gradient(90deg, #42A5F5, #1E88E5); }
+    .bar-fill.quarter-fill { background: linear-gradient(90deg, #66BB6A, #43A047); }
+    .bar-fill.fifth-fill { background: linear-gradient(90deg, #FFA726, #FB8C00); }
+    .bar-fill.custom-fill { background: linear-gradient(90deg, #AB47BC, #7B1FA2); }
+
+    .bar-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+    }
+    .bar-labels span:last-child {
+      color: var(--color-primary-dark);
+      font-weight: 700;
+    }
+
+    /* Three fraction comparison row */
+    .fraction-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 2.5rem 0;
+    }
+    .fraction-compare-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      flex: 1;
+      min-width: 200px;
+      max-width: 280px;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .fraction-compare-card:hover {
+      transform: translateY(-6px);
+    }
+    .fraction-compare-card.half-theme { border-color: #1E88E5; }
+    .fraction-compare-card.quarter-theme { border-color: #43A047; }
+    .fraction-compare-card.fifth-theme { border-color: #FB8C00; }
+
+    .fc-fraction {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--color-text);
+      margin-bottom: 0.25rem;
+    }
+    .fc-equals {
+      font-size: 1.5rem;
+      color: var(--color-text-light);
+      margin: 0.25rem 0;
+    }
+    .fc-decimal {
+      font-size: 2.2rem;
+      font-weight: 800;
+    }
+    .fc-decimal.half-decimal { color: #1E88E5; }
+    .fc-decimal.quarter-decimal { color: #43A047; }
+    .fc-decimal.fifth-decimal { color: #FB8C00; }
+
+    .fc-bar-mini {
+      width: 100%;
+      height: 20px;
+      background: #E8EAF6;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0.75rem 0;
+    }
+    .fc-bar-mini-fill {
+      height: 100%;
+      border-radius: 10px;
+    }
+    .fc-desc {
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+      font-weight: 500;
+      margin-top: 0.25rem;
+    }
+
+    /* Interactive converter */
+    .converter-section {
+      background: linear-gradient(135deg, #EDE7F6 0%, #E8F5E9 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2.5rem 0;
+    }
+    .converter-section h3 {
+      color: #6A1B9A;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .converter-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .converter-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .converter-group label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .converter-group input {
+      width: 90px;
+      padding: 0.6rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--cds-font-sans);
+      color: var(--color-text);
+      transition: all 0.2s ease;
+    }
+    .converter-group input:focus {
+      outline: none;
+      border-color: #7B1FA2;
+      box-shadow: 0 0 0 4px rgba(123, 31, 162, 0.15);
+    }
+    .converter-equals {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #7B1FA2;
+    }
+    .converter-result-box {
+      margin-top: 1rem;
+      padding: 1rem 2rem;
+      background: white;
+      border-radius: var(--radius-md);
+      display: inline-block;
+      box-shadow: var(--shadow-sm);
+      border: 3px solid #7B1FA2;
+    }
+    .converter-result-text {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #6A1B9A;
+    }
+    .converter-bar-area {
+      width: 100%;
+      max-width: 400px;
+      margin: 1.5rem auto;
+    }
+
+    /* Fun fact box */
+    .fun-decimal-fact {
+      background: #F3E5F5;
+      border-left: 6px solid #7B1FA2;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .fun-decimal-fact p {
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .fun-decimal-fact p:last-child { margin-bottom: 0; }
+    .fun-decimal-fact .highlight-number {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #6A1B9A;
+    }
+
+    /* Decimal quiz */
+    .decimal-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .decimal-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .decimal-option:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+      transform: scale(1.05);
+    }
+    .decimal-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .decimal-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .decimal-option:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
+    .decimal-option.correct:disabled {
+      opacity: 1;
+    }
+    .decimal-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .decimal-result.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .decimal-result.correct-result {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .decimal-result.wrong-result {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    @media (max-width: 768px) {
+      .fraction-compare-card { min-width: 160px; }
+      .fc-fraction { font-size: 2rem; }
+      .fc-decimal { font-size: 1.8rem; }
+      .converter-group input { width: 70px; font-size: 1.2rem; }
+      .converter-result-text { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page4.html">Adventure 3</a></li>
+        <li><a href="page5.html">Adventure 4</a></li>
+        <li><a href="page6.html" class="active">Adventure 5</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🔢 Fractions as Numbers! ✨</h2>
+
+      <!-- Intro -->
+      <div class="decimal-intro">
+        <p><strong>Fractions are Numbers Too!</strong></p>
+        <p>Did you know every fraction can be written as a <strong>decimal number</strong>? A decimal is just another way to show a part of a whole!</p>
+        <p>For example, <strong>½ (one-half)</strong> is the same as <strong>0.5</strong>. They mean the exact same thing — just written differently! 🤯</p>
+      </div>
+
+      <!-- ============ 1/2 = 0.5 ============ -->
+      <section>
+        <h3>🍕 Half = <strong>0.5</strong></h3>
+
+        <div class="fraction-decimal-card">
+          <h4>½ is the same as 0.5</h4>
+
+          <div class="bar-container">
+            <div class="bar-bg">
+              <div class="bar-fill half-fill" id="halfBar" style="width: 50%;">½ = 0.5</div>
+            </div>
+            <div class="bar-labels">
+              <span>0</span>
+              <span>0.5 (halfway there!)</span>
+              <span>1</span>
+            </div>
+          </div>
+
+          <p style="font-size:1.1rem; color:var(--color-text-light); margin-top:1rem;">
+            If you have <strong>1 whole pizza</strong> and eat <strong>half of it</strong>, you ate <strong>0.5 of the pizza</strong>! 🍕
+          </p>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 How ½ becomes 0.5</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text">The fraction <strong>½</strong> means <strong>1 ÷ 2</strong> (1 divided by 2).</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text"><strong>1 ÷ 2 = 0.5</strong> — that's the decimal version!</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text"><strong>½ and 0.5</strong> are two different ways of saying the <strong>exact same amount</strong>! 🎉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 1/4 = 0.25 ============ -->
+      <section>
+        <h3>🍕 Quarter = <strong>0.25</strong></h3>
+
+        <div class="fraction-decimal-card">
+          <h4>¼ is the same as 0.25</h4>
+
+          <div class="bar-container">
+            <div class="bar-bg">
+              <div class="bar-fill quarter-fill" id="quarterBar" style="width: 25%;">¼ = 0.25</div>
+            </div>
+            <div class="bar-labels">
+              <span>0</span>
+              <span>0.25</span>
+              <span>1</span>
+            </div>
+          </div>
+
+          <p style="font-size:1.1rem; color:var(--color-text-light); margin-top:1rem;">
+            A <strong>quarter (¼)</strong> is <strong>0.25</strong>. One quarter of a pizza = 0.25 of the whole pizza! 🍕
+          </p>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 How ¼ becomes 0.25</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text"><strong>¼</strong> means <strong>1 ÷ 4</strong> (1 divided by 4).</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text"><strong>1 ÷ 4 = 0.25</strong> — a quarter of the whole!</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text">Fun fact: <strong>0.25 + 0.25 + 0.25 + 0.25 = 1.00</strong> (four quarters make a whole!) 🎉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 1/5 = 0.2 ============ -->
+      <section>
+        <h3>🍕 One Fifth = <strong>0.2</strong></h3>
+
+        <div class="fraction-decimal-card">
+          <h4>⅕ is the same as 0.2</h4>
+
+          <div class="bar-container">
+            <div class="bar-bg">
+              <div class="bar-fill fifth-fill" id="fifthBar" style="width: 20%;">⅕ = 0.2</div>
+            </div>
+            <div class="bar-labels">
+              <span>0</span>
+              <span>0.2</span>
+              <span>1</span>
+            </div>
+          </div>
+
+          <p style="font-size:1.1rem; color:var(--color-text-light); margin-top:1rem;">
+            <strong>One fifth (⅕)</strong> is <strong>0.2</strong>. If 5 friends share a pizza equally, each gets ⅕ = 0.2 of the pizza! 🍕
+          </p>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 How ⅕ becomes 0.2</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text"><strong>⅕</strong> means <strong>1 ÷ 5</strong> (1 divided by 5).</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text"><strong>1 ÷ 5 = 0.2</strong> — one fifth of the whole!</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text"><strong>Five fifths</strong> make a whole: <strong>0.2 + 0.2 + 0.2 + 0.2 + 0.2 = 1.0</strong>! 🎉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SIDE-BY-SIDE COMPARISON ============ -->
+      <section>
+        <h3>📊 See Them Side by Side!</h3>
+
+        <div class="fraction-row">
+          <!-- Half -->
+          <div class="fraction-compare-card half-theme">
+            <div class="fc-fraction">½</div>
+            <div class="fc-equals">=</div>
+            <div class="fc-decimal half-decimal">0.5</div>
+            <div class="fc-bar-mini">
+              <div class="fc-bar-mini-fill half-fill" style="width: 50%;"></div>
+            </div>
+            <div class="fc-desc">Half of the whole</div>
+          </div>
+
+          <!-- Quarter -->
+          <div class="fraction-compare-card quarter-theme">
+            <div class="fc-fraction">¼</div>
+            <div class="fc-equals">=</div>
+            <div class="fc-decimal quarter-decimal">0.25</div>
+            <div class="fc-bar-mini">
+              <div class="fc-bar-mini-fill quarter-fill" style="width: 25%;"></div>
+            </div>
+            <div class="fc-desc">Quarter of the whole</div>
+          </div>
+
+          <!-- Fifth -->
+          <div class="fraction-compare-card fifth-theme">
+            <div class="fc-fraction">⅕</div>
+            <div class="fc-equals">=</div>
+            <div class="fc-decimal fifth-decimal">0.2</div>
+            <div class="fc-bar-mini">
+              <div class="fc-bar-mini-fill fifth-fill" style="width: 20%;"></div>
+            </div>
+            <div class="fc-desc">One fifth of the whole</div>
+          </div>
+        </div>
+
+        <div class="fun-decimal-fact">
+          <p>💡 <strong>Notice the pattern?</strong></p>
+          <p>The bigger the bottom number (denominator), the <strong>smaller the decimal</strong> becomes!</p>
+          <p>
+            <span class="highlight-number">½ = 0.5</span> &nbsp;|&nbsp;
+            <span class="highlight-number">¼ = 0.25</span> &nbsp;|&nbsp;
+            <span class="highlight-number">⅕ = 0.2</span> &nbsp;|&nbsp;
+            <span class="highlight-number">⅛ = 0.125</span>
+          </p>
+          <p>More pieces = smaller pieces = smaller decimal! 🤯</p>
+        </div>
+      </section>
+
+      <!-- ============ INTERACTIVE CONVERTER ============ -->
+      <section class="converter-section">
+        <h3>🧮 Interactive Fraction-to-Decimal Converter!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:0.5rem;">Enter a numerator and denominator to see the fraction as a decimal!</p>
+        <p style="font-size:0.95rem; color:var(--color-text-light); margin-bottom:1rem;">(Try: 1/2, 1/4, 1/5, 3/4, 1/8, 1/3)</p>
+
+        <div class="converter-controls">
+          <div class="converter-group">
+            <label for="numInput">Numerator (top)</label>
+            <input type="number" id="numInput" min="0" max="20" value="1">
+          </div>
+          <div class="converter-equals">/</div>
+          <div class="converter-group">
+            <label for="denInput">Denominator (bottom)</label>
+            <input type="number" id="denInput" min="1" max="20" value="2">
+          </div>
+          <div class="converter-equals">=</div>
+          <div class="converter-result-box">
+            <span class="converter-result-text" id="converterResult">0.5</span>
+          </div>
+        </div>
+
+        <div class="converter-bar-area">
+          <div class="bar-bg">
+            <div class="bar-fill custom-fill" id="converterBar" style="width: 50%;">½</div>
+          </div>
+          <div class="bar-labels">
+            <span>0</span>
+            <span id="converterDecimalLabel">0.5</span>
+            <span>1</span>
+          </div>
+        </div>
+
+        <p style="font-size:1rem; color:var(--color-text-light); font-style:italic;">
+          Tip: If the decimal goes on forever (like ⅓ = 0.333...), we round to 4 decimal places!
+        </p>
+      </section>
+
+      <!-- ============ QUIZ SECTION ============ -->
+      <section class="quiz-section">
+        <h3>🧠 Fraction-to-Decimal Quiz!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Match each fraction to its correct decimal! Click the right answer.</p>
+
+        <!-- Quiz Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ ½ is equal to which decimal?</p>
+          <div class="decimal-quiz-options">
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq1', false)">0.25</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq1', true)">0.5</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq1', false)">0.75</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq1', false)">1.0</button>
+          </div>
+          <div id="dq1result" class="decimal-result"></div>
+        </div>
+
+        <!-- Quiz Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ ¼ is equal to which decimal?</p>
+          <div class="decimal-quiz-options">
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq2', true)">0.25</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq2', false)">0.5</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq2', false)">0.125</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq2', false)">0.2</button>
+          </div>
+          <div id="dq2result" class="decimal-result"></div>
+        </div>
+
+        <!-- Quiz Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ ⅕ is equal to which decimal?</p>
+          <div class="decimal-quiz-options">
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq3', false)">0.5</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq3', false)">0.25</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq3', true)">0.2</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq3', false)">1.5</button>
+          </div>
+          <div id="dq3result" class="decimal-result"></div>
+        </div>
+
+        <!-- Quiz Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ ¾ is equal to which decimal?</p>
+          <div class="decimal-quiz-options">
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq4', false)">0.25</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq4', false)">0.5</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq4', false)">1.75</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq4', true)">0.75</button>
+          </div>
+          <div id="dq4result" class="decimal-result"></div>
+        </div>
+
+        <!-- Quiz Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ ⅛ is equal to which decimal?</p>
+          <div class="decimal-quiz-options">
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq5', false)">0.5</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq5', false)">0.25</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq5', true)">0.125</button>
+            <button class="decimal-option" onclick="checkDecimalAnswer(this, 'dq5', false)">0.2</button>
+          </div>
+          <div id="dq5result" class="decimal-result"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <script>
+    // ============ Interactive Converter ============
+    var numInput = document.getElementById('numInput');
+    var denInput = document.getElementById('denInput');
+    var converterResult = document.getElementById('converterResult');
+    var converterBar = document.getElementById('converterBar');
+    var converterDecimalLabel = document.getElementById('converterDecimalLabel');
+
+    function updateConverter() {
+      var num = parseInt(numInput.value) || 0;
+      var den = parseInt(denInput.value) || 1;
+
+      // Clamp values
+      num = Math.max(0, Math.min(20, num));
+      den = Math.max(1, Math.min(20, den));
+      numInput.value = num;
+      denInput.value = den;
+
+      var decimalValue = num / den;
+      var percent = (decimalValue * 100).toFixed(2);
+      if (percent > 100) percent = 100;
+
+      // Format decimal: show up to 4 places, trim trailing zeros
+      var decimalDisplay = decimalValue.toFixed(4).replace(/\.?0+$/, '');
+      if (decimalDisplay === '') decimalDisplay = '0';
+
+      converterResult.textContent = decimalDisplay;
+      converterBar.style.width = Math.min(percent, 100) + '%';
+
+      // Show fraction text on bar
+      converterBar.textContent = num + '/' + den;
+
+      // Update decimal label
+      converterDecimalLabel.textContent = decimalDisplay;
+
+      // Animate bar
+      gsap.fromTo(converterBar, {
+        scaleX: 0.9,
+        transformOrigin: 'left center'
+      }, {
+        scaleX: 1,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    }
+
+    numInput.addEventListener('input', updateConverter);
+    denInput.addEventListener('input', updateConverter);
+
+    // ============ Decimal Quiz ============
+    function checkDecimalAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.decimal-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      // Disable all options
+      options.forEach(function(opt) {
+        opt.disabled = true;
+      });
+
+      // Highlight correct/wrong
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      // Show the correct answer if wrong
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      // Show result message
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ GSAP Animations on Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate the comparison cards
+      var compareCards = document.querySelectorAll('.fraction-compare-card');
+      if (compareCards.length > 0) {
+        gsap.from(compareCards, {
+          y: 30,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.2,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: compareCards[0],
+            start: 'top 85%'
+          }
+        });
+      }
+
+      // Animate the fraction-decimal cards
+      var decimalCards = document.querySelectorAll('.fraction-decimal-card');
+      if (decimalCards.length > 0) {
+        gsap.from(decimalCards, {
+          y: 20,
+          opacity: 0,
+          duration: 0.4,
+          stagger: 0.15,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: decimalCards[0],
+            start: 'top 85%'
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

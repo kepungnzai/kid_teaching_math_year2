@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Pizza Fractions!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Fraction Page Specific Styles ============ */
+    .fraction-intro {
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFCCBC 100%);
+      border-left: 6px solid #FF6F00;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .fraction-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .fraction-intro p:last-child { margin-bottom: 0; }
+
+    .pizza-showcase {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2.5rem 0;
+    }
+    .pizza-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      flex: 1;
+      min-width: 200px;
+      max-width: 260px;
+    }
+    .pizza-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+    .pizza-card.active {
+      border-color: #FF6F00;
+      background: #FFF8E1;
+    }
+    .pizza-card h4 {
+      font-size: 1.3rem;
+      color: #E65100;
+      margin-bottom: 0.75rem;
+      font-weight: 800;
+    }
+    .pizza-visual {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 1rem;
+    }
+    .pizza-visual svg {
+      width: 100%;
+      height: 100%;
+    }
+    .fraction-label {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #BF360C;
+      margin: 0.5rem 0 0.25rem;
+    }
+    .fraction-desc {
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+      font-weight: 500;
+    }
+
+    /* Fraction name callout */
+    .fraction-callout {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: #FFF3E0;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    .fraction-callout .big-fraction {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #E65100;
+      min-width: 100px;
+      text-align: center;
+    }
+    .fraction-callout .callout-text {
+      flex: 1;
+      min-width: 200px;
+    }
+    .fraction-callout .callout-text p {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+    }
+    .fraction-callout .callout-text p:last-child { margin-bottom: 0; }
+
+    /* Fraction progression arrow */
+    .progress-arrow {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #FF6F00;
+      margin: 0.5rem 0;
+      opacity: 0.6;
+    }
+
+    /* Interactive pizza cutter */
+    .interactive-section {
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFCCBC 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2.5rem 0;
+    }
+    .interactive-section h3 {
+      color: #BF360C;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .cutter-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    .cutter-btn {
+      padding: 0.8rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid #FF6F00;
+      background: white;
+      color: #BF360C;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .cutter-btn:hover {
+      background: #FF6F00;
+      color: white;
+      transform: translateY(-3px);
+    }
+    .cutter-btn.active-btn {
+      background: #FF6F00;
+      color: white;
+    }
+    .cutter-pizza-area {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 1.5rem auto;
+    }
+    .cutter-pizza-area svg {
+      width: 100%;
+      height: 100%;
+    }
+    .cutter-label {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #BF360C;
+      margin-top: 0.5rem;
+    }
+    .cutter-info {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      max-width: 500px;
+      margin: 0.75rem auto;
+      font-weight: 500;
+    }
+
+    /* Fraction table */
+    .fraction-table {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .fraction-table-item {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 2px solid var(--color-border);
+      transition: transform 0.2s ease;
+    }
+    .fraction-table-item:hover {
+      transform: translateY(-4px);
+    }
+    .fraction-table-item .ft-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #BF360C;
+    }
+    .fraction-table-item .ft-label {
+      font-size: 1rem;
+      color: var(--color-text-light);
+      margin-top: 0.25rem;
+    }
+
+    /* Half Quiz special styling */
+    .half-quiz-question {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .half-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .half-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .half-option:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+      transform: scale(1.05);
+    }
+    .half-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .half-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .half-option:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
+    .half-option.correct:disabled {
+      opacity: 1;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+    .half-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .half-result.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .half-result.correct-result {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .half-result.wrong-result {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    /* Pizza SVG pieces hover */
+    .pizza-svg-piece {
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    .pizza-svg-piece:hover {
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .pizza-card { min-width: 150px; max-width: 200px; }
+      .pizza-visual { width: 130px; height: 130px; }
+      .fraction-callout .big-fraction { font-size: 2.5rem; }
+      .cutter-pizza-area { width: 160px; height: 160px; }
+      .fraction-label { font-size: 1.2rem; }
+      .cutter-label { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page4.html">Adventure 3</a></li>
+        <li><a href="page5.html" class="active">Adventure 4</a></li>
+        <li><a href="page6.html">Adventure 5</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🍕 Pizza Fractions! 🧮</h2>
+
+      <!-- Intro -->
+      <div class="fraction-intro">
+        <p><strong>What are Fractions?</strong></p>
+        <p>A <strong>fraction</strong> is a way to talk about a <strong>part of a whole</strong>. Imagine a delicious pizza 🍕 — if you cut it into pieces, each piece is a <strong>fraction</strong> of the whole pizza!</p>
+        <p>The bottom number (denominator) tells you <strong>how many equal parts</strong> the pizza is cut into. The top number (numerator) tells you <strong>how many parts</strong> you have.</p>
+      </div>
+
+      <!-- ============ HALF Introduction ============ -->
+      <section>
+        <h3>🍕 What is a <strong>Half</strong>?</h3>
+
+        <div class="fraction-callout">
+          <div class="big-fraction">½</div>
+          <div class="callout-text">
+            <p><strong>A half</strong> is when you cut <strong>1 whole pizza</strong> into <strong>2 equal pieces</strong>!</p>
+            <p>You take <strong>1 piece</strong> out of <strong>2 pieces total</strong>. That's why we write it as <strong>1/2</strong> (one-half)!</p>
+            <p>🧠 <em>Two halves make a whole pizza!</em></p>
+          </div>
+        </div>
+
+        <div class="pizza-showcase">
+          <!-- Whole Pizza -->
+          <div class="pizza-card">
+            <h4>🍕 Whole Pizza</h4>
+            <div class="pizza-visual">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="#FDD835" stroke="#F57F17" stroke-width="2"/>
+                <circle cx="50" cy="50" r="10" fill="#F57F17"/>
+                <!-- pepperonis -->
+                <circle cx="35" cy="35" r="5" fill="#D32F2F" opacity="0.7"/>
+                <circle cx="65" cy="40" r="5" fill="#D32F2F" opacity="0.7"/>
+                <circle cx="45" cy="65" r="5" fill="#D32F2F" opacity="0.7"/>
+                <circle cx="70" cy="65" r="5" fill="#D32F2F" opacity="0.7"/>
+                <circle cx="30" cy="55" r="5" fill="#D32F2F" opacity="0.7"/>
+              </svg>
+            </div>
+            <div class="fraction-label">1 whole</div>
+            <div class="fraction-desc">A whole pizza — not cut yet!</div>
+          </div>
+
+          <!-- Half Pizza -->
+          <div class="pizza-card active">
+            <h4>🍕 One Half</h4>
+            <div class="pizza-visual">
+              <svg viewBox="0 0 100 100">
+                <!-- Half visible -->
+                <path d="M50,5 A45,45 0 0,1 95,50 L50,50 Z" fill="#FDD835" stroke="#F57F17" stroke-width="2"/>
+                <!-- Half faded -->
+                <path d="M50,5 A45,45 0 0,0 5,50 L50,50 Z" fill="#FFF8E1" stroke="#F57F17" stroke-width="2" opacity="0.5"/>
+                <circle cx="50" cy="50" r="10" fill="#F57F17"/>
+                <circle cx="70" cy="30" r="5" fill="#D32F2F" opacity="0.7"/>
+                <circle cx="65" cy="55" r="5" fill="#D32F2F" opacity="0.7"/>
+              </svg>
+            </div>
+            <div class="fraction-label">½ (one half)</div>
+            <div class="fraction-desc">1 piece out of 2 equal pieces ✨</div>
+          </div>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 Understanding Halves</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text">Start with <strong>1 whole pizza</strong>. It's all yours! 🍕</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text">Cut it into <strong>2 equal pieces</strong>. Each piece is the same size! ✂️</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text">Take <strong>1 piece</strong>. You have 1 out of 2 pieces = <strong>½ (one half)</strong>! 🎉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ QUARTER Introduction ============ -->
+      <section>
+        <h3>🍕 What is a <strong>Quarter</strong>?</h3>
+
+        <div class="fraction-callout">
+          <div class="big-fraction">¼</div>
+          <div class="callout-text">
+            <p><strong>A quarter</strong> is when you cut <strong>1 whole pizza</strong> into <strong>4 equal pieces</strong>!</p>
+            <p>You take <strong>1 piece</strong> out of <strong>4 pieces total</strong>. That's <strong>1/4</strong> (one-quarter)!</p>
+            <p>🧠 <em>Four quarters make a whole pizza!</em></p>
+          </div>
+        </div>
+
+        <div class="pizza-showcase">
+          <!-- Quarter Pizza - one slice highlighted -->
+          <div class="pizza-card active">
+            <h4>🍕 One Quarter</h4>
+            <div class="pizza-visual">
+              <svg viewBox="0 0 100 100">
+                <!-- Quarter visible -->
+                <path d="M50,50 L95,50 A45,45 0 0,0 50,5 Z" fill="#FDD835" stroke="#F57F17" stroke-width="2"/>
+                <!-- Rest faded -->
+                <path d="M50,50 L50,5 A45,45 0 0,1 5,50 Z" fill="#FFF8E1" stroke="#F57F17" stroke-width="1.5" opacity="0.4"/>
+                <path d="M50,50 L5,50 A45,45 0 0,0 50,95 Z" fill="#FFF8E1" stroke="#F57F17" stroke-width="1.5" opacity="0.4"/>
+                <path d="M50,50 L50,95 A45,45 0 0,0 95,50 Z" fill="#FFF8E1" stroke="#F57F17" stroke-width="1.5" opacity="0.4"/>
+                <circle cx="50" cy="50" r="6" fill="#F57F17"/>
+                <circle cx="72" cy="22" r="4" fill="#D32F2F" opacity="0.7"/>
+              </svg>
+            </div>
+            <div class="fraction-label">¼ (one quarter)</div>
+            <div class="fraction-desc">1 piece out of 4 equal pieces ✨</div>
+          </div>
+
+          <!-- Four quarters = whole -->
+          <div class="pizza-card">
+            <h4>🍕 Four Quarters</h4>
+            <div class="pizza-visual">
+              <svg viewBox="0 0 100 100">
+                <path d="M50,50 L50,5 A45,45 0 0,1 95,50 Z" fill="#FFCC02" stroke="#F57F17" stroke-width="1.5"/>
+                <path d="M50,50 L95,50 A45,45 0 0,1 50,95 Z" fill="#FDD835" stroke="#F57F17" stroke-width="1.5"/>
+                <path d="M50,50 L50,95 A45,45 0 0,1 5,50 Z" fill="#FFCC02" stroke="#F57F17" stroke-width="1.5"/>
+                <path d="M50,50 L5,50 A45,45 0 0,1 50,5 Z" fill="#FDD835" stroke="#F57F17" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="6" fill="#F57F17"/>
+                <circle cx="35" cy="30" r="4" fill="#D32F2F" opacity="0.7"/>
+                <circle cx="65" cy="35" r="4" fill="#D32F2F" opacity="0.7"/>
+                <circle cx="55" cy="65" r="4" fill="#D32F2F" opacity="0.7"/>
+                <circle cx="30" cy="60" r="4" fill="#D32F2F" opacity="0.7"/>
+              </svg>
+            </div>
+            <div class="fraction-label">4 × ¼ = 1 whole</div>
+            <div class="fraction-desc">Four quarters make a whole pizza! 🎉</div>
+          </div>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 Understanding Quarters</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text">Start with <strong>1 whole pizza</strong>. Let's share it! 🍕</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text">Cut it into <strong>4 equal pieces</strong>. Each piece is a quarter! ✂️</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text">Take <strong>1 piece</strong>. You have 1 out of 4 pieces = <strong>¼ (one quarter)</strong>! 🎉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ AFTER QUARTER = What is an Eighth? ============ -->
+      <section>
+        <h3>🍕 What Comes After a Quarter?</h3>
+
+        <div class="fraction-callout">
+          <div class="big-fraction">⅛</div>
+          <div class="callout-text">
+            <p><strong>An eighth (1/8)</strong> comes after a quarter! If you cut a pizza into <strong>8 equal pieces</strong>, each piece is <strong>one-eighth</strong>!</p>
+            <p>An eighth is <strong>half of a quarter</strong>. If you cut each quarter in half, you get two eighths! 🤯</p>
+            <p>🧠 <em>Eight eighths make a whole pizza!</em></p>
+          </div>
+        </div>
+
+        <!-- Visual progression: Whole → Half → Quarter → Eighth -->
+        <div class="fraction-table">
+          <div class="fraction-table-item">
+            <div class="ft-num">1</div>
+            <div class="ft-label">🍕 1 Whole Pizza</div>
+          </div>
+          <div class="fraction-table-item">
+            <div class="ft-num">½</div>
+            <div class="ft-label">🍕 Half = 2 pieces</div>
+          </div>
+          <div class="fraction-table-item">
+            <div class="ft-num">¼</div>
+            <div class="ft-label">🍕 Quarter = 4 pieces</div>
+          </div>
+          <div class="fraction-table-item">
+            <div class="ft-num">⅛</div>
+            <div class="ft-label">🍕 Eighth = 8 pieces</div>
+          </div>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 How Halves, Quarters, and Eighths are Related</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text"><strong>1 whole</strong> pizza = <strong>2 halves</strong> = <strong>4 quarters</strong> = <strong>8 eighths</strong> 🤯</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text"><strong>½</strong> (half) = <strong>2 quarters</strong> = <strong>4 eighths</strong></span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text"><strong>¼</strong> (quarter) = <strong>2 eighths</strong> — cut a quarter in half!</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ INTERACTIVE PIZZA CUTTER ============ -->
+      <section class="interactive-section">
+        <h3>✂️ Interactive Pizza Cutter!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1rem;">Click a button to see how the pizza looks when cut into different fractions!</p>
+
+        <div class="cutter-controls">
+          <button class="cutter-btn" data-cuts="1" onclick="cutPizza(1, this)">🍕 Whole</button>
+          <button class="cutter-btn active-btn" data-cuts="2" onclick="cutPizza(2, this)">½ Halves</button>
+          <button class="cutter-btn" data-cuts="4" onclick="cutPizza(4, this)">¼ Quarters</button>
+          <button class="cutter-btn" data-cuts="8" onclick="cutPizza(8, this)">⅛ Eighths</button>
+        </div>
+
+        <div class="cutter-pizza-area" id="cutterPizza">
+          <svg viewBox="0 0 100 100" id="cutterSvg">
+            <!-- Will be drawn by JS -->
+          </svg>
+        </div>
+        <div class="cutter-label" id="cutterLabel">½</div>
+        <div class="cutter-info" id="cutterInfo">The pizza is cut into 2 equal pieces. Each piece is one half!</div>
+      </section>
+
+      <!-- ============ PIZZA EXAMPLE STORY ============ -->
+      <section>
+        <h3>🍕 Real Pizza Story!</h3>
+        <div class="story-box">
+          <p><span class="story-icon">📖</span><strong>Pizza Night with Friends!</strong></p>
+          <p>You ordered <strong>1 large pizza</strong> for you and your friend. There are <strong>2 of you</strong>.</p>
+          <p>If you share equally, each person gets <strong>half (½)</strong> of the pizza! 🍕</p>
+          <p>But wait! Your friend's mom and dad come home too! Now there are <strong>4 people</strong>.</p>
+          <p>Each person gets <strong>one quarter (¼)</strong> of the pizza instead! That's a smaller piece. 😊</p>
+          <p>And if your friend's <strong>grandparents</strong> also come? That's <strong>6 people</strong>! Now each person gets an even smaller piece called <strong>one-sixth (⅙)</strong>.</p>
+          <p><strong>Moral of the story:</strong> The more people you share with, the smaller each fraction becomes! But sharing is always great! 💖</p>
+        </div>
+      </section>
+
+      <!-- ============ QUIZ SECTION: What is Half ============ -->
+      <section class="quiz-section">
+        <h3>🧠 Half Fraction Quiz!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Let's test what you learned about <strong>halves</strong>! Click the correct answer for each question.</p>
+
+        <!-- Quiz Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🍕 A pizza is cut into 2 equal pieces. You eat 1 piece. What fraction of the pizza did you eat?</p>
+          <div class="half-quiz-options">
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q1', false)">1 whole</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q1', true)">½ (one half)</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q1', false)">¼ (one quarter)</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q1', false)">⅛ (one eighth)</button>
+          </div>
+          <div id="q1result" class="half-result"></div>
+        </div>
+
+        <!-- Quiz Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🍎 You have 1 apple and cut it into 2 equal halves. How many halves do you have?</p>
+          <div class="half-quiz-options">
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q2', false)">4 halves</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q2', true)">2 halves</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q2', false)">1 half</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q2', false)">8 halves</button>
+          </div>
+          <div id="q2result" class="half-result"></div>
+        </div>
+
+        <!-- Quiz Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🧮 What does the bottom number (denominator) in ½ tell us?</p>
+          <div class="half-quiz-options">
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q3', false)">How many pieces you ate</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q3', true)">How many equal parts the whole is cut into</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q3', false)">How big the pizza is</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q3', false)">The flavor of the pizza</button>
+          </div>
+          <div id="q3result" class="half-result"></div>
+        </div>
+
+        <!-- Quiz Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 🍕 If you have 2 halves of a pizza and put them together, what do you get?</p>
+          <div class="half-quiz-options">
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q4', false)">¼ (one quarter)</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q4', false)">½ (one half)</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q4', true)">1 whole pizza</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q4', false)">⅛ (one eighth)</button>
+          </div>
+          <div id="q4result" class="half-result"></div>
+        </div>
+
+        <!-- Quiz Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🎂 A cake is cut into 2 equal pieces. Your friend takes ½. How much of the cake is left?</p>
+          <div class="half-quiz-options">
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q5', false)">¼ (one quarter)</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q5', true)">½ (one half)</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q5', false)">Nothing left</button>
+            <button class="half-option" onclick="checkHalfAnswer(this, 'q5', false)">1 whole</button>
+          </div>
+          <div id="q5result" class="half-result"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <script>
+    // ============ Interactive Pizza Cutter ============
+    function cutPizza(cuts, btn) {
+      // Update active button
+      document.querySelectorAll('.cutter-btn').forEach(b => b.classList.remove('active-btn'));
+      btn.classList.add('active-btn');
+
+      var svg = document.getElementById('cutterSvg');
+      var cx = 50, cy = 50, r = 45;
+      var html = '';
+
+      // Special case: whole pizza (just draw a circle)
+      if (cuts === 1) {
+        html += '<circle cx="50" cy="50" r="45" fill="#FDD835" stroke="#F57F17" stroke-width="1.5" class="pizza-svg-piece"/>';
+        html += '<circle cx="50" cy="50" r="6" fill="#F57F17"/>';
+        // Add pepperonis
+        html += '<circle cx="35" cy="35" r="4" fill="#D32F2F" opacity="0.6"/>';
+        html += '<circle cx="65" cy="40" r="4" fill="#D32F2F" opacity="0.6"/>';
+        html += '<circle cx="45" cy="65" r="4" fill="#D32F2F" opacity="0.6"/>';
+        html += '<circle cx="70" cy="65" r="4" fill="#D32F2F" opacity="0.6"/>';
+        html += '<circle cx="30" cy="55" r="4" fill="#D32F2F" opacity="0.6"/>';
+        svg.innerHTML = html;
+
+        document.getElementById('cutterLabel').textContent = '1 whole pizza';
+        document.getElementById('cutterInfo').textContent = 'The pizza is not cut. It is 1 whole pizza! 🍕';
+
+        gsap.from('.pizza-svg-piece', {
+          scale: 0,
+          transformOrigin: '50% 50%',
+          duration: 0.3,
+          ease: 'back.out(2)'
+        });
+        return;
+      }
+
+      for (var i = 0; i < cuts; i++) {
+        var startAngle = (i / cuts) * 360;
+        var endAngle = ((i + 1) / cuts) * 360;
+        var startRad = (startAngle - 90) * Math.PI / 180;
+        var endRad = (endAngle - 90) * Math.PI / 180;
+        var x1 = cx + r * Math.cos(startRad);
+        var y1 = cy + r * Math.sin(startRad);
+        var x2 = cx + r * Math.cos(endRad);
+        var y2 = cy + r * Math.sin(endRad);
+        var largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+
+        var fillColor = i === 0 ? '#FDD835' : '#FFCC02';
+        if (i % 2 === 0) fillColor = '#FDD835';
+        else fillColor = '#FFCC02';
+
+        html += '<path d="M' + cx + ',' + cy + ' L' + x1 + ',' + y1 + ' A' + r + ',' + r + ' 0 ' + largeArc + ',1 ' + x2 + ',' + y2 + ' Z" fill="' + fillColor + '" stroke="#F57F17" stroke-width="1.5" class="pizza-svg-piece"/>';
+
+        // Add pepperoni to some slices
+        if (i % 2 === 0) {
+          var midAngle = (startAngle + endAngle) / 2;
+          var midRad = (midAngle - 90) * Math.PI / 180;
+          var pr = 20 + Math.random() * 12;
+          var px = cx + pr * Math.cos(midRad);
+          var py = cy + pr * Math.sin(midRad);
+          html += '<circle cx="' + px + '" cy="' + py + '" r="4" fill="#D32F2F" opacity="0.6"/>';
+        }
+      }
+
+      // Center circle
+      html += '<circle cx="50" cy="50" r="6" fill="#F57F17"/>';
+      svg.innerHTML = html;
+
+      // Update labels
+      var labelMap = {
+        1: '1 whole pizza',
+        2: '½ — one half',
+        4: '¼ — one quarter',
+        8: '⅛ — one eighth'
+      };
+      var infoMap = {
+        1: 'The pizza is not cut. It is 1 whole pizza! 🍕',
+        2: 'The pizza is cut into 2 equal pieces. Each piece is one half! ✨',
+        4: 'The pizza is cut into 4 equal pieces. Each piece is one quarter! ✨',
+        8: 'The pizza is cut into 8 equal pieces. Each piece is one eighth! ✨'
+      };
+      document.getElementById('cutterLabel').textContent = labelMap[cuts] || cuts + ' pieces';
+      document.getElementById('cutterInfo').textContent = infoMap[cuts] || 'The pizza is cut into ' + cuts + ' equal pieces!';
+
+      // Animate
+      gsap.from('.pizza-svg-piece', {
+        scale: 0,
+        transformOrigin: '50% 50%',
+        duration: 0.3,
+        stagger: 0.05,
+        ease: 'back.out(2)'
+      });
+    }
+
+    // ============ Half Quiz ============
+    function checkHalfAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.half-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      // Disable all options
+      options.forEach(function(opt) {
+        opt.disabled = true;
+      });
+
+      // Highlight correct/wrong
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      // Show the correct answer if wrong
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      // Show result message
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ Initialize Interactive Pizza ============
+    // Start with halves
+    document.addEventListener('DOMContentLoaded', function() {
+      var firstBtn = document.querySelector('.cutter-btn[data-cuts="2"]');
+      if (firstBtn) cutPizza(2, firstBtn);
+
+      // Animate pizza cards on scroll
+      var pizzaCards = document.querySelectorAll('.pizza-card');
+      if (pizzaCards.length > 0) {
+        gsap.from(pizzaCards, {
+          y: 40,
+          opacity: 0,
+          duration: 0.6,
+          stagger: 0.2,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: pizzaCards[0],
+            start: 'top 85%'
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
