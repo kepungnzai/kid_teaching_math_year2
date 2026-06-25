@@ -313,6 +313,7 @@
         <li><a href="page4.html">Adventure 3</a></li>
         <li><a href="page5.html" class="active">Adventure 4</a></li>
         <li><a href="page6.html">Adventure 5</a></li>
+        <li><a href="page7.html">Adventure 6</a></li>
       </ul>
     </nav>
   </header>
@@ -327,7 +328,58 @@
       <div class="fraction-intro">
         <p><strong>What are Fractions?</strong></p>
         <p>A <strong>fraction</strong> is a way to talk about a <strong>part of a whole</strong>. Imagine a delicious pizza 🍕 — if you cut it into pieces, each piece is a <strong>fraction</strong> of the whole pizza!</p>
-        <p>The bottom number (denominator) tells you <strong>how many equal parts</strong> the pizza is cut into. The top number (numerator) tells you <strong>how many parts</strong> you have.</p>
+      </div>
+
+      <!-- Numerator / Denominator visual -->
+      <div style="display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; align-items:center; margin:2rem 0; padding:2rem; background:white; border-radius:var(--radius-lg); box-shadow:var(--shadow-md); border:3px solid #FFF8E1;">
+        <!-- The fraction display -->
+        <div style="text-align:center; position:relative;">
+          <div style="font-size:0.9rem; color:var(--color-text-light); font-weight:600; margin-bottom:0.5rem;">A Fraction looks like this:</div>
+          <div style="display:flex; flex-direction:column; align-items:center; position:relative;">
+            <!-- Top: Numerator with balloon -->
+            <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+              <div style="font-size:3.5rem; font-weight:800; color:#E65100; line-height:1; padding:0.25rem 1.5rem; border:3px solid #E65100; border-radius:var(--radius-md); background:#FFF3E0;">
+                1
+              </div>
+              <!-- Balloon pointing to numerator -->
+              <div style="position:absolute; top:-50px; left:50%; transform:translateX(-50%); background:#FFCCBC; border-radius:50px; padding:0.5rem 1.2rem; white-space:nowrap; font-weight:700; font-size:1rem; color:#BF360C; box-shadow:var(--shadow-sm); display:flex; align-items:center; gap:0.4rem;">
+                <span style="font-size:1.3rem;">🎈</span> Numerator
+                <div style="position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:10px solid #FFCCBC;"></div>
+              </div>
+            </div>
+            <!-- Fraction line -->
+            <div style="width:80px; height:4px; background:#E65100; margin:0.3rem 0; border-radius:2px;"></div>
+            <!-- Bottom: Denominator -->
+            <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+              <div style="font-size:3.5rem; font-weight:800; color:#1565C0; line-height:1; padding:0.25rem 1.5rem; border:3px solid #1565C0; border-radius:var(--radius-md); background:#E3F2FD;">
+                2
+              </div>
+              <!-- Balloon pointing to denominator -->
+              <div style="position:absolute; bottom:-50px; left:50%; transform:translateX(-50%); background:#BBDEFB; border-radius:50px; padding:0.5rem 1.2rem; white-space:nowrap; font-weight:700; font-size:1rem; color:#1565C0; box-shadow:var(--shadow-sm); display:flex; align-items:center; gap:0.4rem;">
+                <span style="font-size:1.3rem;">🎈</span> Denominator
+                <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:10px solid #BBDEFB;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explanation cards -->
+        <div style="display:flex; flex-direction:column; gap:1rem; min-width:200px; max-width:350px;">
+          <div style="display:flex; align-items:center; gap:0.75rem; background:#FFF3E0; padding:1rem 1.25rem; border-radius:var(--radius-md); border-left:4px solid #E65100;">
+            <div style="font-size:2rem; line-height:1;">⬆️</div>
+            <div>
+              <div style="font-weight:800; color:#BF360C; font-size:1.1rem;">Numerator (Top)</div>
+              <div style="font-size:0.95rem; color:var(--color-text-light);">Tells you <strong>how many parts</strong> you have! <br>Like 1 slice of pizza 🍕</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.75rem; background:#E3F2FD; padding:1rem 1.25rem; border-radius:var(--radius-md); border-left:4px solid #1565C0;">
+            <div style="font-size:2rem; line-height:1;">⬇️</div>
+            <div>
+              <div style="font-weight:800; color:#1565C0; font-size:1.1rem;">Denominator (Bottom)</div>
+              <div style="font-size:0.95rem; color:var(--color-text-light);">Tells you <strong>how many equal parts</strong> the whole is split into! <br>Like 2 equal slices in half 🍕✂️</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ============ HALF Introduction ============ -->

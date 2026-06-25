@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - More Than One Whole!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --cake-primary: #E91E63;
+      --cake-primary-light: #FCE4EC;
+      --cake-primary-dark: #AD1457;
+      --cake-bg-start: #FCE4EC;
+      --cake-bg-end: #FFF8E1;
+      --cake-accent: #FF6F00;
+      --cake-focus-rgb: 233, 30, 99;
+    }
+
+    .cake-intro {
+      background: linear-gradient(135deg, var(--cake-primary-light) 0%, #FFF8E1 100%);
+      border-left: 6px solid var(--cake-primary);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .cake-intro p { margin-bottom: 0.75rem; font-size: 1.15rem; line-height: 1.7; }
+    .cake-intro p:last-child { margin-bottom: 0; }
+    .cake-intro .big-question {
+      font-size: 1.5rem; font-weight: 800; color: var(--cake-primary-dark);
+      text-align: center; margin-top: 0.5rem;
+    }
+
+    /* ===== ANIMATION AREA ===== */
+    .anim-scene {
+      position: relative;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 1.5rem;
+    }
+
+    /* Row of cakes */
+    .cakes-row {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      min-height: 110px;
+      padding: 1rem;
+      align-items: center;
+    }
+    .cake-block {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 4rem;
+      background: white;
+      border-radius: 16px;
+      padding: 0.5rem 0.8rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 3px solid var(--cake-primary-light);
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+    }
+    .cake-block .cake-num {
+      font-size: 0.75rem; font-weight: 700; color: var(--cake-primary-dark);
+      background: var(--cake-primary-light); padding: 0.1rem 0.5rem;
+      border-radius: 10px; margin-top: 0.2rem;
+    }
+
+    /* The two friends */
+    .friends-area {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .friend-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+      border: 3px solid var(--cake-primary-light);
+      min-width: 150px;
+      flex: 1;
+      max-width: 220px;
+    }
+    .friend-box .friend-avatar { font-size: 3rem; line-height: 1; }
+    .friend-box .friend-label { font-size: 1rem; font-weight: 800; color: var(--cake-primary-dark); }
+    .friend-box .friend-plate {
+      display: flex; flex-wrap: wrap; gap: 0.2rem; justify-content: center;
+      min-height: 4rem; min-width: 80px; padding: 0.5rem;
+      background: var(--cake-bg-start); border-radius: 12px;
+      border: 2px dashed var(--cake-primary-light);
+    }
+    .friend-box .friend-plate .plate-item {
+      font-size: 2rem; animation: popIn 0.35s ease;
+    }
+    .friend-box .friend-plate .plate-item.half {
+      font-size: 1.5rem;
+    }
+    .friend-box .friend-total {
+      font-size: 1.1rem; font-weight: 800; color: var(--cake-primary-dark);
+    }
+
+    /* Cut overlay */
+    .cut-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .cut-line {
+      width: 3px; height: 70px;
+      background: #FF5722;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(255,87,34,0.4);
+    }
+
+    /* Status bar */
+    .status-bar {
+      text-align: center;
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--cake-primary-dark);
+      padding: 0.7rem 1.5rem;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin: 0.5rem 0;
+      min-height: 3.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--cake-primary-light);
+    }
+
+    /* Math step */
+    .math-step {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      padding: 0.8rem 1.5rem;
+      background: #FFF8E1;
+      border-radius: 14px;
+      border: 3px dashed var(--cake-accent);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0.5rem 0;
+    }
+    .math-step .math-sym { color: var(--cake-accent); font-size: 1.5rem; }
+    .math-step .math-result {
+      color: var(--cake-primary-dark);
+      background: var(--cake-primary-light);
+      padding: 0.2rem 0.7rem;
+      border-radius: 10px;
+    }
+
+    /* Half pieces */
+    .half-piece-outer {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 2.5rem;
+      background: #FFF3E0;
+      border-radius: 12px;
+      padding: 0.3rem 0.5rem;
+      border: 2px solid var(--cake-accent);
+    }
+    .half-piece-outer .half-badge {
+      font-size: 0.7rem; font-weight: 800; color: white;
+      background: var(--cake-primary); padding: 0.1rem 0.5rem;
+      border-radius: 8px; margin-top: 0.1rem;
+    }
+
+    /* Result reveal */
+    .result-reveal-box {
+      background: linear-gradient(135deg, var(--cake-primary-light) 0%, #E8F5E9 100%);
+      border: 4px solid var(--cake-primary);
+      border-radius: 24px;
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .result-reveal-box .result-big { font-size: 3rem; font-weight: 800; color: var(--cake-primary-dark); }
+    .result-reveal-box .result-equals { font-size: 1.5rem; color: var(--color-text-light); margin: 0.5rem 0; }
+    .result-reveal-box .result-formats {
+      display: flex; justify-content: center; gap: 2rem;
+      flex-wrap: wrap; margin: 1rem 0;
+    }
+    .result-reveal-box .result-format-card {
+      padding: 1rem 1.5rem; background: white;
+      border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      min-width: 120px;
+    }
+    .result-reveal-box .result-format-card .format-label {
+      font-size: 0.9rem; color: var(--color-text-light); font-weight: 600;
+    }
+    .result-reveal-box .result-format-card .format-value {
+      font-size: 2rem; font-weight: 800; color: var(--cake-primary-dark);
+    }
+
+    /* Thinking steps */
+    .thinking-steps {
+      background: #E3F2FD; border-left: 6px solid var(--color-primary);
+      border-radius: 16px; padding: 1.5rem 2rem; margin: 2rem 0;
+    }
+    .thinking-steps h4 { font-size: 1.3rem; color: var(--color-primary-dark); margin-bottom: 1rem; font-weight: 800; }
+    .thinking-steps .step {
+      display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem;
+    }
+    .thinking-steps .step-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; background: var(--color-primary);
+      color: white; border-radius: 50%; font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .thinking-steps .step-text { font-size: 1.05rem; color: var(--color-text); padding-top: 0.2rem; }
+
+    /* Play button */
+    .btn-play {
+      font-size: 1.3rem; padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, var(--cake-primary), var(--cake-primary-dark));
+      color: white; border: none;
+      box-shadow: 0 8px 20px rgba(233, 30, 99, 0.3);
+    }
+    .btn-play:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 12px 25px rgba(233, 30, 99, 0.4);
+    }
+
+    /* Concept cards */
+    .concept-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem; margin: 2rem 0;
+    }
+    .concept-card {
+      background: white; border-radius: 24px; padding: 1.5rem;
+      text-align: center; box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+      border: 3px solid var(--color-border);
+    }
+    .concept-card:hover { transform: translateY(-6px); box-shadow: 0 12px 20px rgba(0,0,0,0.08); }
+    .concept-card .concept-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .concept-card h4 { font-size: 1.2rem; color: var(--cake-primary-dark); font-weight: 800; margin-bottom: 0.5rem; }
+    .concept-card p { font-size: 0.95rem; color: var(--color-text-light); line-height: 1.5; }
+
+    .examples-table {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem; margin: 2rem 0;
+    }
+    .example-item {
+      background: white; border-radius: 16px; padding: 1rem;
+      text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      border: 2px solid var(--cake-primary-light);
+    }
+    .example-item .ex-fraction { font-size: 1.8rem; font-weight: 800; color: var(--cake-primary-dark); }
+    .example-item .ex-arrow { font-size: 1.2rem; color: var(--color-text-light); margin: 0.2rem 0; }
+    .example-item .ex-mixed { font-size: 1.5rem; font-weight: 700; color: #2E7D32; }
+
+    .interactive-more {
+      background: linear-gradient(135deg, #E8F5E9 0%, #FCE4EC 100%);
+      border-radius: 24px; padding: 2rem; text-align: center; margin: 2.5rem 0;
+    }
+    .interactive-more h3 { color: #2E7D32; font-size: 1.6rem; font-weight: 800; margin-bottom: 1rem; }
+    .more-controls {
+      display: flex; flex-wrap: wrap; gap: 1.5rem;
+      justify-content: center; align-items: center; margin: 1.5rem 0;
+    }
+    .more-group { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+    .more-group label { font-size: 1.1rem; font-weight: 700; color: var(--color-text); }
+    .more-group input {
+      width: 90px; padding: 0.6rem; font-size: 1.5rem; font-weight: 700;
+      text-align: center; border: 3px solid var(--color-border);
+      border-radius: 16px; font-family: 'Fredoka', sans-serif;
+      color: var(--color-text);
+    }
+    .more-group input:focus { outline: none; border-color: #2E7D32; box-shadow: 0 0 0 4px rgba(76,175,80,0.15); }
+    .more-equals { font-size: 2rem; font-weight: 800; color: #2E7D32; }
+    .more-result-box {
+      padding: 1rem 2rem; background: white; border-radius: 16px;
+      display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      border: 3px solid #2E7D32;
+    }
+    .more-result-text { font-size: 1.5rem; font-weight: 800; color: #2E7D32; }
+    .more-breakdown { margin-top: 0.75rem; font-size: 1.05rem; color: var(--color-text-light); }
+    .more-breakdown strong { color: var(--cake-primary-dark); }
+
+    .quiz-section {
+      margin-top: 3rem; background: var(--color-bg-tone);
+      border-radius: 24px; padding: 2.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+      border: 2px solid var(--color-border);
+    }
+    .quiz-section h3 { font-size: 1.8rem; color: var(--color-primary-dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .quiz-card { background: white; padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; box-shadow: 0 4px 8px rgba(0,0,0,0.03); }
+    .quiz-question { font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-text); }
+    .quiz-answer { display: none; margin-top: 1rem; padding: 1rem; background: #E8F5E9; border-left: 4px solid #4CAF50; border-radius: 8px; color: #2E7D32; font-weight: 600; font-size: 1.05rem; }
+    .quiz-answer.show { display: block; animation: fadeIn 0.3s ease; }
+    .btn-answer { background: var(--color-primary); color: white; border: none; padding: 0.6rem 1.2rem; font-size: 0.95rem; font-weight: 700; border-radius: 50px; cursor: pointer; }
+    .btn-answer:hover { background: var(--color-primary-dark); transform: scale(1.05); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+    .answer-reveal {
+      background: var(--cake-primary-light); border: 3px solid var(--cake-primary);
+      border-radius: 16px; padding: 1.5rem 2rem; text-align: center; margin: 2rem 0;
+    }
+    .answer-reveal .big-answer { font-size: 2rem; font-weight: 800; color: var(--cake-primary-dark); }
+    .answer-reveal .fun-fact { font-size: 1rem; color: var(--color-text-light); font-style: italic; margin-top: 0.75rem; }
+
+    @media (max-width: 768px) {
+      .cake-block { font-size: 3rem; }
+      .friend-box { min-width: 120px; padding: 0.8rem; }
+      .friend-box .friend-avatar { font-size: 2.5rem; }
+      .result-reveal-box .result-big { font-size: 2.2rem; }
+      .result-reveal-box .result-format-card .format-value { font-size: 1.5rem; }
+      .math-step { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page4.html">Adventure 3</a></li>
+        <li><a href="page5.html">Adventure 4</a></li>
+        <li><a href="page6.html">Adventure 5</a></li>
+        <li><a href="page7.html" class="active">Adventure 6</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🎂 More Than One Whole! 🧮</h2>
+
+      <div class="cake-intro">
+        <p><strong>What happens when fractions are bigger than 1?</strong></p>
+        <p>So far you've learned about fractions like <strong>½</strong> and <strong>¼</strong> — which are <strong>less than 1</strong>. But what happens when the top number is <strong>bigger</strong> than the bottom?</p>
+        <p>Example: <strong>3 ÷ 2</strong> or <strong>3/2</strong>. That's <strong>more than one whole</strong>! Let's share some cakes! 🎂</p>
+        <div class="big-question">🤔 3 cakes shared between 2 people — how much does each person get?</div>
+      </div>
+
+      <!-- Equation -->
+      <section class="adventure-display" style="border-color: var(--cake-primary); background: linear-gradient(135deg, var(--cake-primary-light) 0%, #FFF8E1 100%);">
+        <div class="equation-box">
+          <span class="equation-number" style="border-color: var(--cake-primary); color: var(--cake-primary);" id="eqTotal">3</span>
+          <span class="equation-symbol">÷</span>
+          <span class="equation-number" style="border-color: var(--cake-primary); color: var(--cake-primary);" id="eqPeople">2</span>
+          <span class="equation-symbol">=</span>
+          <span class="equation-number" style="border-color: #4CAF50; color: #2E7D32;" id="eqResult">?</span>
+        </div>
+        <p class="result-text" id="resultText">Press play to find out! 🎬</p>
+      </section>
+
+      <!-- Status -->
+      <div class="status-bar" id="statusBar">👋 Ready! Click play to share the cakes!</div>
+
+      <!-- Math Step -->
+      <div class="math-step" id="mathStep" style="display:none;">
+        <span id="mathTotal">3</span>
+        <span class="math-sym">−</span>
+        <span id="mathGiven">2</span>
+        <span class="math-sym">=</span>
+        <span class="math-result" id="mathResult">1</span>
+        <span style="font-size:0.9rem;color:var(--color-text-light);font-weight:600;">(remainder)</span>
+      </div>
+
+      <!-- Animation Area -->
+      <section class="animation-area" id="animationArea" style="border-color: var(--cake-primary); background: linear-gradient(180deg, var(--cake-bg-start) 0%, var(--cake-bg-end) 100%); min-height: 420px;">
+        <div class="anim-scene" id="animScene">
+          <!-- Cakes row -->
+          <div class="cakes-row" id="cakesRow"></div>
+          <!-- Friends area -->
+          <div class="friends-area" id="friendsArea"></div>
+        </div>
+      </section>
+
+      <!-- Play Button -->
+      <div class="action-buttons">
+        <button id="playBtn" class="btn btn-play">🎬 Let's Share the Cakes!</button>
+      </div>
+
+      <!-- Result Reveal -->
+      <div class="result-reveal-box" id="resultReveal" style="display:none;">
+        <div class="result-equals">So 3 ÷ 2 =</div>
+        <div class="result-big" id="resultBig">1½ (One and a Half!)</div>
+        <div class="result-formats">
+          <div class="result-format-card"><div class="format-label">🎂 Fraction</div><div class="format-value">3/2</div></div>
+          <div class="result-format-card"><div class="format-label">🍰 Mixed</div><div class="format-value">1½</div></div>
+          <div class="result-format-card"><div class="format-label">🔢 Decimal</div><div class="format-value">1.5</div></div>
+        </div>
+        <p style="font-size:1.1rem;color:var(--color-text-light);font-weight:500;">🎉 <strong>3/2</strong>, <strong>1½</strong>, and <strong>1.5</strong> all mean the same thing!</p>
+      </div>
+
+      <!-- Thinking Steps -->
+      <div class="thinking-steps" id="thinkingSteps" style="display:none;">
+        <h4>🧠 Let's Review</h4>
+        <div class="step"><span class="step-number">1</span><span class="step-text">Started with <strong>3 whole cakes</strong>. 🎂🎂🎂</span></div>
+        <div class="step"><span class="step-number">2</span><span class="step-text">Gave <strong>1 whole cake</strong> to each person. That's <strong>2 cakes</strong> given. 🎂🎂</span></div>
+        <div class="step"><span class="step-number">3</span><span class="step-text"><strong>3 − 2 = 1</strong> — <strong>1 cake leftover</strong>! This is the <strong>remainder</strong>! 🎂</span></div>
+        <div class="step"><span class="step-number">4</span><span class="step-text">Cut the leftover cake into <strong>2 halves</strong> = <strong>½</strong> each! ✂️</span></div>
+        <div class="step"><span class="step-number">5</span><span class="step-text">Each person gets <strong>1 + ½ = 1½</strong> cakes! 🎉</span></div>
+      </div>
+
+      <!-- Key Concepts -->
+      <section>
+        <h3>🔑 Key Concepts</h3>
+        <div class="concept-grid">
+          <div class="concept-card"><div class="concept-icon">🎂</div><h4>Improper Fraction</h4><p>Numerator <strong>bigger</strong> than denominator, like <strong>3/2</strong>. More than 1 whole!</p></div>
+          <div class="concept-card"><div class="concept-icon">🍰</div><h4>Mixed Number</h4><p>Whole numbers + fraction, like <strong>1½</strong> (one and a half).</p></div>
+          <div class="concept-card"><div class="concept-icon">🔢</div><h4>Decimal</h4><p><strong>3/2 = 1.5</strong>. 1 whole + 5 tenths!</p></div>
+          <div class="concept-card"><div class="concept-icon">➖</div><h4>The Remainder</h4><p><strong>3 − 2 = 1</strong>. The remainder gets cut into <strong>denominator pieces</strong>!</p></div>
+        </div>
+      </section>
+
+      <!-- Examples -->
+      <section>
+        <h3>📊 More Examples</h3>
+        <div class="examples-table">
+          <div class="example-item"><div class="ex-fraction">3/2</div><div class="ex-arrow">=</div><div class="ex-mixed">1½ = 1.5</div></div>
+          <div class="example-item"><div class="ex-fraction">5/2</div><div class="ex-arrow">=</div><div class="ex-mixed">2½ = 2.5</div></div>
+          <div class="example-item"><div class="ex-fraction">7/2</div><div class="ex-arrow">=</div><div class="ex-mixed">3½ = 3.5</div></div>
+          <div class="example-item"><div class="ex-fraction">4/3</div><div class="ex-arrow">=</div><div class="ex-mixed">1⅓</div></div>
+          <div class="example-item"><div class="ex-fraction">5/3</div><div class="ex-arrow">=</div><div class="ex-mixed">1⅔</div></div>
+          <div class="example-item"><div class="ex-fraction">5/4</div><div class="ex-arrow">=</div><div class="ex-mixed">1¼ = 1.25</div></div>
+        </div>
+      </section>
+
+      <!-- Interactive -->
+      <section class="interactive-more">
+        <h3>🧮 Try It Yourself!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">Change the numbers to see the breakdown!</p>
+        <div class="more-controls">
+          <div class="more-group"><label for="numCakes">🎂 Cakes</label><input type="number" id="numCakes" min="1" max="20" value="5"></div>
+          <div class="more-equals">÷</div>
+          <div class="more-group"><label for="numPeople">👥 People</label><input type="number" id="numPeople" min="2" max="10" value="2"></div>
+          <div class="more-equals">=</div>
+          <div class="more-result-box"><span class="more-result-text" id="moreResult">2½ (2.5)</span></div>
+        </div>
+        <div class="more-breakdown" id="moreBreakdown">
+          <strong>5</strong> ÷ <strong>2</strong> = <strong>2</strong> each + <strong>1</strong> remainder → each gets <strong>2½</strong>
+        </div>
+        <div style="margin-top:0.8rem;padding:0.8rem 1.2rem;background:white;border-radius:12px;">
+          <p id="moreMathBreakdown" style="font-size:1rem;"><strong>5</strong> − <strong>4</strong> = <strong>1</strong> remainder</p>
+        </div>
+      </section>
+
+      <!-- Summary -->
+      <div class="answer-reveal">
+        <p>💡 <strong>Remember:</strong></p>
+        <div class="big-answer">When fractions are bigger than 1!</div>
+        <p>If numerator <strong>bigger</strong> than denominator → fraction is <strong>more than 1 whole</strong>.</p>
+        <p style="font-size:1.1rem;"><strong>3/2</strong> = 1 + ½ = <strong>1½</strong> = <strong>1.5</strong> 🎉</p>
+        <div class="fun-fact">Fun Fact: 3 ÷ 2 = 1 remainder 1. The remainder becomes the top of the fraction: 1½!</div>
+      </div>
+
+      <!-- Quiz -->
+      <section class="quiz-section">
+        <h3>🧠 Quiz!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Click "Show Answer" to reveal!</p>
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🎂 3 cakes between 2 people. How much each?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q1',this)">Show Answer 💡</button>
+          <div id="q1" class="quiz-answer">✨ 3 ÷ 2 = <strong>1½</strong>! Each gets 1 whole + ½! 🎉</div>
+        </div>
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🎂 5 cakes between 2 people. How much each?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q2',this)">Show Answer 💡</button>
+          <div id="q2" class="quiz-answer">✨ 5 ÷ 2 = <strong>2½</strong>! Each gets 2 whole + ½!</div>
+        </div>
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🧮 What's the remainder when 3 ÷ 2?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q3',this)">Show Answer 💡</button>
+          <div id="q3" class="quiz-answer">✨ Remainder is <strong>1</strong>! 3 − 2 = 1.</div>
+        </div>
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 🎂 7 cakes for 2 people. How much each?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q4',this)">Show Answer 💡</button>
+          <div id="q4" class="quiz-answer">✨ 7 ÷ 2 = <strong>3½</strong>! 7 − 6 = 1 remainder → cut in half!</div>
+        </div>
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🔢 3/2 as a decimal?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q5',this)">Show Answer 💡</button>
+          <div id="q5" class="quiz-answer">✨ 3/2 = <strong>1.5</strong>! Same as 1½!</div>
+        </div>
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ 🧮 Numerator bigger than denominator = ?</p>
+          <button class="btn-answer" onclick="toggleAnswer('q6',this)">Show Answer 💡</button>
+          <div id="q6" class="quiz-answer">✨ <strong>Bigger than 1!</strong> Example: 3/2 = 1½ 🎉</div>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer><p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p></footer>
+
+  <script>
+    let totalCakes = 3, totalPeople = 2, isAnimating = false, animationPhase = 0;
+    const playBtn = document.getElementById('playBtn');
+    const cakesRow = document.getElementById('cakesRow');
+    const friendsArea = document.getElementById('friendsArea');
+    const statusBar = document.getElementById('statusBar');
+    const mathStep = document.getElementById('mathStep');
+    const mathTotal = document.getElementById('mathTotal');
+    const mathGiven = document.getElementById('mathGiven');
+    const mathResult = document.getElementById('mathResult');
+    const resultReveal = document.getElementById('resultReveal');
+    const resultBig = document.getElementById('resultBig');
+    const thinkingSteps = document.getElementById('thinkingSteps');
+    const eqTotal = document.getElementById('eqTotal');
+    const eqPeople = document.getElementById('eqPeople');
+    const eqResult = document.getElementById('eqResult');
+    const resultText = document.getElementById('resultText');
+    const numCakes = document.getElementById('numCakes');
+    const numPeople = document.getElementById('numPeople');
+    const moreResult = document.getElementById('moreResult');
+    const moreBreakdown = document.getElementById('moreBreakdown');
+    const moreMathBreakdown = document.getElementById('moreMathBreakdown');
+    const personEmojis = ['👨','👩','👧','👦','👶','🧑','👴','👵','🧒'];
+
+    function setStatus(t, e) { statusBar.textContent = (e||'')+' '+t; }
+
+    function buildCakes(n) {
+      cakesRow.innerHTML = '';
+      for (let i=0;i<n;i++) {
+        const b=document.createElement('div'); b.className='cake-block'; b.id='cake'+i;
+        b.innerHTML='🎂<div class="cake-num">'+(i+1)+'</div>';
+        cakesRow.appendChild(b);
+      }
+    }
+    function buildFriends(n) {
+      friendsArea.innerHTML = '';
+      for (let i=0;i<n;i++) {
+        const f=document.createElement('div'); f.className='friend-box'; f.id='friend'+i;
+        f.innerHTML='<div class="friend-avatar">'+personEmojis[i%personEmojis.length]+
+          '</div><div class="friend-label">Friend '+(i+1)+
+          '</div><div class="friend-plate" id="plate'+i+'"></div>'+
+          '<div class="friend-total" id="total'+i+'"></div>';
+        friendsArea.appendChild(f);
+      }
+    }
+
+    function addToPlate(fi, emoji, cls) {
+      const p=document.getElementById('plate'+fi);
+      const s=document.createElement('span'); s.className='plate-item'+(cls?' '+cls:''); s.textContent=emoji;
+      p.appendChild(s);
+    }
+
+    function resetAll() {
+      isAnimating=false; animationPhase=0;
+      playBtn.disabled=false; playBtn.style.opacity='1';
+      playBtn.textContent='🎬 Let\'s Share the Cakes!';
+      buildCakes(totalCakes); buildFriends(totalPeople);
+      mathStep.style.display='none';
+      resultReveal.style.display='none'; thinkingSteps.style.display='none';
+      setStatus('Ready! Click play to share the cakes!','👋');
+      eqResult.textContent='?'; resultText.textContent='Press play to find out! 🎬';
+      for(let i=0;i<totalPeople;i++){
+        document.getElementById('plate'+i).innerHTML='';
+        document.getElementById('total'+i).textContent='';
+      }
+    }
+
+    function startAnimation() {
+      if (isAnimating) return;
+      isAnimating=true; playBtn.disabled=true; playBtn.style.opacity='0.6';
+
+      const num=totalCakes, den=totalPeople;
+      const q=Math.floor(num/den), r=num%den;
+
+      buildCakes(num); buildFriends(den);
+      mathStep.style.display='none'; resultReveal.style.display='none'; thinkingSteps.style.display='none';
+      for(let i=0;i<den;i++){document.getElementById('plate'+i).innerHTML='';document.getElementById('total'+i).textContent='';}
+
+      const tl=gsap.timeline({onComplete:function(){
+        isAnimating=false; playBtn.disabled=false; playBtn.style.opacity='1';
+        animationPhase=6; playBtn.textContent='🔄 Play Again';
+      }});
+
+      const cakes=document.querySelectorAll('.cake-block');
+      const friends=document.querySelectorAll('.friend-box');
+
+      // STEP 1: Show cakes
+      setStatus(num+' whole cakes to share between '+den+' friends!','🎂');
+      tl.from(cakes,{scale:0,rotation:-30,duration:0.5,stagger:0.12,ease:'back.out(2)'});
+      tl.from(friends,{y:30,opacity:0,duration:0.4,stagger:0.15,ease:'power2.out'},'-=0.2');
+
+      // STEP 2-4: Give whole cakes one-by-one cycling friends
+      let cakeIdx=0;
+      const posPerF=[];
+      for(let f=0;f<den;f++)posPerF[f]=0;
+      // Round-robin count
+      let c=0;
+      while(c<q*den){for(let f=0;f<den&&c<q*den;f++){posPerF[f]++;c++;}}
+
+      for(let round=0;round<q;round++){
+        for(let f=0;f<den;f++){
+          const ck=cakes[cakeIdx]; if(!ck)break;
+          const fi=f, pos=posPerF[f];
+
+          tl.add(function(){setStatus('➡️ Give Cake '+(cakeIdx+1)+' to Friend '+(fi+1),'🎁');});
+
+          const areaRect=document.getElementById('animationArea').getBoundingClientRect();
+          const cr=ck.getBoundingClientRect();
+          const plate=document.getElementById('plate'+f);
+          const pr=plate.getBoundingClientRect();
+          const dx=(pr.left+pr.width/2)-(cr.left+cr.width/2)+(pos>1?(pos-1)*28:0);
+          const dy=(pr.top+pr.height/2)-(cr.top+cr.height/2)+(pos>1?-(pos-1)*15:0);
+
+          tl.to(ck,{scale:0.6,x:dx,y:dy,duration:0.7,ease:'power2.inOut'});
+          tl.add(function(){addToPlate(fi,'🎂');ck.style.opacity='0';document.getElementById('total'+fi).textContent='🎂×'+pos;});
+
+          cakeIdx++;
+        }
+      }
+
+      // STEP 5: Show remainder
+      if(r>0){
+        tl.add(function(){
+          setStatus('🤔 '+r+' cake'+(r>1?'s':'')+' left over! '+num+' − '+(q*den)+' = '+r+' remainder!','🤔');
+          mathStep.style.display='flex';
+          mathTotal.textContent=num; mathGiven.textContent=q*den; mathResult.textContent=r;
+          // Pulse remaining cakes
+          for(let i=cakeIdx;i<num;i++){gsap.to(cakes[i],{scale:1.2,duration:0.4,yoyo:true,repeat:3,ease:'power1.inOut'});}
+        },'+=0.3');
+
+        // STEP 6: Cut remainder and distribute
+        for(let rc=0;rc<r;rc++){
+          const rcake=cakes[cakeIdx+rc]; if(!rcake)break;
+
+          // Cut effect: cake rotates and a "snap" happens
+          tl.add(function(){setStatus('✂️ Cut the leftover cake into '+den+' equal pieces!','✂️');},'+=0.4');
+          tl.to(rcake,{rotation:90,scale:0.8,duration:0.5,ease:'power2.out'});
+          tl.add(function(){
+            rcake.style.opacity='0';
+            // Show two half pieces replacing the cake
+            const hp=document.createElement('div'); hp.style.display='flex'; hp.style.gap='0.5rem'; hp.style.justifyContent='center'; hp.style.alignItems='center';
+            hp.innerHTML='<span class="half-piece-outer">🍰<span class="half-badge">½</span></span><span style="color:var(--cake-accent);font-weight:800;">+</span><span class="half-piece-outer">🍰<span class="half-badge">½</span></span>';
+            rcake.parentNode.replaceChild(hp,rcake);
+            hp.id='halfPieces';
+            gsap.from(hp.children,{scale:0,duration:0.3,stagger:0.1,ease:'back.out(2)'});
+          },'-=0.1');
+
+          // Give pieces to each friend one at a time
+          for(let pf=0;pf<den;pf++){
+            tl.add(function(){setStatus('➡️ Give ½ piece to Friend '+(pf+1),'🎉');},'+=0.2');
+            tl.add(function(){
+              addToPlate(pf,'🍰','half');
+              // Update total
+              const t=document.getElementById('total'+pf);
+              t.textContent='🎂 '+q+' + ½ = '+q+'½';
+            });
+          }
+        }
+      }
+
+      // STEP 7: Final result
+      const mix=q+(r>0?'½':'');
+      const dec=(num/den).toFixed(4).replace(/\.?0+$/,'');
+      tl.add(function(){
+        setStatus('🎉 Each friend gets '+mix+' cakes! '+num+' ÷ '+den+' = '+mix+'! 🎉','🎉');
+        eqResult.textContent=mix+' ('+dec+')';
+        resultText.textContent='Each person gets '+mix+' cakes! 🎉';
+        resultReveal.style.display='block';
+        resultBig.textContent=mix+' ('+dec+')';
+        gsap.from(resultReveal,{scale:0.8,opacity:0,duration:0.5,ease:'back.out(2)'});
+        thinkingSteps.style.display='block';
+        gsap.from(thinkingSteps,{y:20,opacity:0,duration:0.4,ease:'power2.out'});
+      },'+=0.3');
+
+      tl.add(function(){
+        playBtn.textContent='🔄 Play Again';
+        playBtn.disabled=false; playBtn.style.opacity='1';
+        isAnimating=false; animationPhase=6; playBtn.onclick=null;
+      },'+=0.5');
+    }
+
+    function handlePlayClick(){
+      if(animationPhase===6){resetAll();setTimeout(function(){playBtn.onclick=handlePlayClick;},100);}
+      else startAnimation();
+    }
+
+    function setupEventListeners(){
+      playBtn.addEventListener('click',handlePlayClick);
+      numCakes.addEventListener('input',updateConverter);
+      numPeople.addEventListener('input',updateConverter);
+    }
+
+    function updateConverter(){
+      const c=Math.max(1,Math.min(20,parseInt(numCakes.value)||1));
+      const p=Math.max(2,Math.min(10,parseInt(numPeople.value)||2));
+      numCakes.value=c; numPeople.value=p;
+      const q=Math.floor(c/p), r=c%p;
+      if(r===0){
+        moreResult.textContent=q+' (exact)';
+        moreBreakdown.innerHTML='<strong>'+c+'</strong> ÷ <strong>'+p+'</strong> = <strong>'+q+'</strong> each. No remainder!';
+        moreMathBreakdown.innerHTML='<strong>'+c+'</strong> ÷ <strong>'+p+'</strong> = <strong>'+q+'</strong> exactly.';
+      }else{
+        const mn=q+' '+r+'/'+p;
+        const dv=(c/p).toFixed(4).replace(/\.?0+$/,'');
+        moreResult.textContent=mn+' ('+dv+')';
+        moreBreakdown.innerHTML='<strong>'+c+'</strong> ÷ <strong>'+p+'</strong> = <strong>'+q+'</strong> each + <strong>'+r+'</strong> remainder → each gets <strong>'+mn+'</strong>';
+        moreMathBreakdown.innerHTML='<strong>'+c+'</strong> − <strong>'+(q*p)+'</strong> = <strong>'+r+'</strong> remainder &nbsp;|&nbsp; '+r+'/'+p+' = <strong>'+dv+'</strong> extra';
+      }
+    }
+
+    function toggleAnswer(id,btn){
+      const a=document.getElementById(id);
+      if(a.classList.contains('show')){a.classList.remove('show');btn.textContent='Show Answer 💡';}
+      else{a.classList.add('show');btn.textContent='Hide Answer 🙈';}
+    }
+
+    document.addEventListener('DOMContentLoaded',function(){
+      buildCakes(3); buildFriends(2);
+      setupEventListeners(); updateConverter();
+      // Scroll animations disabled on initial load; concept cards animate on page scroll
+      var conceptCards = document.querySelectorAll('.concept-card');
+      if (conceptCards.length > 0) {
+        gsap.from(conceptCards, {y:30, opacity:0, duration:0.5, stagger:0.15, ease:'power2.out',
+          scrollTrigger: {trigger: conceptCards[0], start:'top 85%'}
+        });
+      }
+    });
+  </script>
+</body>
+</html>
