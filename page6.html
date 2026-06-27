@@ -88,6 +88,139 @@
       font-weight: 700;
     }
 
+    /* Build-to-One Interactive Sections */
+    .build-to-one-card {
+      background: linear-gradient(135deg, #F1F8E9 0%, #E8F5E9 100%);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      border: 3px solid #A5D6A7;
+      text-align: center;
+    }
+    .build-to-one-card.fifth-card {
+      background: linear-gradient(135deg, #FFF3E0 0%, #FFF8E1 100%);
+      border-color: #FFCC80;
+    }
+    .build-to-one-card h4 {
+      font-size: 1.2rem;
+      color: #2E7D32;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+    .build-to-one-card.fifth-card h4 {
+      color: #E65100;
+    }
+    .segmented-bar {
+      display: flex;
+      width: 100%;
+      max-width: 520px;
+      margin: 0.75rem auto;
+      height: 40px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid #C8E6C9;
+      background: #E8EAF6;
+    }
+    .segmented-bar .seg {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: white;
+      transition: background 0.4s ease, opacity 0.4s ease;
+      border-right: 1px solid rgba(255,255,255,0.3);
+    }
+    .segmented-bar .seg:last-child { border-right: none; }
+    .segmented-bar .seg.filled { opacity: 1; }
+    .segmented-bar .seg.empty {
+      background: #E8EAF6 !important;
+      color: #9E9E9E;
+    }
+    .segmented-bar .seg.quarter-seg.filled { background: #66BB6A; }
+    .segmented-bar .seg.fifth-seg.filled { background: #FFA726; }
+    .segmented-bar.fifth-bar { border-color: #FFE0B2; }
+
+    .segmented-summary {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0.5rem 0;
+    }
+    .segmented-summary .sum-green { color: #2E7D32; }
+    .segmented-summary .sum-orange { color: #E65100; }
+
+    .build-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin: 0.75rem 0;
+      flex-wrap: wrap;
+    }
+    .build-controls .btn-add {
+      padding: 0.6rem 1.8rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .build-controls .btn-add:hover {
+      transform: translateY(-3px) scale(1.05);
+    }
+    .build-controls .btn-add:disabled {
+      opacity: 0.4;
+      cursor: default;
+      transform: none !important;
+    }
+    .build-controls .btn-add.quarter-add {
+      background: #66BB6A;
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
+    }
+    .build-controls .btn-add.fifth-add {
+      background: #FFA726;
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
+    }
+    .build-controls .counter-display {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--color-text);
+      background: white;
+      padding: 0.4rem 1.2rem;
+      border-radius: 12px;
+      border: 2px solid var(--color-border);
+      min-width: 80px;
+    }
+    .build-controls .reset-btn {
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: 2px solid #E0E0E0;
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--color-text-light);
+    }
+    .build-controls .reset-btn:hover {
+      border-color: #BDBDBD;
+      background: #F5F5F5;
+    }
+    .build-complete-msg {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #2E7D32;
+      margin-top: 0.5rem;
+      display: none;
+    }
+    .build-complete-msg.show { display: block; animation: fadeIn 0.4s ease; }
+    .build-complete-msg.fifth-msg { color: #E65100; }
+
     /* Three fraction comparison row */
     .fraction-row {
       display: flex;
@@ -426,6 +559,34 @@
             <span class="step-text">Fun fact: <strong>0.25 + 0.25 + 0.25 + 0.25 = 1.00</strong> (four quarters make a whole!) 🎉</span>
           </div>
         </div>
+        <!-- Interactive Build-to-One: Quarters -->
+        <div class="build-to-one-card" id="quarterBuildCard">
+          <h4>👆 Click to Build 1 Whole with Quarters!</h4>
+          <p style="font-size:0.95rem; color:var(--color-text-light); margin-bottom:0.75rem;">
+            Each click adds <strong>¼ (0.25)</strong>. See how 4 quarters make 1 whole!
+          </p>
+
+          <div class="segmented-bar" id="quarterSegBar">
+            <div class="seg quarter-seg empty" data-q="1">¼</div>
+            <div class="seg quarter-seg empty" data-q="2">¼</div>
+            <div class="seg quarter-seg empty" data-q="3">¼</div>
+            <div class="seg quarter-seg empty" data-q="4">¼</div>
+          </div>
+
+          <div class="segmented-summary" id="quarterSummary">
+            <span>0</span> + <span class="sum-green" id="quarterSumDisplay">0.00</span> + <span id="quarterRemainDisplay">1.00</span> = <strong>1.00</strong>
+          </div>
+
+          <div class="build-controls">
+            <button class="btn-add quarter-add" id="quarterAddBtn">+¼ (0.25)</button>
+            <span class="counter-display" id="quarterCounter">0 / 4</span>
+            <button class="reset-btn" id="quarterResetBtn">↺ Reset</button>
+          </div>
+
+          <div class="build-complete-msg" id="quarterCompleteMsg">
+            🎉 4 quarters = <strong>1 whole</strong>! 0.25 + 0.25 + 0.25 + 0.25 = <strong>1.00</strong>!
+          </div>
+        </div>
       </section>
 
       <!-- ============ 1/5 = 0.2 ============ -->
@@ -464,6 +625,35 @@
           <div class="step">
             <span class="step-number">3</span>
             <span class="step-text"><strong>Five fifths</strong> make a whole: <strong>0.2 + 0.2 + 0.2 + 0.2 + 0.2 = 1.0</strong>! 🎉</span>
+          </div>
+        </div>
+        <!-- Interactive Build-to-One: Fifths -->
+        <div class="build-to-one-card fifth-card" id="fifthBuildCard">
+          <h4>👆 Click to Build 1 Whole with Fifths!</h4>
+          <p style="font-size:0.95rem; color:var(--color-text-light); margin-bottom:0.75rem;">
+            Each click adds <strong>⅕ (0.2)</strong>. See how 5 fifths make 1 whole!
+          </p>
+
+          <div class="segmented-bar fifth-bar" id="fifthSegBar">
+            <div class="seg fifth-seg empty" data-q="1">⅕</div>
+            <div class="seg fifth-seg empty" data-q="2">⅕</div>
+            <div class="seg fifth-seg empty" data-q="3">⅕</div>
+            <div class="seg fifth-seg empty" data-q="4">⅕</div>
+            <div class="seg fifth-seg empty" data-q="5">⅕</div>
+          </div>
+
+          <div class="segmented-summary" id="fifthSummary">
+            <span>0</span> + <span class="sum-orange" id="fifthSumDisplay">0.0</span> + <span id="fifthRemainDisplay">1.0</span> = <strong>1.0</strong>
+          </div>
+
+          <div class="build-controls">
+            <button class="btn-add fifth-add" id="fifthAddBtn">+⅕ (0.2)</button>
+            <span class="counter-display" id="fifthCounter">0 / 5</span>
+            <button class="reset-btn" id="fifthResetBtn">↺ Reset</button>
+          </div>
+
+          <div class="build-complete-msg fifth-msg" id="fifthCompleteMsg">
+            🎉 5 fifths = <strong>1 whole</strong>! 0.2 + 0.2 + 0.2 + 0.2 + 0.2 = <strong>1.0</strong>!
           </div>
         </div>
       </section>
@@ -712,8 +902,118 @@
       }
     }
 
+    // ============ Build-to-One: Quarters ============
+    var quarterCount = 0;
+    var quarterAddBtn = document.getElementById('quarterAddBtn');
+    var quarterResetBtn = document.getElementById('quarterResetBtn');
+    var quarterSegs = document.querySelectorAll('#quarterSegBar .seg');
+    var quarterSumDisplay = document.getElementById('quarterSumDisplay');
+    var quarterRemainDisplay = document.getElementById('quarterRemainDisplay');
+    var quarterCounter = document.getElementById('quarterCounter');
+    var quarterCompleteMsg = document.getElementById('quarterCompleteMsg');
+
+    function updateQuarterDisplay() {
+      var filled = quarterCount;
+      var total = 4;
+      var sum = (filled * 0.25).toFixed(2);
+      var remain = ((total - filled) * 0.25).toFixed(2);
+      quarterSumDisplay.textContent = sum;
+      quarterRemainDisplay.textContent = remain;
+      quarterCounter.textContent = filled + ' / ' + total;
+      quarterAddBtn.disabled = filled >= total;
+      if (filled >= total) {
+        quarterCompleteMsg.classList.add('show');
+      } else {
+        quarterCompleteMsg.classList.remove('show');
+      }
+    }
+
+    function quarterAdd() {
+      if (quarterCount >= 4) return;
+      var seg = quarterSegs[quarterCount];
+      seg.classList.remove('empty');
+      seg.classList.add('filled');
+      quarterCount++;
+      updateQuarterDisplay();
+      // Animate the segment
+      gsap.fromTo(seg, { scale: 0.8, opacity: 0.5 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(3)' });
+      if (quarterCount === 4) {
+        gsap.fromTo(quarterCompleteMsg, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(2)' });
+      }
+    }
+
+    function quarterReset() {
+      quarterCount = 0;
+      quarterSegs.forEach(function(seg) {
+        seg.classList.remove('filled');
+        seg.classList.add('empty');
+      });
+      quarterCompleteMsg.classList.remove('show');
+      updateQuarterDisplay();
+    }
+
+    quarterAddBtn.addEventListener('click', quarterAdd);
+    quarterResetBtn.addEventListener('click', quarterReset);
+
+    // ============ Build-to-One: Fifths ============
+    var fifthCount = 0;
+    var fifthAddBtn = document.getElementById('fifthAddBtn');
+    var fifthResetBtn = document.getElementById('fifthResetBtn');
+    var fifthSegs = document.querySelectorAll('#fifthSegBar .seg');
+    var fifthSumDisplay = document.getElementById('fifthSumDisplay');
+    var fifthRemainDisplay = document.getElementById('fifthRemainDisplay');
+    var fifthCounter = document.getElementById('fifthCounter');
+    var fifthCompleteMsg = document.getElementById('fifthCompleteMsg');
+
+    function updateFifthDisplay() {
+      var filled = fifthCount;
+      var total = 5;
+      var sum = (filled * 0.2).toFixed(1);
+      var remain = ((total - filled) * 0.2).toFixed(1);
+      fifthSumDisplay.textContent = sum;
+      fifthRemainDisplay.textContent = remain;
+      fifthCounter.textContent = filled + ' / ' + total;
+      fifthAddBtn.disabled = filled >= total;
+      if (filled >= total) {
+        fifthCompleteMsg.classList.add('show');
+      } else {
+        fifthCompleteMsg.classList.remove('show');
+      }
+    }
+
+    function fifthAdd() {
+      if (fifthCount >= 5) return;
+      var seg = fifthSegs[fifthCount];
+      seg.classList.remove('empty');
+      seg.classList.add('filled');
+      fifthCount++;
+      updateFifthDisplay();
+      // Animate the segment
+      gsap.fromTo(seg, { scale: 0.8, opacity: 0.5 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(3)' });
+      if (fifthCount === 5) {
+        gsap.fromTo(fifthCompleteMsg, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(2)' });
+      }
+    }
+
+    function fifthReset() {
+      fifthCount = 0;
+      fifthSegs.forEach(function(seg) {
+        seg.classList.remove('filled');
+        seg.classList.add('empty');
+      });
+      fifthCompleteMsg.classList.remove('show');
+      updateFifthDisplay();
+    }
+
+    fifthAddBtn.addEventListener('click', fifthAdd);
+    fifthResetBtn.addEventListener('click', fifthReset);
+
     // ============ GSAP Animations on Load ============
     document.addEventListener('DOMContentLoaded', function() {
+      // Initialize build-to-one displays
+      updateQuarterDisplay();
+      updateFifthDisplay();
+
       // Animate the comparison cards
       var compareCards = document.querySelectorAll('.fraction-compare-card');
       if (compareCards.length > 0) {
