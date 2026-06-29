@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Rate of Change: How Far Can We Go?</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Rate of Change Specific Styles ============ */
+    .rate-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #FFF8E1 100%);
+      border-left: 6px solid #1E88E5;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .rate-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .rate-intro p:last-child { margin-bottom: 0; }
+
+    /* Road animation area */
+    .road-scene {
+      position: relative;
+      background: linear-gradient(180deg, #BBDEFB 0%, #E3F2FD 40%, #C8E6C9 70%, #A5D6A7 100%);
+      border-radius: var(--radius-lg);
+      border: 3px solid #90CAF9;
+      padding: 2rem 1.5rem;
+      margin: 2rem 0;
+      overflow: hidden;
+      min-height: 320px;
+    }
+
+    .road {
+      position: relative;
+      width: 100%;
+      height: 80px;
+      background: #546E7A;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .road-lines {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: repeating-linear-gradient(
+        90deg,
+        #FFD54F 0px,
+        #FFD54F 40px,
+        transparent 40px,
+        transparent 60px
+      );
+      transform: translateY(-50%);
+    }
+
+    .road-left-edge,
+    .road-right-edge {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #FFF;
+    }
+    .road-left-edge { top: 8px; }
+    .road-right-edge { bottom: 8px; }
+
+    /* Car sprite on the road */
+    .car-on-road {
+      position: absolute;
+      top: 50%;
+      left: 5%;
+      transform: translateY(-50%) scaleX(-1);
+      font-size: 3.2rem;
+      z-index: 10;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+      transition: left 0.1s linear;
+    }
+
+    /* Distance markers */
+    .distance-markers {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 2%;
+      margin-top: 0.25rem;
+      position: relative;
+    }
+
+    .distance-markers .marker {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+      position: relative;
+      text-align: center;
+    }
+
+    .distance-markers .marker::before {
+      content: '|';
+      display: block;
+      font-size: 1.2rem;
+      color: #90A4AE;
+      margin-bottom: 2px;
+    }
+
+    .marker.reached {
+      color: #2E7D32;
+      font-weight: 800;
+    }
+    .marker.reached::before {
+      color: #4CAF50;
+    }
+
+    /* Info panel next to road */
+    .trip-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: rgba(255,255,255,0.9);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      margin: 1rem 0;
+    }
+
+    .trip-info .info-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .trip-info .info-item .info-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+
+    .trip-info .info-item .info-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #1E88E5;
+    }
+
+    .trip-info .info-item .info-value.distance-value {
+      color: #2E7D32;
+    }
+
+    /* Time selector buttons */
+    .time-selector {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .time-btn {
+      padding: 0.8rem 1.8rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid #BBDEFB;
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #1E88E5;
+    }
+
+    .time-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .time-btn.active {
+      background: #1E88E5;
+      color: white;
+      border-color: #1E88E5;
+      box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+    }
+
+    .time-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+      transform: none !important;
+    }
+
+    /* Animate button */
+    .btn-drive {
+      padding: 0.9rem 2.5rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #1E88E5, #1565C0);
+      color: white;
+      box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+    }
+
+    .btn-drive:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 8px 25px rgba(30, 136, 229, 0.5);
+    }
+
+    .btn-drive:disabled {
+      opacity: 0.5;
+      cursor: default;
+      transform: none !important;
+    }
+
+    .btn-reset-drive {
+      padding: 0.6rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border: 2px solid #E0E0E0;
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--color-text-light);
+    }
+
+    .btn-reset-drive:hover {
+      border-color: #BDBDBD;
+      background: #F5F5F5;
+    }
+
+    /* Calculation display */
+    .calc-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, #E8F5E9 0%, #E3F2FD 100%);
+      border-radius: var(--radius-lg);
+      border: 3px solid #42A5F5;
+      margin: 1.5rem 0;
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    .calc-display .calc-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 65px;
+      height: 65px;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 3px solid #90CAF9;
+      color: #1565C0;
+      font-size: 1.5rem;
+    }
+
+    .calc-display .calc-num.result-num {
+      background: #1565C0;
+      border-color: #1565C0;
+      color: white;
+    }
+
+    .calc-display .calc-sym {
+      font-size: 1.8rem;
+      color: var(--color-orange);
+    }
+
+    .calc-display .calc-eq {
+      font-size: 1.8rem;
+      color: #2E7D32;
+    }
+
+    /* Explanation box */
+    .explain-box {
+      background: #E3F2FD;
+      border-left: 6px solid #1E88E5;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+
+    .explain-box p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+
+    .explain-box p:last-child { margin-bottom: 0; }
+
+    .explain-box .highlight {
+      color: #1565C0;
+      font-weight: 800;
+    }
+
+    /* Second example - bicycle */
+    .example-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid #E3F2FD;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .example-card .example-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .example-card h4 {
+      font-size: 1.4rem;
+      color: #1565C0;
+      margin-bottom: 0.75rem;
+    }
+
+    .example-card p {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+
+    .example-card .example-equation {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #2E7D32;
+      margin: 1rem 0;
+    }
+
+    /* Quiz styles */
+    .rate-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .rate-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .rate-option:hover {
+      border-color: #1E88E5;
+      background: #E3F2FD;
+      transform: scale(1.05);
+    }
+    .rate-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .rate-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .rate-option:disabled { cursor: default; opacity: 0.7; }
+    .rate-option.correct:disabled { opacity: 1; }
+
+    .rate-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .rate-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .rate-result.correct-result {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .rate-result.wrong-result {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    /* Example road - small scene for bike/walk */
+    .example-scene {
+      position: relative;
+      background: linear-gradient(180deg, #C8E6C9 0%, #E8F5E9 40%, #A5D6A7 70%, #81C784 100%);
+      border-radius: var(--radius-lg);
+      border: 3px solid #66BB6A;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      overflow: hidden;
+      min-height: 200px;
+    }
+
+    .example-scene .path {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      background: #A1887F;
+      border-radius: 6px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+
+    .example-scene .path .path-edge {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #FFF;
+    }
+    .example-scene .path .path-edge.top { top: 5px; }
+    .example-scene .path .path-edge.bottom { bottom: 5px; }
+
+    .example-scene .sprite {
+      position: absolute;
+      top: 50%;
+      left: 5%;
+      transform: translateY(-50%);
+      font-size: 2.5rem;
+      z-index: 10;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+      transition: left 0.1s linear;
+    }
+
+    .example-scene .sprite.flip {
+      transform: translateY(-50%) scaleX(-1);
+    }
+
+    .example-scene .example-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.9);
+      border-radius: var(--radius-md);
+      margin: 0.75rem 0;
+    }
+
+    .example-scene .example-info .ex-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+    }
+
+    .example-scene .example-info .ex-item .ex-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+
+    .example-scene .example-info .ex-item .ex-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #2E7D32;
+    }
+
+    .example-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      align-items: center;
+      margin: 0.75rem 0;
+    }
+
+    .btn-go {
+      padding: 0.7rem 1.8rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-go.cycle-btn {
+      background: linear-gradient(135deg, #FF7043, #E64A19);
+      color: white;
+    }
+    .btn-go.cycle-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+    }
+    .btn-go.cycle-btn:disabled { opacity: 0.5; cursor: default; transform: none !important; }
+
+    .btn-go.walk-btn {
+      background: linear-gradient(135deg, #42A5F5, #1565C0);
+      color: white;
+    }
+    .btn-go.walk-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+    }
+    .btn-go.walk-btn:disabled { opacity: 0.5; cursor: default; transform: none !important; }
+
+    .btn-ex-reset {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: 2px solid #E0E0E0;
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--color-text-light);
+    }
+    .btn-ex-reset:hover {
+      border-color: #BDBDBD;
+      background: #F5F5F5;
+    }
+
+    .example-scene .ex-equation {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #2E7D32;
+      margin-top: 0.5rem;
+    }
+
+    .example-scene .ex-equation span {
+      background: #E8F5E9;
+      padding: 0.2rem 0.8rem;
+      border-radius: 10px;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 768px) {
+      .road-scene { min-height: 260px; padding: 1.5rem 1rem; }
+      .car-on-road { font-size: 2.5rem; }
+      .trip-info .info-item .info-value { font-size: 1.4rem; }
+      .calc-display { font-size: 1.2rem; }
+      .calc-display .calc-num { width: 50px; height: 50px; font-size: 1.2rem; }
+      .time-btn { padding: 0.6rem 1.2rem; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="page2.html">Multiply by 3</a></li>
+        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page5.html" class="active">Rate of Change</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🚗 Rate of Change: How Far Can We Go? 🛣️</h2>
+
+      <!-- Intro -->
+      <div class="rate-intro">
+        <p><strong>What is Rate of Change?</strong></p>
+        <p>Rate of change tells us <strong>how fast something changes over time</strong>. 🚀</p>
+        <p>If a car drives at <strong>50 km every hour</strong>, then in <strong>2 hours</strong> it travels <strong>100 km</strong>! That's multiplication in action! ✨</p>
+        <p>Let's explore how <strong>speed × time = distance</strong>! 🎉</p>
+      </div>
+
+      <!-- ============ SCENE: The Road ============ -->
+      <section>
+        <h3>🛣️ The Car Trip</h3>
+
+        <div class="explain-box">
+          <p>🚗 A car drives at a <strong>constant speed</strong> of <strong>50 km every hour</strong>.</p>
+          <p>This means: in <strong>1 hour</strong> → <strong>50 km</strong> &nbsp; | &nbsp; in <strong>2 hours</strong> → <strong>100 km</strong></p>
+          <p>We can write this as: <span class="highlight">Speed × Time = Distance</span></p>
+        </div>
+
+        <!-- Road scene with car animation -->
+        <div class="road-scene" id="roadScene">
+          <!-- Sky and scenery elements -->
+          <div style="position:absolute; top:10px; left:20px; font-size:1.8rem;">☀️</div>
+          <div style="position:absolute; top:5px; right:40px; font-size:1.5rem;">☁️</div>
+          <div style="position:absolute; bottom:15px; left:30px; font-size:1.2rem;">🌳</div>
+          <div style="position:absolute; bottom:15px; right:60px; font-size:1.2rem;">🌲</div>
+          <div style="position:absolute; bottom:15px; left:70%; font-size:1.2rem;">🌳</div>
+
+          <!-- The road -->
+          <div class="road" id="theRoad">
+            <div class="road-left-edge"></div>
+            <div class="road-right-edge"></div>
+            <div class="road-lines"></div>
+            <!-- Car on the road -->
+            <div class="car-on-road" id="carSprite">🚗</div>
+          </div>
+
+          <!-- Distance markers below the road -->
+          <div class="distance-markers" id="distanceMarkers">
+            <span class="marker reached" data-km="0">0 km</span>
+            <span class="marker" data-km="50">50 km</span>
+            <span class="marker" data-km="100">100 km</span>
+            <span class="marker" data-km="150">150 km</span>
+            <span class="marker" data-km="200">200 km</span>
+          </div>
+
+          <!-- Trip info panel -->
+          <div class="trip-info">
+            <div class="info-item">
+              <span class="info-label">⏱️ Time</span>
+              <span class="info-value" id="timeDisplay">0</span>
+              <span style="font-size:0.85rem; color:var(--color-text-light); font-weight:600;">hours</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">🚗 Speed</span>
+              <span class="info-value" style="color:#1E88E5;">50</span>
+              <span style="font-size:0.85rem; color:var(--color-text-light); font-weight:600;">km/h</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">📏 Distance</span>
+              <span class="info-value distance-value" id="distanceDisplay">0</span>
+              <span style="font-size:0.85rem; color:var(--color-text-light); font-weight:600;">km</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Time selector and control buttons -->
+        <div class="time-selector">
+          <button class="time-btn" data-hours="1" onclick="selectTime(1)">1 Hour</button>
+          <button class="time-btn" data-hours="2" onclick="selectTime(2)">2 Hours</button>
+          <button class="time-btn" data-hours="3" onclick="selectTime(3)">3 Hours</button>
+          <button class="time-btn" data-hours="4" onclick="selectTime(4)">4 Hours</button>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-top:1rem;">
+          <button class="btn-drive" id="driveBtn">▶️ Drive!</button>
+          <button class="btn-reset-drive" id="resetDriveBtn">↺ Reset</button>
+        </div>
+      </section>
+
+      <!-- ============ Calculation Display ============ -->
+      <section>
+        <h3>🧮 The Calculation</h3>
+
+        <div class="calc-display" id="calcDisplay">
+          <span class="calc-num" id="calcSpeed">50</span>
+          <span class="calc-sym">×</span>
+          <span class="calc-num" id="calcTime">1</span>
+          <span class="calc-eq">=</span>
+          <span class="calc-num result-num" id="calcResult">50</span>
+        </div>
+
+        <div style="text-align:center;">
+          <p style="font-size:1.2rem; font-weight:600; color:var(--color-text-light);" id="calcDescription">
+            In <strong>1 hour</strong> at <strong>50 km/h</strong>, the car travels <strong>50 km</strong>!
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ INTERACTIVE EXAMPLES ============ -->
+      <section>
+        <h3>🚴 Interactive Examples</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1rem;">
+          Press the buttons below to see each example in action!
+        </p>
+
+        <!-- Bicycle Example -->
+        <div class="example-card">
+          <div class="example-icon">🚴</div>
+          <h4>A Bicycle Ride</h4>
+          <p>
+            Sarah rides her bicycle at a speed of <strong>10 km per hour</strong>.
+            If she rides for <strong>3 hours</strong>, how far does she go?
+          </p>
+
+          <div class="example-scene">
+            <!-- Park scenery -->
+            <div style="position:absolute; top:8px; left:15px; font-size:1.5rem;">☀️</div>
+            <div style="position:absolute; top:5px; right:30px; font-size:1.2rem;">☁️</div>
+            <div style="position:absolute; bottom:10px; left:20px; font-size:1rem;">🌳</div>
+            <div style="position:absolute; bottom:10px; right:40px; font-size:1rem;">🌷</div>
+
+            <!-- Path -->
+            <div class="path">
+              <div class="path-edge top"></div>
+              <div class="path-edge bottom"></div>
+              <div class="sprite flip" id="bikeSprite">🚴</div>
+            </div>
+
+            <!-- Info panel -->
+            <div class="example-info">
+              <div class="ex-item">
+                <span class="ex-label">⏱️ Time</span>
+                <span class="ex-value" id="bikeTimeDisplay">0</span>
+                <span style="font-size:0.75rem; color:var(--color-text-light); font-weight:600;">hours</span>
+              </div>
+              <div class="ex-item">
+                <span class="ex-label">🚴 Speed</span>
+                <span class="ex-value" style="color:#E64A19;">10</span>
+                <span style="font-size:0.75rem; color:var(--color-text-light); font-weight:600;">km/h</span>
+              </div>
+              <div class="ex-item">
+                <span class="ex-label">📏 Distance</span>
+                <span class="ex-value" id="bikeDistDisplay">0</span>
+                <span style="font-size:0.75rem; color:var(--color-text-light); font-weight:600;">km</span>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="example-controls">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <label style="font-weight:700; font-size:1rem; color:var(--color-text);">Hours:</label>
+                <input type="number" id="bikeHoursInput" value="3" min="1" max="6" style="width:70px; padding:0.5rem; font-size:1.2rem; font-weight:700; text-align:center; border:3px solid #FFE0B2; border-radius:12px; font-family:var(--cds-font-sans); color:#E64A19;">
+              </div>
+              <button class="btn-go cycle-btn" id="bikeGoBtn">🚴 Cycle!</button>
+              <button class="btn-ex-reset" id="bikeResetBtn">↺ Reset</button>
+            </div>
+
+            <div class="ex-equation" id="bikeEquation">
+              <span id="bikeEquationText">10 × 3 = 30 km</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Walking Example -->
+        <div class="example-card">
+          <div class="example-icon">🚶</div>
+          <h4>Walking Slowly</h4>
+          <p>
+            Tom walks at a speed of <strong>5 km per hour</strong>.
+            If he walks for <strong>4 hours</strong>, how far does he go?
+          </p>
+
+          <div class="example-scene">
+            <!-- Street scenery -->
+            <div style="position:absolute; top:8px; left:15px; font-size:1.5rem;">🏙️</div>
+            <div style="position:absolute; top:5px; right:30px; font-size:1.2rem;">☁️</div>
+            <div style="position:absolute; bottom:10px; left:25px; font-size:1rem;">🌲</div>
+            <div style="position:absolute; bottom:10px; right:25px; font-size:1rem;">🚏</div>
+
+            <!-- Path -->
+            <div class="path">
+              <div class="path-edge top"></div>
+              <div class="path-edge bottom"></div>
+              <div class="sprite flip" id="walkSprite">🚶</div>
+            </div>
+
+            <!-- Info panel -->
+            <div class="example-info">
+              <div class="ex-item">
+                <span class="ex-label">⏱️ Time</span>
+                <span class="ex-value" id="walkTimeDisplay">0</span>
+                <span style="font-size:0.75rem; color:var(--color-text-light); font-weight:600;">hours</span>
+              </div>
+              <div class="ex-item">
+                <span class="ex-label">🚶 Speed</span>
+                <span class="ex-value" style="color:#1565C0;">5</span>
+                <span style="font-size:0.75rem; color:var(--color-text-light); font-weight:600;">km/h</span>
+              </div>
+              <div class="ex-item">
+                <span class="ex-label">📏 Distance</span>
+                <span class="ex-value" id="walkDistDisplay">0</span>
+                <span style="font-size:0.75rem; color:var(--color-text-light); font-weight:600;">km</span>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="example-controls">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <label style="font-weight:700; font-size:1rem; color:var(--color-text);">Hours:</label>
+                <input type="number" id="walkHoursInput" value="4" min="1" max="8" style="width:70px; padding:0.5rem; font-size:1.2rem; font-weight:700; text-align:center; border:3px solid #BBDEFB; border-radius:12px; font-family:var(--cds-font-sans); color:#1565C0;">
+              </div>
+              <button class="btn-go walk-btn" id="walkGoBtn">🚶 Walk!</button>
+              <button class="btn-ex-reset" id="walkResetBtn">↺ Reset</button>
+            </div>
+
+            <div class="ex-equation" id="walkEquation">
+              <span id="walkEquationText">5 × 4 = 20 km</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 Understanding Rate of Change</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text"><strong>Rate (speed)</strong> tells us how much distance is covered in <strong>1 unit of time</strong> (1 hour).</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text">To find the total distance, <strong>multiply</strong> the speed by the time: <strong>Speed × Time = Distance</strong>.</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text">The faster you go or the longer you travel, the <strong>farther</strong> you get! 🚀</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section">
+        <h3>🧠 Rate of Change Quiz!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Test your understanding of speed, time, and distance!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🚗 A car drives 50 km in 1 hour. How far in 2 hours?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq1', false)">50 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq1', false)">75 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq1', true)">100 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq1', false)">150 km</button>
+          </div>
+          <div id="rq1result" class="rate-result"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🚴 Sarah rides 10 km in 1 hour. How far in 3 hours?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq2', false)">10 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq2', false)">20 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq2', true)">30 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq2', false)">40 km</button>
+          </div>
+          <div id="rq2result" class="rate-result"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🧮 What is the formula for distance?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq3', false)">Time ÷ Speed</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq3', true)">Speed × Time</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq3', false)">Speed + Time</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq3', false)">Speed − Time</button>
+          </div>
+          <div id="rq3result" class="rate-result"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 🚶 Tom walks 5 km in 1 hour. How far in 4 hours?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq4', false)">5 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq4', false)">10 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq4', false)">15 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq4', true)">20 km</button>
+          </div>
+          <div id="rq4result" class="rate-result"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🧠 If a train travels 80 km in 1 hour, how far in 2 hours?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq5', false)">80 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq5', true)">160 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq5', false)">120 km</button>
+            <button class="rate-option" onclick="checkRateAnswer(this, 'rq5', false)">200 km</button>
+          </div>
+          <div id="rq5result" class="rate-result"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Car Animation ============
+    var selectedHours = 1;
+    var isAnimating = false;
+    var carSprite = document.getElementById('carSprite');
+    var timeDisplay = document.getElementById('timeDisplay');
+    var distanceDisplay = document.getElementById('distanceDisplay');
+    var calcSpeed = document.getElementById('calcSpeed');
+    var calcTime = document.getElementById('calcTime');
+    var calcResult = document.getElementById('calcResult');
+    var calcDescription = document.getElementById('calcDescription');
+    var driveBtn = document.getElementById('driveBtn');
+    var resetDriveBtn = document.getElementById('resetDriveBtn');
+    var markers = document.querySelectorAll('.marker');
+    var timeBtns = document.querySelectorAll('.time-btn');
+
+    var SPEED = 50; // km per hour
+    var ROAD_TOTAL = 200; // max km on the road scale
+
+    function selectTime(hours) {
+      if (isAnimating) return;
+      selectedHours = hours;
+      timeBtns.forEach(function(btn) {
+        btn.classList.remove('active');
+        if (parseInt(btn.getAttribute('data-hours')) === hours) {
+          btn.classList.add('active');
+        }
+      });
+      // Update calculation display
+      updateCalcOnly();
+    }
+
+    function updateCalcOnly() {
+      var totalDist = SPEED * selectedHours;
+      calcSpeed.textContent = SPEED;
+      calcTime.textContent = selectedHours;
+      calcResult.textContent = totalDist;
+      calcDescription.innerHTML = 
+        'In <strong>' + selectedHours + ' hour' + (selectedHours > 1 ? 's' : '') + '</strong> at <strong>' + SPEED + ' km/h</strong>, the car travels <strong>' + totalDist + ' km</strong>!';
+      timeDisplay.textContent = selectedHours;
+      distanceDisplay.textContent = totalDist;
+
+      // Show appropriate markers as reached
+      markers.forEach(function(marker) {
+        var km = parseInt(marker.getAttribute('data-km'));
+        if (km <= totalDist) {
+          marker.classList.add('reached');
+        } else {
+          marker.classList.remove('reached');
+        }
+      });
+    }
+
+    function animateCar() {
+      if (isAnimating) return;
+      isAnimating = true;
+      driveBtn.disabled = true;
+      resetDriveBtn.disabled = true;
+      timeBtns.forEach(function(btn) { btn.style.pointerEvents = 'none'; });
+
+      var totalDist = SPEED * selectedHours;
+      // Calculate percentage of road (max 200 km)
+      var percent = Math.min(totalDist / ROAD_TOTAL, 1);
+      var endLeft = 5 + (percent * 90); // from 5% to 95%
+
+      // Reset car to start
+      gsap.set(carSprite, { left: '5%' });
+
+      // Animate car driving
+      gsap.to(carSprite, {
+        left: endLeft + '%',
+        duration: 1.5,
+        ease: 'none',
+        onUpdate: function() {
+          // Calculate progress
+          var progress = this.progress();
+          var currentTime = progress * selectedHours;
+          var currentDist = progress * totalDist;
+
+          timeDisplay.textContent = Math.round(currentTime * 10) / 10;
+          distanceDisplay.textContent = Math.round(currentDist);
+
+          // Update markers
+          markers.forEach(function(marker) {
+            var km = parseInt(marker.getAttribute('data-km'));
+            if (km <= currentDist) {
+              marker.classList.add('reached');
+            } else {
+              marker.classList.remove('reached');
+            }
+          });
+        },
+        onComplete: function() {
+          timeDisplay.textContent = selectedHours;
+          distanceDisplay.textContent = totalDist;
+          updateCalcOnly();
+          isAnimating = false;
+          driveBtn.disabled = false;
+          resetDriveBtn.disabled = false;
+          timeBtns.forEach(function(btn) { btn.style.pointerEvents = 'auto'; });
+        }
+      });
+    }
+
+    function resetCar() {
+      if (isAnimating) return;
+      gsap.set(carSprite, { left: '5%' });
+      timeDisplay.textContent = '0';
+      distanceDisplay.textContent = '0';
+      markers.forEach(function(marker) {
+        var km = parseInt(marker.getAttribute('data-km'));
+        if (km === 0) {
+          marker.classList.add('reached');
+        } else {
+          marker.classList.remove('reached');
+        }
+      });
+      // Reset calc to 1 hour default
+      selectedHours = 1;
+      timeBtns.forEach(function(btn) {
+        btn.classList.remove('active');
+        if (parseInt(btn.getAttribute('data-hours')) === 1) {
+          btn.classList.add('active');
+        }
+      });
+      updateCalcOnly();
+    }
+
+    driveBtn.addEventListener('click', animateCar);
+    resetDriveBtn.addEventListener('click', resetCar);
+
+    // Initialize
+    selectTime(1);
+
+    // ============ Bicycle Animation ============
+    var BIKE_SPEED = 10; // km per hour
+    var bikeAnimating = false;
+    var bikeSprite = document.getElementById('bikeSprite');
+    var bikeTimeDisplay = document.getElementById('bikeTimeDisplay');
+    var bikeDistDisplay = document.getElementById('bikeDistDisplay');
+    var bikeGoBtn = document.getElementById('bikeGoBtn');
+    var bikeResetBtn = document.getElementById('bikeResetBtn');
+    var bikeHoursInput = document.getElementById('bikeHoursInput');
+    var bikeEquationText = document.getElementById('bikeEquationText');
+
+    function getBikeHours() {
+      var val = parseInt(bikeHoursInput.value);
+      if (isNaN(val) || val < 1) val = 1;
+      if (val > 6) val = 6;
+      bikeHoursInput.value = val;
+      return val;
+    }
+
+    function updateBikeEquation() {
+      var hours = getBikeHours();
+      var total = BIKE_SPEED * hours;
+      bikeEquationText.textContent = BIKE_SPEED + ' × ' + hours + ' = ' + total + ' km';
+    }
+
+    function animateBike() {
+      if (bikeAnimating) return;
+      bikeAnimating = true;
+      bikeGoBtn.disabled = true;
+      bikeResetBtn.disabled = true;
+
+      var hours = getBikeHours();
+      var totalDist = BIKE_SPEED * hours;
+      var bikeMax = BIKE_SPEED * 6;
+      var endLeft = 5 + (Math.min(totalDist / bikeMax, 1) * 90);
+
+      gsap.set(bikeSprite, { left: '5%' });
+
+      gsap.to(bikeSprite, {
+        left: endLeft + '%',
+        duration: 2,
+        ease: 'none',
+        onUpdate: function() {
+          var progress = this.progress();
+          var currentTime = progress * hours;
+          var currentDist = progress * totalDist;
+          bikeTimeDisplay.textContent = Math.round(currentTime * 10) / 10;
+          bikeDistDisplay.textContent = Math.round(currentDist);
+        },
+        onComplete: function() {
+          bikeTimeDisplay.textContent = hours;
+          bikeDistDisplay.textContent = totalDist;
+          updateBikeEquation();
+          bikeAnimating = false;
+          bikeGoBtn.disabled = false;
+          bikeResetBtn.disabled = false;
+        }
+      });
+    }
+
+    function resetBike() {
+      if (bikeAnimating) return;
+      gsap.set(bikeSprite, { left: '5%' });
+      bikeTimeDisplay.textContent = '0';
+      bikeDistDisplay.textContent = '0';
+    }
+
+    bikeGoBtn.addEventListener('click', animateBike);
+    bikeResetBtn.addEventListener('click', resetBike);
+    bikeHoursInput.addEventListener('change', updateBikeEquation);
+
+    // ============ Walking Animation ============
+    var WALK_SPEED = 5; // km per hour
+    var walkAnimating = false;
+    var walkSprite = document.getElementById('walkSprite');
+    var walkTimeDisplay = document.getElementById('walkTimeDisplay');
+    var walkDistDisplay = document.getElementById('walkDistDisplay');
+    var walkGoBtn = document.getElementById('walkGoBtn');
+    var walkResetBtn = document.getElementById('walkResetBtn');
+    var walkHoursInput = document.getElementById('walkHoursInput');
+    var walkEquationText = document.getElementById('walkEquationText');
+
+    function getWalkHours() {
+      var val = parseInt(walkHoursInput.value);
+      if (isNaN(val) || val < 1) val = 1;
+      if (val > 8) val = 8;
+      walkHoursInput.value = val;
+      return val;
+    }
+
+    function updateWalkEquation() {
+      var hours = getWalkHours();
+      var total = WALK_SPEED * hours;
+      walkEquationText.textContent = WALK_SPEED + ' × ' + hours + ' = ' + total + ' km';
+    }
+
+    function animateWalk() {
+      if (walkAnimating) return;
+      walkAnimating = true;
+      walkGoBtn.disabled = true;
+      walkResetBtn.disabled = true;
+
+      var hours = getWalkHours();
+      var totalDist = WALK_SPEED * hours;
+      var walkMax = WALK_SPEED * 8;
+      var endLeft = 5 + (Math.min(totalDist / walkMax, 1) * 90);
+
+      gsap.set(walkSprite, { left: '5%' });
+
+      gsap.to(walkSprite, {
+        left: endLeft + '%',
+        duration: 2.5,
+        ease: 'none',
+        onUpdate: function() {
+          var progress = this.progress();
+          var currentTime = progress * hours;
+          var currentDist = progress * totalDist;
+          walkTimeDisplay.textContent = Math.round(currentTime * 10) / 10;
+          walkDistDisplay.textContent = Math.round(currentDist);
+        },
+        onComplete: function() {
+          walkTimeDisplay.textContent = hours;
+          walkDistDisplay.textContent = totalDist;
+          updateWalkEquation();
+          walkAnimating = false;
+          walkGoBtn.disabled = false;
+          walkResetBtn.disabled = false;
+        }
+      });
+    }
+
+    function resetWalk() {
+      if (walkAnimating) return;
+      gsap.set(walkSprite, { left: '5%' });
+      walkTimeDisplay.textContent = '0';
+      walkDistDisplay.textContent = '0';
+    }
+
+    walkGoBtn.addEventListener('click', animateWalk);
+    walkResetBtn.addEventListener('click', resetWalk);
+    walkHoursInput.addEventListener('change', updateWalkEquation);
+
+    // ============ Quiz ============
+    function checkRateAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.rate-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ GSAP Animations on Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      var exampleCards = document.querySelectorAll('.example-card');
+      if (exampleCards.length > 0) {
+        gsap.from(exampleCards, {
+          y: 30,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.3,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: exampleCards[0],
+            start: 'top 85%'
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

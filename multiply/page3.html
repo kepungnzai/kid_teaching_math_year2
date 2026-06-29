@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KidRead - Let's Multiply by 2!</title>
+  <title>KidRead - Let's Multiply by 4!</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
-    /* ============ Multiply by 2 Specific Styles ============ */
+    /* ============ Multiply by 4 Specific Styles ============ */
     .mult-intro {
       background: linear-gradient(135deg, #E8F5E9 0%, #FFF8E1 100%);
       border-left: 6px solid #2E7D32;
@@ -65,7 +65,7 @@
       box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
     }
 
-    /* Group visual - circles in pairs */
+    /* Group visual - circles in groups of 4 */
     .group-visual {
       display: flex;
       flex-wrap: wrap;
@@ -349,9 +349,9 @@
     <nav>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="page1.html" class="active">Multiply by 2</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
         <li><a href="page2.html">Multiply by 3</a></li>
-        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page3.html" class="active">Multiply by 4</a></li>
         <li><a href="page5.html">Rate of Change</a></li>
       </ul>
     </nav>
@@ -361,134 +361,303 @@
     <a href="index.html" class="back-btn">&larr; Back to Home</a>
 
     <article class="article">
-      <h2>✖️ Let's Multiply by 2! 🧮</h2>
+      <h2>✖️ Let's Multiply by 4! 🧮</h2>
 
       <!-- Intro -->
       <div class="mult-intro">
-        <p><strong>What is Multiplication?</strong></p>
-        <p>Multiplication is like <strong>adding the same number over and over</strong> — it's a shortcut for repeated addition! 🚀</p>
-        <p>If you have <strong>2 groups of apples</strong> and each group has <strong>3 apples</strong>, instead of saying <strong>3 + 3</strong>, you can say <strong>2 × 3 = 6</strong>! ✨</p>
-        <p>Today we'll learn the <strong>2 times table</strong> — the easiest and funniest one! 🎉</p>
+        <p><strong>Welcome to the 4 Times Table!</strong></p>
+        <p>Today we'll learn to <strong>count in groups of 4</strong>! 🚀</p>
+        <p>If you have <strong>3 groups of dogs</strong> and each group has <strong>4 dogs</strong>, you can say <strong>3 × 4 = 12</strong>! Much faster than adding 4 + 4 + 4! ✨</p>
+        <p>Let's explore the <strong>4 times table</strong> step by step! 🎉</p>
       </div>
 
-      <!-- ============ 2 x 1 = 2 ============ -->
+      <!-- ============ 4 x 1 = 4 ============ -->
       <section>
-        <h3>🍎 2 × 1 = 2</h3>
+        <h3>🐶 4 × 1 = 4</h3>
 
         <div class="fact-card">
-          <div class="big-mult">2 × 1 = 2</div>
+          <div class="big-mult">4 × 1 = 4</div>
           <p style="font-size:1.1rem; color:var(--color-text); margin-bottom:0;">
-            <strong>1 group</strong> of <strong>2 apples</strong> = <strong>2 apples total</strong>! 🍎
+            <strong>1 group</strong> of <strong>4 dogs</strong> = <strong>4 dogs total</strong>! 🐶
           </p>
         </div>
 
         <div class="mult-equation">
-          <span class="eq-num">2</span>
+          <span class="eq-num">4</span>
           <span class="eq-sym">×</span>
           <span class="eq-num">1</span>
-          <span class="eq-sym">=</span>
-          <span class="eq-result">2</span>
-        </div>
-
-        <div class="group-visual">
-          <div class="group-box">
-            <div class="group-items">
-              <span class="item">🍎</span>
-              <span class="item">🍎</span>
-            </div>
-            <div class="group-label">1 group of 2</div>
-          </div>
-        </div>
-
-        <div class="thinking-steps">
-          <h4>🧠 Understanding 2 × 1</h4>
-          <div class="step">
-            <span class="step-number">1</span>
-            <span class="step-text"><strong>2 × 1</strong> means <strong>1 group of 2</strong>.</span>
-          </div>
-          <div class="step">
-            <span class="step-number">2</span>
-            <span class="step-text">It's the same as <strong>adding 2 just once</strong>: just <strong>2</strong>!</span>
-          </div>
-          <div class="step">
-            <span class="step-number">3</span>
-            <span class="step-text"><strong>2 × 1 = 2</strong> — any number × 1 is just itself! 🎉</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ 2 x 2 = 4 ============ -->
-      <section>
-        <h3>🍎 2 × 2 = 4</h3>
-
-        <div class="fact-card">
-          <div class="big-mult">2 × 2 = 4</div>
-          <p style="font-size:1.1rem; color:var(--color-text); margin-bottom:0;">
-            <strong>2 groups</strong> of <strong>2 apples</strong> = <strong>4 apples total</strong>! 🍎🍎
-          </p>
-        </div>
-
-        <div class="mult-equation">
-          <span class="eq-num">2</span>
-          <span class="eq-sym">×</span>
-          <span class="eq-num">2</span>
           <span class="eq-sym">=</span>
           <span class="eq-result">4</span>
         </div>
 
+        <div class="group-visual">
+          <div class="group-box">
+            <div class="group-items">
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+            </div>
+            <div class="group-label">1 group of 4</div>
+          </div>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 Understanding 4 × 1</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text"><strong>4 × 1</strong> means <strong>1 group of 4</strong>.</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text">It's the same as <strong>just 4</strong> — adding four once!</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text"><strong>4 × 1 = 4</strong> — any number × 1 is itself! 🎉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 4 x 2 = 8 ============ -->
+      <section>
+        <h3>🐶 4 × 2 = 8</h3>
+
+        <div class="fact-card">
+          <div class="big-mult">4 × 2 = 8</div>
+          <p style="font-size:1.1rem; color:var(--color-text); margin-bottom:0;">
+            <strong>2 groups</strong> of <strong>4 dogs</strong> = <strong>8 dogs total</strong>! 🐶🐶
+          </p>
+        </div>
+
+        <div class="mult-equation">
+          <span class="eq-num">4</span>
+          <span class="eq-sym">×</span>
+          <span class="eq-num">2</span>
+          <span class="eq-sym">=</span>
+          <span class="eq-result">8</span>
+        </div>
+
         <div class="addition-breakdown">
-          <span class="add-term">2</span>
+          <span class="add-term">4</span>
           <span class="add-sym">+</span>
-          <span class="add-term">2</span>
+          <span class="add-term">4</span>
           <span class="add-eq">=</span>
-          <span class="add-result">4</span>
+          <span class="add-result">8</span>
         </div>
 
         <div class="group-visual">
           <div class="group-box">
             <div class="group-items">
-              <span class="item">🍎</span>
-              <span class="item">🍎</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
             </div>
             <div class="group-label">Group 1</div>
           </div>
           <div class="group-box">
             <div class="group-items">
-              <span class="item">🍎</span>
-              <span class="item">🍎</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
             </div>
             <div class="group-label">Group 2</div>
           </div>
         </div>
 
         <div class="thinking-steps">
-          <h4>🧠 Understanding 2 × 2</h4>
+          <h4>🧠 Understanding 4 × 2</h4>
           <div class="step">
             <span class="step-number">1</span>
-            <span class="step-text"><strong>2 × 2</strong> means <strong>2 groups of 2</strong>.</span>
+            <span class="step-text"><strong>4 × 2</strong> means <strong>2 groups of 4</strong>.</span>
           </div>
           <div class="step">
             <span class="step-number">2</span>
-            <span class="step-text">It's the same as <strong>2 + 2</strong> (adding 2 twice)!</span>
+            <span class="step-text">It's the same as <strong>4 + 4</strong> (adding 4 twice)!</span>
           </div>
           <div class="step">
             <span class="step-number">3</span>
-            <span class="step-text"><strong>2 + 2 = 4</strong>, so <strong>2 × 2 = 4</strong>! 🎉</span>
+            <span class="step-text"><strong>4 + 4 = 8</strong>, so <strong>4 × 2 = 8</strong>! 🎉</span>
           </div>
         </div>
       </section>
 
-      <!-- ============ INTERACTIVE: Build Groups of 2 ============ -->
+      <!-- ============ 4 x 3 = 12 ============ -->
+      <section>
+        <h3>🐶 4 × 3 = 12</h3>
+
+        <div class="fact-card">
+          <div class="big-mult">4 × 3 = 12</div>
+          <p style="font-size:1.1rem; color:var(--color-text); margin-bottom:0;">
+            <strong>3 groups</strong> of <strong>4 dogs</strong> = <strong>12 dogs total</strong>! 🐶🐶🐶
+          </p>
+        </div>
+
+        <div class="mult-equation">
+          <span class="eq-num">4</span>
+          <span class="eq-sym">×</span>
+          <span class="eq-num">3</span>
+          <span class="eq-sym">=</span>
+          <span class="eq-result">12</span>
+        </div>
+
+        <div class="addition-breakdown">
+          <span class="add-term">4</span>
+          <span class="add-sym">+</span>
+          <span class="add-term">4</span>
+          <span class="add-sym">+</span>
+          <span class="add-term">4</span>
+          <span class="add-eq">=</span>
+          <span class="add-result">12</span>
+        </div>
+
+        <div class="group-visual">
+          <div class="group-box">
+            <div class="group-items">
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+            </div>
+            <div class="group-label">Group 1</div>
+          </div>
+          <div class="group-box">
+            <div class="group-items">
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+            </div>
+            <div class="group-label">Group 2</div>
+          </div>
+          <div class="group-box">
+            <div class="group-items">
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+            </div>
+            <div class="group-label">Group 3</div>
+          </div>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 Understanding 4 × 3</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text"><strong>4 × 3</strong> means <strong>3 groups of 4</strong>.</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text">It's the same as <strong>4 + 4 + 4</strong> (adding 4 three times)!</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text"><strong>4 + 4 + 4 = 12</strong>, so <strong>4 × 3 = 12</strong>! 🎉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 4 x 4 = 16 ============ -->
+      <section>
+        <h3>🐶 4 × 4 = 16</h3>
+
+        <div class="fact-card">
+          <div class="big-mult">4 × 4 = 16</div>
+          <p style="font-size:1.1rem; color:var(--color-text); margin-bottom:0;">
+            <strong>4 groups</strong> of <strong>4 dogs</strong> = <strong>16 dogs total</strong>! 🐶🐶🐶🐶
+          </p>
+        </div>
+
+        <div class="mult-equation">
+          <span class="eq-num">4</span>
+          <span class="eq-sym">×</span>
+          <span class="eq-num">4</span>
+          <span class="eq-sym">=</span>
+          <span class="eq-result">16</span>
+        </div>
+
+        <div class="addition-breakdown">
+          <span class="add-term">4</span>
+          <span class="add-sym">+</span>
+          <span class="add-term">4</span>
+          <span class="add-sym">+</span>
+          <span class="add-term">4</span>
+          <span class="add-sym">+</span>
+          <span class="add-term">4</span>
+          <span class="add-eq">=</span>
+          <span class="add-result">16</span>
+        </div>
+
+        <div class="group-visual">
+          <div class="group-box">
+            <div class="group-items">
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+            </div>
+            <div class="group-label">Group 1</div>
+          </div>
+          <div class="group-box">
+            <div class="group-items">
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+            </div>
+            <div class="group-label">Group 2</div>
+          </div>
+          <div class="group-box">
+            <div class="group-items">
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+            </div>
+            <div class="group-label">Group 3</div>
+          </div>
+          <div class="group-box">
+            <div class="group-items">
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+              <span class="item">🐶</span>
+            </div>
+            <div class="group-label">Group 4</div>
+          </div>
+        </div>
+
+        <div class="thinking-steps">
+          <h4>🧠 Understanding 4 × 4</h4>
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text"><strong>4 × 4</strong> means <strong>4 groups of 4</strong>.</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text">It's the same as <strong>4 + 4 + 4 + 4</strong> (adding 4 four times)!</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text"><strong>4 + 4 + 4 + 4 = 16</strong>, so <strong>4 × 4 = 16</strong>! 🎉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ INTERACTIVE: Build Groups of 4 ============ -->
       <section class="interactive-area">
-        <h3>🧮 Build Groups of 2!</h3>
+        <h3>🧮 Build Groups of 4!</h3>
         <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:0.5rem;">
-          Click the button to add groups of 2. See how multiplication builds!
+          Click the button to add groups of 4. See how multiplication builds!
         </p>
 
         <div class="groups-row" id="groupsRow"></div>
 
         <div class="controls-row">
-          <button class="btn-add-group" id="addGroupBtn">+ Add a Group of 2 🍎</button>
+          <button class="btn-add-group" id="addGroupBtn">+ Add a Group of 4 🐶</button>
           <button class="btn-reset-groups" id="resetGroupsBtn">↺ Reset</button>
         </div>
 
@@ -501,55 +670,67 @@
 
       <!-- ============ QUIZ ============ -->
       <section class="quiz-section">
-        <h3>🧠 Multiply by 2 Quiz!</h3>
-        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Test your understanding of the 2 times table!</p>
+        <h3>🧠 Multiply by 4 Quiz!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Test your understanding of the 4 times table!</p>
 
         <!-- Q1 -->
         <div class="quiz-card">
-          <p class="quiz-question">1️⃣ 🍎 2 × 1 = ?</p>
+          <p class="quiz-question">1️⃣ 🐶 4 × 1 = ?</p>
           <div class="mult-quiz-options">
             <button class="mult-option" onclick="checkMultAnswer(this, 'mq1', false)">1</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq1', true)">2</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq1', false)">4</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq1', false)">0</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq1', false)">8</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq1', true)">4</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq1', false)">6</button>
           </div>
           <div id="mq1result" class="mult-result"></div>
         </div>
 
         <!-- Q2 -->
         <div class="quiz-card">
-          <p class="quiz-question">2️⃣ 🍎 2 × 2 = ?</p>
+          <p class="quiz-question">2️⃣ 🐶 4 × 2 = ?</p>
           <div class="mult-quiz-options">
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq2', false)">2</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq2', false)">3</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq2', true)">4</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq2', false)">4</button>
             <button class="mult-option" onclick="checkMultAnswer(this, 'mq2', false)">6</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq2', true)">8</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq2', false)">12</button>
           </div>
           <div id="mq2result" class="mult-result"></div>
         </div>
 
         <!-- Q3 -->
         <div class="quiz-card">
-          <p class="quiz-question">3️⃣ 🧮 2 × 2 is the same as which addition?</p>
+          <p class="quiz-question">3️⃣ 🧮 4 × 3 = ?</p>
           <div class="mult-quiz-options">
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq3', false)">2 + 1</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq3', false)">1 + 1</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq3', true)">2 + 2</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq3', false)">4 + 4</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq3', false)">8</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq3', false)">10</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq3', true)">12</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq3', false)">16</button>
           </div>
           <div id="mq3result" class="mult-result"></div>
         </div>
 
         <!-- Q4 -->
         <div class="quiz-card">
-          <p class="quiz-question">4️⃣ 🧠 If you have 2 baskets with 2 apples in each, how many apples total?</p>
+          <p class="quiz-question">4️⃣ 🧮 4 × 4 = ?</p>
           <div class="mult-quiz-options">
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq4', false)">2</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq4', false)">3</button>
-            <button class="mult-option" onclick="checkMultAnswer(this, 'mq4', true)">4</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq4', false)">12</button>
             <button class="mult-option" onclick="checkMultAnswer(this, 'mq4', false)">8</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq4', false)">14</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq4', true)">16</button>
           </div>
           <div id="mq4result" class="mult-result"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🧠 4 + 4 + 4 is the same as which multiplication?</p>
+          <div class="mult-quiz-options">
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq5', false)">2 × 4</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq5', true)">3 × 4</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq5', false)">4 × 4</button>
+            <button class="mult-option" onclick="checkMultAnswer(this, 'mq5', false)">4 × 1</button>
+          </div>
+          <div id="mq5result" class="mult-result"></div>
         </div>
       </section>
 
@@ -561,7 +742,7 @@
   </footer>
 
   <script>
-    // ============ Interactive Groups of 2 ============
+    // ============ Interactive Groups of 4 ============
     var groupCount = 0;
     var addGroupBtn = document.getElementById('addGroupBtn');
     var resetGroupsBtn = document.getElementById('resetGroupsBtn');
@@ -575,7 +756,7 @@
       var bubble = document.createElement('div');
       bubble.className = 'group-bubble';
       bubble.id = 'group-' + groupCount;
-      bubble.innerHTML = '<span class="bubble-item">🍎</span><span class="bubble-item">🍎</span>';
+      bubble.innerHTML = '<span class="bubble-item">🐶</span><span class="bubble-item">🐶</span><span class="bubble-item">🐶</span><span class="bubble-item">🐶</span>';
       groupsRow.appendChild(bubble);
 
       // Animate the new group
@@ -591,24 +772,24 @@
     }
 
     function updateDisplay() {
-      var total = groupCount * 2;
+      var total = groupCount * 4;
       multResultDisplay.textContent = total;
 
       if (groupCount === 0) {
         multBreakdown.innerHTML = 'Click the button to start building!';
         addGroupBtn.disabled = false;
       } else if (groupCount === 1) {
-        multBreakdown.innerHTML = '<strong>1</strong> group of 2 = <strong>2</strong> (2 × 1 = 2) 🍎🍎';
+        multBreakdown.innerHTML = '<strong>1</strong> group of 4 = <strong>4</strong> (4 × 1 = 4) 🐶🐶🐶🐶';
         addGroupBtn.disabled = false;
       } else {
         // Build addition string
         var parts = [];
         for (var i = 0; i < groupCount; i++) {
-          parts.push('2');
+          parts.push('4');
         }
         var additionStr = parts.join(' + ');
         multBreakdown.innerHTML = 
-          '<strong>' + groupCount + '</strong> groups of 2 = ' + additionStr + ' = <strong>' + total + '</strong> &nbsp;|&nbsp; <strong>2 × ' + groupCount + ' = ' + total + '</strong> 🎉';
+          '<strong>' + groupCount + '</strong> groups of 4 = ' + additionStr + ' = <strong>' + total + '</strong> &nbsp;|&nbsp; <strong>4 × ' + groupCount + ' = ' + total + '</strong> 🎉';
         addGroupBtn.disabled = false;
       }
     }
