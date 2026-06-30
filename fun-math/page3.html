@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Percentage Growth: Australia Population!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Population Growth Specific Styles ============ */
+    .pop-intro {
+      background: linear-gradient(135deg, #E8EAF6 0%, #FFF8E1 100%);
+      border-left: 6px solid #283593;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .pop-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .pop-intro p:last-child { margin-bottom: 0; }
+    .pop-intro .big-question {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #1A237E;
+      text-align: center;
+      margin-top: 0.75rem;
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      border: 3px solid #C5CAE9;
+    }
+
+    /* Timeline visual */
+    .timeline-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .timeline-card {
+      flex: 1;
+      min-width: 200px;
+      max-width: 300px;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .timeline-card:hover { transform: translateY(-6px); }
+    .timeline-card.old-australia { border-color: #9E9E9E; }
+    .timeline-card.new-australia { border-color: #283593; }
+    .timeline-card .year-badge {
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      padding: 0.3rem 1rem;
+      border-radius: 12px;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+    .timeline-card.old-australia .year-badge { background: #78909C; }
+    .timeline-card.new-australia .year-badge { background: #283593; }
+    .timeline-card .pop-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0.5rem 0;
+    }
+    .timeline-card.old-australia .pop-number { color: #546E7A; }
+    .timeline-card.new-australia .pop-number { color: #1A237E; }
+    .timeline-card .pop-label {
+      font-size: 1rem;
+      color: var(--color-text-light);
+      font-weight: 600;
+    }
+    .timeline-card .pop-emoji { font-size: 3rem; margin-bottom: 0.5rem; }
+
+    /* Arrow between cards */
+    .timeline-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: var(--color-orange);
+      min-width: 60px;
+    }
+    .timeline-arrow .arrow-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+    }
+
+    /* Person icons row for visualizing population */
+    .people-row-visual {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.15rem;
+      justify-content: center;
+      margin: 1rem 0;
+      min-height: 40px;
+    }
+    .people-row-visual .person-icon {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+    }
+    .people-row-visual .person-icon.highlight {
+      opacity: 1;
+      transform: scale(1.3);
+    }
+
+    /* Step reveal */
+    .step-reveal.pop-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .step-reveal.pop-steps .step-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border-left: 6px solid #283593;
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    .step-reveal.pop-steps .step-card .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: #283593;
+      color: white;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .step-reveal.pop-steps .step-card .step-content {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      font-weight: 600;
+    }
+    .step-reveal.pop-steps .step-card .step-content strong {
+      color: #1A237E;
+    }
+    .step-reveal.pop-steps .step-card .step-content .highlight-grow {
+      color: #E65100;
+    }
+
+    /* Growth bar */
+    .growth-bar-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 1.5rem auto;
+    }
+    .growth-bar-bg {
+      width: 100%;
+      height: 50px;
+      background: #E8EAF6;
+      border-radius: 25px;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid #C5CAE9;
+    }
+    .growth-bar-fill {
+      height: 100%;
+      border-radius: 22px;
+      transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: white;
+      background: linear-gradient(90deg, #5C6BC0, #283593);
+    }
+    .growth-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+    }
+    .growth-bar-labels span:last-child {
+      color: #1A237E;
+      font-weight: 700;
+    }
+
+    /* Interactive Calculator */
+    .interactive-pop {
+      background: linear-gradient(135deg, #E8EAF6 0%, #FFF8E1 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2.5rem 0;
+      border: 3px solid #283593;
+    }
+    .interactive-pop h3 {
+      color: #1A237E;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .interactive-pop .pop-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .interactive-pop .pop-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .interactive-pop .pop-group label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .interactive-pop .pop-group input {
+      width: 100px;
+      padding: 0.6rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--cds-font-sans);
+      color: var(--color-text);
+      transition: all 0.2s ease;
+    }
+    .interactive-pop .pop-group input:focus {
+      outline: none;
+      border-color: #283593;
+      box-shadow: 0 0 0 4px rgba(40, 53, 147, 0.15);
+    }
+    .interactive-pop .pop-result-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .interactive-pop .pop-result-card {
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 3px solid #C5CAE9;
+      min-width: 120px;
+      text-align: center;
+    }
+    .interactive-pop .pop-result-card .result-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .interactive-pop .pop-result-card .result-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1A237E;
+    }
+    .interactive-pop .pop-result-card.pct-card {
+      border-color: #E65100;
+    }
+    .interactive-pop .pop-result-card.pct-card .result-value {
+      color: #E65100;
+      font-size: 2.2rem;
+    }
+
+    /* Multiple choice quiz */
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .choice-btn {
+      padding: 1rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    .choice-btn:hover {
+      border-color: #283593;
+      background: #E8EAF6;
+      transform: scale(1.05);
+    }
+    .choice-btn.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .choice-btn.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .choice-btn:disabled { cursor: default; opacity: 0.7; }
+    .choice-btn.correct:disabled { opacity: 1; }
+
+    .pop-result-msg {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+      text-align: center;
+    }
+    .pop-result-msg.show { display: block; animation: fadeIn 0.3s ease; }
+    .pop-result-msg.correct-msg { background: #E8F5E9; color: #2E7D32; }
+    .pop-result-msg.wrong-msg { background: #FFEBEE; color: #C62828; }
+
+    @media (max-width: 768px) {
+      .timeline-card .pop-number { font-size: 2rem; }
+      .timeline-arrow { font-size: 2rem; min-width: 40px; }
+      .choice-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page3.html" class="active">Adventure 3</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🇦🇺 Australia's Population Growth! 📈</h2>
+
+      <!-- Intro -->
+      <div class="pop-intro">
+        <p><strong>How much has Australia grown?</strong></p>
+        <p>Let's travel through time! In <strong>1901</strong>, Australia had <strong>3.8 million</strong> people. By <strong>2023</strong>, that number grew to <strong>26.8 million</strong>! That's a huge difference! 🤯</p>
+        <p>But <strong>how much bigger</strong> is it? We can use <strong>percentage increase</strong> to find out! Let's calculate it step by step! 🧮</p>
+        <div class="big-question">
+          📊 Australia's population went from <strong>3.8 million</strong> to <strong>26.8 million</strong>. <br>What's the <strong>percentage increase</strong>?
+        </div>
+      </div>
+
+      <!-- Timeline Visual -->
+      <section>
+        <h3>📅 Australia Then vs Now</h3>
+        <div class="timeline-area">
+          <!-- 1901 -->
+          <div class="timeline-card old-australia" id="card1901">
+            <div class="year-badge">1901</div>
+            <div class="pop-emoji">🏞️</div>
+            <div class="pop-number">3.8 <span style="font-size:1.2rem;">million</span></div>
+            <div class="pop-label">Old Australia</div>
+          </div>
+
+          <!-- Arrow -->
+          <div class="timeline-arrow">
+            <span>➡️</span>
+            <span class="arrow-label">+ <span id="diffLabel">23.0 M</span></span>
+          </div>
+
+          <!-- 2023 -->
+          <div class="timeline-card new-australia" id="card2023">
+            <div class="year-badge">2023</div>
+            <div class="pop-emoji">🏙️</div>
+            <div class="pop-number">26.8 <span style="font-size:1.2rem;">million</span></div>
+            <div class="pop-label">Modern Australia</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Growth Bar -->
+      <section>
+        <h3>📊 Visual Growth</h3>
+        <div class="growth-bar-container">
+          <div class="growth-bar-bg">
+            <div class="growth-bar-fill" id="growthBar" style="width: 0%;">0%</div>
+          </div>
+          <div class="growth-bar-labels">
+            <span>1901: 3.8 M</span>
+            <span>Growth: <span id="growthBarLabel">0</span>%</span>
+            <span>2023: 26.8 M</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Action Button -->
+      <div class="action-buttons">
+        <button id="solveBtn" class="btn btn-primary" style="background:#283593;box-shadow:0 8px 20px rgba(40,53,147,0.3);font-size:1.3rem;padding:1rem 2.5rem;">📈 Calculate Growth!</button>
+      </div>
+
+      <!-- Step-by-Step Reveal -->
+      <div class="step-reveal pop-steps" id="stepReveal">
+        <div class="step-card" id="step1">
+          <div class="step-num">1</div>
+          <div class="step-content">Find the <strong>difference</strong>: 26.8 M − 3.8 M = <strong style="color:#E65100;">23.0 million</strong> more people!</div>
+        </div>
+        <div class="step-card" id="step2">
+          <div class="step-num">2</div>
+          <div class="step-content">The <strong>percentage increase</strong> formula: <strong>(Difference ÷ Original) × 100</strong></div>
+        </div>
+        <div class="step-card" id="step3">
+          <div class="step-num">3</div>
+          <div class="step-content">Divide: <strong>23.0 ÷ 3.8</strong> = <strong style="color:#E65100;">6.0526...</strong></div>
+        </div>
+        <div class="step-card" id="step4">
+          <div class="step-num">4</div>
+          <div class="step-content">Multiply by <strong>100</strong>: 6.0526 × 100 = <strong style="color:#E65100;font-size:1.4rem;">605.3%</strong></div>
+        </div>
+        <div class="step-card" id="step5" style="border-left-color:#4CAF50;">
+          <div class="step-num" style="background:#4CAF50;">✅</div>
+          <div class="step-content">Australia's population increased by approximately <strong style="color:#E65100;">605%</strong>! 🎉</div>
+        </div>
+      </div>
+
+      <!-- Final Answer Box -->
+      <div class="answer-reveal" id="answerReveal" style="display:none;background:#E8EAF6;border-color:#283593;">
+        <p>🎯 <strong>The Answer:</strong></p>
+        <div class="big-answer" style="color:#1A237E;" id="finalAnswer">605% increase! (Or approximately 600%)</div>
+        <p style="font-size:1.2rem;">
+          <strong>3.8 M</strong> → <strong>26.8 M</strong> = <strong>~605% growth</strong> over 122 years!
+        </p>
+        <div class="fun-fact" style="color:#1A237E;">
+          💡 Fun Fact: Australia's population grew more than <strong>7 times</strong> its original size! From 3.8 million to 26.8 million people! 🇦🇺✨
+        </div>
+      </div>
+
+      <!-- Thinking Steps -->
+      <div class="thinking-steps" style="background:#E8EAF6;border-left-color:#283593;">
+        <h4 style="color:#1A237E;">🧠 Percentage Increase Formula</h4>
+        <div class="step">
+          <span class="step-number" style="background:#283593;">1</span>
+          <span class="step-text"><strong>Difference</strong> = New Value − Old Value</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#283593;">2</span>
+          <span class="step-text"><strong>Divide</strong> the difference by the original value</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#283593;">3</span>
+          <span class="step-text"><strong>Multiply</strong> by 100 to get the percentage!</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#E65100;">💡</span>
+          <span class="step-text"><strong>% Increase</strong> = (New − Old) ÷ Old × 100</span>
+        </div>
+      </div>
+
+      <!-- Quiz Section: Multiple Choice -->
+      <section class="quiz-section" style="border-color:#283593;">
+        <h3>🧠 What's the Closest Answer?</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">
+          Based on our calculation, what is the <strong>percentage increase</strong> closest to?
+        </p>
+
+        <div class="choice-grid">
+          <button class="choice-btn" onclick="checkChoice(this, false)">85%</button>
+          <button class="choice-btn" onclick="checkChoice(this, false)">205%</button>
+          <button class="choice-btn" onclick="checkChoice(this, false)">505%</button>
+          <button class="choice-btn" onclick="checkChoice(this, true)">605%</button>
+          <button class="choice-btn" onclick="checkChoice(this, false)">705%</button>
+          <button class="choice-btn" onclick="checkChoice(this, false)">805%</button>
+        </div>
+
+        <div id="choiceResult" class="pop-result-msg"></div>
+
+        <div style="margin-top:1.5rem;padding:1rem;background:#FFF8E1;border-radius:var(--radius-md);border:2px dashed #E65100;">
+          <p style="font-size:1.05rem;font-weight:600;color:var(--color-text);">
+            🧮 <strong>Quick Check:</strong> 3.8 M × 7 = 26.6 M (close to 26.8 M). So it grew by about <strong>7 times</strong> = <strong>~600%</strong>!
+          </p>
+        </div>
+      </section>
+
+      <!-- Interactive Calculator -->
+      <section class="interactive-pop">
+        <h3>🧮 Try Your Own Percentage Increase!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:0.75rem;">
+          Enter any old and new values to calculate the percentage increase!
+        </p>
+        <div class="pop-controls">
+          <div class="pop-group">
+            <label for="oldValue">🏞️ Old Value</label>
+            <input type="number" id="oldValue" min="0.1" max="1000" step="0.1" value="3.8">
+          </div>
+          <div class="pop-group">
+            <label for="newValue">🏙️ New Value</label>
+            <input type="number" id="newValue" min="0.1" max="1000" step="0.1" value="26.8">
+          </div>
+        </div>
+        <button id="calcPctBtn" class="btn btn-primary" style="background:#283593;box-shadow:0 8px 20px rgba(40,53,147,0.3);">🧮 Calculate % Increase</button>
+        <div class="pop-result-display">
+          <div class="pop-result-card">
+            <div class="result-label">📐 Difference</div>
+            <div class="result-value" id="calcDiff">23.0</div>
+          </div>
+          <div class="pop-result-card pct-card">
+            <div class="result-label">📈 % Increase</div>
+            <div class="result-value" id="calcPct">605.3%</div>
+          </div>
+          <div class="pop-result-card">
+            <div class="result-label">🔄 Times Bigger</div>
+            <div class="result-value" id="calcTimes">7.1×</div>
+          </div>
+        </div>
+        <div style="font-size:1.05rem;color:var(--color-text-light);margin-top:1rem;font-weight:600;">
+          <span id="calcBreakdown">(26.8 − 3.8) ÷ 3.8 × 100 = 605.3%</span>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Main Solve Animation ============
+    var solved = false;
+    var solveBtn = document.getElementById('solveBtn');
+    var stepReveal = document.getElementById('stepReveal');
+    var answerReveal = document.getElementById('answerReveal');
+    var growthBar = document.getElementById('growthBar');
+    var growthBarLabel = document.getElementById('growthBarLabel');
+
+    function solveProblem() {
+      if (solved) {
+        // Reset
+        solved = false;
+        solveBtn.textContent = '📈 Calculate Growth!';
+        var steps = document.querySelectorAll('.step-card');
+        steps.forEach(function(s) { s.style.opacity = '0'; s.style.transform = 'translateX(-20px)'; });
+        answerReveal.style.display = 'none';
+        growthBar.style.width = '0%';
+        growthBar.textContent = '0%';
+        growthBarLabel.textContent = '0';
+        return;
+      }
+
+      solved = true;
+      solveBtn.textContent = '🔄 Reset';
+      solveBtn.disabled = true;
+
+      var oldVal = 3.8;
+      var newVal = 26.8;
+      var diff = newVal - oldVal;
+      var pct = (diff / oldVal) * 100;
+
+      var tl = gsap.timeline({ onComplete: function() { solveBtn.disabled = false; } });
+
+      // Animate growth bar
+      tl.to(growthBar, { width: '100%', duration: 1.2, ease: 'power2.out' });
+      tl.add(function() {
+        growthBar.textContent = pct.toFixed(1) + '%';
+        growthBarLabel.textContent = pct.toFixed(1);
+      }, '-=0.3');
+
+      // Animate the 1901 card
+      tl.to('#card1901', { scale: 1.05, duration: 0.3, yoyo: true, repeat: 1, ease: 'power1.inOut' }, '+=0.2');
+
+      // Reveal steps
+      tl.add(function() { revealStep('step1'); }, '+=0.3');
+      tl.add(function() { revealStep('step2'); }, '+=0.5');
+      tl.add(function() { revealStep('step3'); }, '+=0.5');
+      tl.add(function() { revealStep('step4'); }, '+=0.5');
+      tl.add(function() { revealStep('step5'); }, '+=0.5');
+
+      // Show final answer
+      tl.add(function() {
+        answerReveal.style.display = 'block';
+        gsap.from(answerReveal, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(2)' });
+      }, '+=0.3');
+    }
+
+    function revealStep(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      gsap.to(el, { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' });
+    }
+
+    solveBtn.addEventListener('click', solveProblem);
+
+    // ============ Multiple Choice Quiz ============
+    var quizAnswered = false;
+
+    function checkChoice(btn, isCorrect) {
+      if (quizAnswered) return;
+      quizAnswered = true;
+
+      var allBtns = document.querySelectorAll('.choice-btn');
+      allBtns.forEach(function(b) { b.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        allBtns.forEach(function(b) {
+          if (b.getAttribute('onclick').includes('true')) {
+            b.classList.add('correct');
+          }
+        });
+      }
+
+      var resultDiv = document.getElementById('choiceResult');
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-msg');
+        resultDiv.classList.remove('wrong-msg');
+        resultDiv.textContent = '✅ Correct! Australia\'s population grew by about 605%! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-msg');
+        resultDiv.classList.remove('correct-msg');
+        resultDiv.textContent = '❌ Not quite! The correct answer is 605%. (26.8 − 3.8) ÷ 3.8 × 100 = 605.3%';
+      }
+    }
+
+    // ============ Interactive Calculator ============
+    var oldInput = document.getElementById('oldValue');
+    var newInput = document.getElementById('newValue');
+    var calcPctBtn = document.getElementById('calcPctBtn');
+    var calcDiff = document.getElementById('calcDiff');
+    var calcPct = document.getElementById('calcPct');
+    var calcTimes = document.getElementById('calcTimes');
+    var calcBreakdown = document.getElementById('calcBreakdown');
+
+    function calculatePctIncrease() {
+      var ov = parseFloat(oldInput.value) || 1;
+      var nv = parseFloat(newInput.value) || 1;
+      if (ov <= 0) ov = 0.1;
+      oldInput.value = ov;
+      newInput.value = nv;
+
+      var diff = nv - ov;
+      var pct = (diff / ov) * 100;
+      var times = nv / ov;
+
+      calcDiff.textContent = diff.toFixed(1);
+      calcPct.textContent = pct.toFixed(1) + '%';
+      calcTimes.textContent = times.toFixed(1) + '×';
+      calcBreakdown.innerHTML = '(' + nv.toFixed(1) + ' − ' + ov.toFixed(1) + ') ÷ ' + ov.toFixed(1) + ' × 100 = <strong>' + pct.toFixed(1) + '%</strong>';
+
+      gsap.from('.pop-result-card', { scale: 0.8, opacity: 0, duration: 0.3, stagger: 0.1, ease: 'back.out(2)' });
+    }
+
+    calcPctBtn.addEventListener('click', calculatePctIncrease);
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      calculatePctIncrease();
+
+      gsap.from('.timeline-card', {
+        y: 30,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.timeline-card',
+          start: 'top 85%'
+        }
+      });
+    });
+  </script>
+</body>
+</html>

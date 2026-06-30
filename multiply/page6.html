@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Rate of Change with Shapes!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Shapes Rate of Change Specific Styles ============ */
+    .shape-intro {
+      background: linear-gradient(135deg, #F3E5F5 0%, #FFF8E1 100%);
+      border-left: 6px solid #7E57C2;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .shape-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .shape-intro p:last-child { margin-bottom: 0; }
+
+    .shape-intro .highlight {
+      color: #7E57C2;
+      font-weight: 800;
+    }
+
+    /* Shape scene boxes (reuse road-scene style) */
+    .shape-scene {
+      position: relative;
+      border-radius: var(--radius-lg);
+      border: 3px solid #90CAF9;
+      padding: 2rem 1.5rem;
+      margin: 2rem 0;
+      overflow: hidden;
+      min-height: 300px;
+    }
+
+    .example-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid #E3F2FD;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .example-card .example-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .example-card h4 {
+      font-size: 1.4rem;
+      color: #1565C0;
+      margin-bottom: 0.75rem;
+    }
+
+    .example-card p {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+
+    /* Thinking Steps */
+    .thinking-steps {
+      background-color: #EDE7F6;
+      border-left: 6px solid #7E57C2;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+
+    .thinking-steps h4 {
+      font-size: 1.3rem;
+      color: #5E35B1;
+      margin-bottom: 1rem;
+      font-weight: 800;
+    }
+
+    .thinking-steps .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .thinking-steps .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background-color: #7E57C2;
+      color: white;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .thinking-steps .step-text {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      padding-top: 0.2rem;
+    }
+
+    /* Quiz styles */
+    .shape-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .shape-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .shape-option:hover {
+      border-color: #7E57C2;
+      background: #EDE7F6;
+      transform: scale(1.05);
+    }
+    .shape-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .shape-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .shape-option:disabled { cursor: default; opacity: 0.7; }
+    .shape-option.correct:disabled { opacity: 1; }
+
+    .shape-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .shape-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .shape-result.correct-result {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .shape-result.wrong-result {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 768px) {
+      .shape-scene { min-height: 260px; padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="page2.html">Multiply by 3</a></li>
+        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page5.html">Rate of Change</a></li>
+        <li><a href="page6.html" class="active">Shapes</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>📐 Rate of Change with Shapes</h2>
+
+      <!-- Intro -->
+      <div class="shape-intro">
+        <p><strong>Shapes grow proportionally!</strong></p>
+        <p>When a shape grows, <strong>all its sides grow by the same ratio</strong>. This is another form of <span class="highlight">rate of change</span>! 🚀</p>
+        <p>If a square is 2 × 2 and its height doubles to 4, the width also doubles to 4. The <strong>ratio stays the same</strong>! ✨</p>
+      </div>
+
+      <!-- ============ SQUARE ============ -->
+      <section>
+        <div class="example-card">
+          <div class="example-icon">⬜</div>
+          <h4>Growing a Square</h4>
+          <p>
+            A square has <strong>equal width and height</strong>. 
+            A <strong>2 × 2 square</strong> has height = 2 and width = 2. 
+            If the height grows to <strong>4</strong>, what is the width?
+          </p>
+
+          <div class="shape-scene" style="background:linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%); border-color:#7E57C2;">
+            <!-- Square container -->
+            <div style="display:flex; align-items:flex-end; justify-content:center; gap:2rem; height:220px; padding-top:1rem;">
+              <!-- Original square -->
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div id="smallSquare" style="width:60px; height:60px; background:#7E57C2; border-radius:8px; box-shadow:0 4px 12px rgba(126,87,194,0.3); transition:all 0.8s ease;"></div>
+                <div style="margin-top:0.5rem; font-size:0.85rem; font-weight:700; color:var(--color-text-light);">2 × 2</div>
+              </div>
+              <div style="font-size:2rem; color:var(--color-orange); font-weight:800; padding-bottom:1.5rem;">→</div>
+              <!-- Scaled square -->
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div id="largeSquare" style="width:60px; height:60px; background:#7E57C2; border-radius:8px; opacity:0.6; box-shadow:0 4px 12px rgba(126,87,194,0.3); transition:all 0.8s ease;"></div>
+                <div style="margin-top:0.5rem; font-size:0.85rem; font-weight:700; color:var(--color-text-light);"><span id="squareLabel">2 × 2</span></div>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; align-items:center; margin-top:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <label style="font-weight:700; font-size:1rem; color:var(--color-text);">Height:</label>
+                <input type="range" id="squareHeightSlider" value="2" min="2" max="6" step="0.5" style="width:140px; accent-color:#7E57C2;">
+                <span id="squareHeightLabel" style="font-weight:800; font-size:1.3rem; color:#7E57C2; min-width:40px;">2</span>
+              </div>
+            </div>
+
+            <div style="text-align:center; margin-top:0.75rem;">
+              <p style="font-size:1.15rem; font-weight:700; color:var(--color-text);" id="squareRatioText">
+                ⬜ For a square, <strong>width always = height</strong>! &nbsp; Ratio = <strong>1 : 1</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TRIANGLE / PYRAMID ============ -->
+      <section>
+        <div class="example-card">
+          <div class="example-icon">🔺</div>
+          <h4>Growing a Triangle</h4>
+          <p>
+            This triangle has <strong>height = 2 and width = 3</strong>. 
+            The ratio is <strong>width : height = 3 : 2</strong>. 
+            If the height grows to <strong>4</strong>, what is the width?
+          </p>
+
+          <div class="shape-scene" style="background:linear-gradient(135deg, #FFF3E0 0%, #E8F5E9 100%); border-color:#FF6F00;">
+            <!-- Triangle container -->
+            <div style="display:flex; align-items:flex-end; justify-content:center; gap:2rem; height:220px; padding-top:1rem;">
+              <!-- Original triangle -->
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="width:0; height:0; border-left:45px solid transparent; border-right:45px solid transparent; border-bottom:60px solid #FF6F00; transition:all 0.8s ease;" id="smallTriangle"></div>
+                <div style="margin-top:0.5rem; font-size:0.85rem; font-weight:700; color:var(--color-text-light);">h=2, w=3</div>
+              </div>
+              <div style="font-size:2rem; color:var(--color-orange); font-weight:800; padding-bottom:1.5rem;">→</div>
+              <!-- Scaled triangle -->
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="width:0; height:0; border-left:45px solid transparent; border-right:45px solid transparent; border-bottom:60px solid #FF6F00; opacity:0.6; transition:all 0.8s ease;" id="largeTriangle"></div>
+                <div style="margin-top:0.5rem; font-size:0.85rem; font-weight:700; color:var(--color-text-light);"><span id="triangleLabel">h=2, w=3</span></div>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; align-items:center; margin-top:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <label style="font-weight:700; font-size:1rem; color:var(--color-text);">Height:</label>
+                <input type="range" id="triangleHeightSlider" value="2" min="2" max="8" step="0.5" style="width:140px; accent-color:#FF6F00;">
+                <span id="triangleHeightLabel" style="font-weight:800; font-size:1.3rem; color:#FF6F00; min-width:40px;">2</span>
+              </div>
+            </div>
+
+            <div style="text-align:center; margin-top:0.75rem;">
+              <p style="font-size:1.15rem; font-weight:700; color:var(--color-text);" id="triangleRatioText">
+                🔺 Width = height × 1.5 &nbsp;|&nbsp; Ratio = <strong>3 : 2</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ RECTANGLE EXAMPLE ============ -->
+      <section>
+        <div class="example-card">
+          <div class="example-icon">▬</div>
+          <h4>Bonus: Rectangle with Same Ratio</h4>
+          <p>
+            A rectangle has <strong>height = 1 and width = 4</strong> (ratio <strong>4:1</strong>).
+            If the height grows to <strong>3</strong>, what is the width?
+          </p>
+
+          <div class="shape-scene" style="background:linear-gradient(135deg, #E0F7FA 0%, #FFF8E1 100%); border-color:#00ACC1;">
+            <!-- Rectangle container -->
+            <div style="display:flex; align-items:flex-end; justify-content:center; gap:2rem; height:220px; padding-top:1rem;">
+              <!-- Original rectangle -->
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="width:120px; height:30px; background:#00ACC1; border-radius:6px; box-shadow:0 4px 12px rgba(0,172,193,0.3); transition:all 0.8s ease;" id="smallRect"></div>
+                <div style="margin-top:0.5rem; font-size:0.85rem; font-weight:700; color:var(--color-text-light);">h=1, w=4</div>
+              </div>
+              <div style="font-size:2rem; color:var(--color-orange); font-weight:800; padding-bottom:1.5rem;">→</div>
+              <!-- Scaled rectangle -->
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                <div style="width:120px; height:30px; background:#00ACC1; border-radius:6px; opacity:0.6; box-shadow:0 4px 12px rgba(0,172,193,0.3); transition:all 0.8s ease;" id="largeRect"></div>
+                <div style="margin-top:0.5rem; font-size:0.85rem; font-weight:700; color:var(--color-text-light);"><span id="rectLabel">h=1, w=4</span></div>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; align-items:center; margin-top:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <label style="font-weight:700; font-size:1rem; color:var(--color-text);">Height:</label>
+                <input type="range" id="rectHeightSlider" value="1" min="1" max="4" step="0.5" style="width:140px; accent-color:#00ACC1;">
+                <span id="rectHeightLabel" style="font-weight:800; font-size:1.3rem; color:#00ACC1; min-width:40px;">1</span>
+              </div>
+            </div>
+
+            <div style="text-align:center; margin-top:0.75rem;">
+              <p style="font-size:1.15rem; font-weight:700; color:var(--color-text);" id="rectRatioText">
+                ▬ Width = height × 4 &nbsp;|&nbsp; Ratio = <strong>4 : 1</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="thinking-steps">
+        <h4>🧠 Understanding Shape Rate of Change</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text"><strong>Ratio</strong> tells us how width and height are related — it's always the <strong>same</strong> for a shape.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text">For a <strong>square</strong>, height = width (ratio <strong>1:1</strong>). Double the height → double the width!</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text">For the <strong>triangle</strong>, width = height × 1.5 (ratio <strong>3:2</strong>). Height 2 → width 3. Height 4 → width 6!</span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-text">For the <strong>rectangle</strong>, width = height × 4 (ratio <strong>4:1</strong>). Height 1 → width 4. Height 3 → width 12!</span>
+        </div>
+      </div>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section">
+        <h3>🧠 Shapes Rate of Change Quiz!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Test your understanding of how shapes grow!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ ⬜ A square has height = 2 and width = 2. If the height grows to 6, what is the width?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq1', false)">3</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq1', false)">12</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq1', true)">6</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq1', false)">4</button>
+          </div>
+          <div id="sq1result" class="shape-result"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🔺 A triangle has height = 2 and width = 3. If the height grows to 6, what is the width?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq2', false)">6</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq2', false)">8</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq2', true)">9</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq2', false)">12</button>
+          </div>
+          <div id="sq2result" class="shape-result"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🧠 What is the width-to-height ratio of the triangle (h=2, w=3)?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq3', false)">1 : 1</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq3', false)">2 : 3</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq3', true)">3 : 2</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq3', false)">2 : 1</button>
+          </div>
+          <div id="sq3result" class="shape-result"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ ▬ A rectangle has height = 1 and width = 4. If the height grows to 3, what is the width?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq4', false)">4</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq4', false)">8</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq4', true)">12</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq4', false)">7</button>
+          </div>
+          <div id="sq4result" class="shape-result"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🧠 What is the ratio of the rectangle (h=1, w=4)?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq5', false)">1 : 1</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq5', true)">4 : 1</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq5', false)">2 : 1</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, 'sq5', false)">3 : 2</button>
+          </div>
+          <div id="sq5result" class="shape-result"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Square Slider ============
+    var squareSlider = document.getElementById('squareHeightSlider');
+    var squareHeightLabel = document.getElementById('squareHeightLabel');
+    var smallSquare = document.getElementById('smallSquare');
+    var largeSquare = document.getElementById('largeSquare');
+    var squareLabel = document.getElementById('squareLabel');
+    var squareRatioText = document.getElementById('squareRatioText');
+
+    function updateSquare() {
+      var height = parseFloat(squareSlider.value);
+      squareHeightLabel.textContent = height;
+      var scale = height / 2;
+      var size = 60 * scale;
+      largeSquare.style.width = size + 'px';
+      largeSquare.style.height = size + 'px';
+      largeSquare.style.opacity = '0.6';
+      squareLabel.textContent = height + ' × ' + height;
+      squareRatioText.innerHTML = '⬜ Height = <strong>' + height + '</strong>, Width = <strong>' + height + '</strong> &nbsp;|&nbsp; Ratio = <strong>1 : 1</strong>';
+    }
+    squareSlider.addEventListener('input', updateSquare);
+
+    // ============ Triangle Slider ============
+    var triSlider = document.getElementById('triangleHeightSlider');
+    var triHeightLabel = document.getElementById('triangleHeightLabel');
+    var smallTriangle = document.getElementById('smallTriangle');
+    var largeTriangle = document.getElementById('largeTriangle');
+    var triangleLabel = document.getElementById('triangleLabel');
+    var triangleRatioText = document.getElementById('triangleRatioText');
+    var TRI_RATIO = 3 / 2;
+
+    function updateTriangle() {
+      var height = parseFloat(triSlider.value);
+      triHeightLabel.textContent = height;
+      var width = height * TRI_RATIO;
+      var scale = height / 2;
+      var triSize = 60 * scale;
+      var triHalfBase = 45 * scale;
+      smallTriangle.style.borderBottomWidth = '60px';
+      smallTriangle.style.borderLeftWidth = '45px';
+      smallTriangle.style.borderRightWidth = '45px';
+      largeTriangle.style.borderBottomWidth = triSize + 'px';
+      largeTriangle.style.borderLeftWidth = triHalfBase + 'px';
+      largeTriangle.style.borderRightWidth = triHalfBase + 'px';
+      largeTriangle.style.opacity = '0.6';
+      triangleLabel.textContent = 'h=' + height + ', w=' + width;
+      triangleRatioText.innerHTML = '🔺 Height = <strong>' + height + '</strong>, Width = <strong>' + width + '</strong> &nbsp;|&nbsp; Ratio = <strong>3 : 2</strong>';
+    }
+    triSlider.addEventListener('input', updateTriangle);
+
+    // ============ Rectangle Slider ============
+    var rectSlider = document.getElementById('rectHeightSlider');
+    var rectHeightLabel = document.getElementById('rectHeightLabel');
+    var smallRect = document.getElementById('smallRect');
+    var largeRect = document.getElementById('largeRect');
+    var rectLabel = document.getElementById('rectLabel');
+    var rectRatioText = document.getElementById('rectRatioText');
+    var RECT_RATIO = 4; // width:height = 4:1
+
+    function updateRect() {
+      var height = parseFloat(rectSlider.value);
+      rectHeightLabel.textContent = height;
+      var width = height * RECT_RATIO;
+      var scale = height / 1;
+      var rectH = 30 * scale;
+      var rectW = 120 * scale;
+      smallRect.style.width = '120px';
+      smallRect.style.height = '30px';
+      largeRect.style.width = rectW + 'px';
+      largeRect.style.height = rectH + 'px';
+      largeRect.style.opacity = '0.6';
+      rectLabel.textContent = 'h=' + height + ', w=' + width;
+      rectRatioText.innerHTML = '▬ Height = <strong>' + height + '</strong>, Width = <strong>' + width + '</strong> &nbsp;|&nbsp; Ratio = <strong>4 : 1</strong>';
+    }
+    rectSlider.addEventListener('input', updateRect);
+
+    // ============ Quiz ============
+    function checkShapeAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.shape-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ GSAP Animations on Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      var exampleCards = document.querySelectorAll('.example-card');
+      if (exampleCards.length > 0) {
+        gsap.from(exampleCards, {
+          y: 30,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.3,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: exampleCards[0],
+            start: 'top 85%'
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

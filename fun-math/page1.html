@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Multiply & Divide Together!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Combined Multiply & Divide Styles ============ */
+    .md-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #FFF8E1 100%);
+      border-left: 6px solid #1565C0;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .md-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .md-intro p:last-child { margin-bottom: 0; }
+    .md-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #E65100;
+      text-align: center;
+      margin-top: 1rem;
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      border: 3px solid #FFE0B2;
+    }
+
+    /* Operation cards */
+    .op-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .op-card {
+      flex: 1;
+      min-width: 200px;
+      max-width: 300px;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .op-card:hover { transform: translateY(-6px); }
+    .op-card.mult-card { border-color: #42A5F5; }
+    .op-card.div-card { border-color: #66BB6A; }
+    .op-card .op-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .op-card h4 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .op-card.mult-card h4 { color: #1565C0; }
+    .op-card.div-card h4 { color: #2E7D32; }
+    .op-card p { font-size: 1rem; color: var(--color-text-light); line-height: 1.5; }
+    .op-card .op-example {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-top: 0.75rem;
+      padding: 0.5rem;
+      border-radius: 12px;
+    }
+    .op-card.mult-card .op-example { background: #E3F2FD; color: #1565C0; }
+    .op-card.div-card .op-example { background: #E8F5E9; color: #2E7D32; }
+
+    /* Real-world story box */
+    .real-story {
+      background: linear-gradient(135deg, #FFF8E1 0%, #E8F5E9 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 3px solid #FF6F00;
+      position: relative;
+    }
+    .real-story .story-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #E65100;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .real-story p { font-size: 1.1rem; margin-bottom: 0.75rem; }
+    .real-story p:last-child { margin-bottom: 0; }
+
+    /* Step display */
+    .combined-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .combined-steps .cs-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border-left: 6px solid #1565C0;
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    .combined-steps .cs-step .step-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.3rem 0.8rem;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      color: white;
+    }
+    .combined-steps .cs-step .step-tag.mult-tag { background: #42A5F5; }
+    .combined-steps .cs-step .step-tag.div-tag { background: #66BB6A; }
+    .combined-steps .cs-step .step-content { font-size: 1.1rem; font-weight: 600; color: var(--color-text); }
+    .combined-steps .cs-step .step-content strong { color: #1565C0; }
+    .combined-steps .cs-step .step-content .highlight-orange { color: #E65100; }
+
+    /* Visual area */
+    .visual-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    .visual-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 3px solid #E0E0E0;
+      min-width: 100px;
+    }
+    .visual-card .items-row {
+      display: flex;
+      gap: 0.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .visual-card .items-row .item { font-size: 1.8rem; animation: popIn 0.3s ease; }
+    .visual-card .v-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+      background: #F5F5F5;
+      padding: 0.2rem 0.8rem;
+      border-radius: 8px;
+    }
+
+    /* Multi-step button */
+    .btn-solve {
+      font-size: 1.3rem;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, #42A5F5, #1565C0);
+      color: white;
+      border: none;
+      box-shadow: 0 8px 20px rgba(21, 101, 192, 0.3);
+    }
+    .btn-solve:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 12px 25px rgba(21, 101, 192, 0.4);
+    }
+
+    /* Final answer box */
+    .answer-box {
+      background: #E8F5E9;
+      border: 3px solid #2E7D32;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+      display: none;
+    }
+    .answer-box .ans-big {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #1B5E20;
+    }
+    .answer-box .ans-detail {
+      font-size: 1.1rem;
+      color: var(--color-text-light);
+      margin-top: 0.75rem;
+    }
+
+    /* Interactive */
+    .interactive-area {
+      background: linear-gradient(135deg, #E3F2FD 0%, #E8F5E9 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2.5rem 0;
+      border: 3px solid #42A5F5;
+    }
+    .interactive-area h3 {
+      color: #1565C0;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .interactive-area .inputs-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .interactive-area .inp-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .interactive-area .inp-group label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .interactive-area .inp-group input {
+      width: 100px;
+      padding: 0.6rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--cds-font-sans);
+      color: var(--color-text);
+    }
+    .interactive-area .inp-group input:focus {
+      outline: none;
+      border-color: #1565C0;
+      box-shadow: 0 0 0 4px rgba(21, 101, 192, 0.15);
+    }
+    .interactive-area .interactive-result {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .interactive-area .ir-card {
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 3px solid #BBDEFB;
+      min-width: 100px;
+      text-align: center;
+    }
+    .interactive-area .ir-card .ir-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .interactive-area .ir-card .ir-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1565C0;
+    }
+    .interactive-area .ir-card.green-card { border-color: #C8E6C9; }
+    .interactive-area .ir-card.green-card .ir-value { color: #2E7D32; }
+
+    /* Quiz */
+    .quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .quiz-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .quiz-option:hover {
+      border-color: #1565C0;
+      background: #E3F2FD;
+      transform: scale(1.05);
+    }
+    .quiz-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .quiz-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .quiz-option:disabled { cursor: default; opacity: 0.7; }
+    .quiz-option.correct:disabled { opacity: 1; }
+
+    .quiz-result-msg {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .quiz-result-msg.show { display: block; animation: fadeIn 0.3s ease; }
+    .quiz-result-msg.correct-msg { background: #E8F5E9; color: #2E7D32; }
+    .quiz-result-msg.wrong-msg { background: #FFEBEE; color: #C62828; }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 768px) {
+      .op-card { min-width: 160px; }
+      .visual-card .items-row .item { font-size: 1.4rem; }
+      .answer-box .ans-big { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html" class="active">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page3.html">Adventure 3</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🧮 Multiply & Divide — Together! 🚀</h2>
+
+      <!-- Intro -->
+      <div class="md-intro">
+        <p><strong>Multiplication and Division are best friends!</strong></p>
+        <p><strong>Multiplication</strong> is adding the same number over and over (a shortcut!).</p>
+        <p><strong>Division</strong> is sharing equally into groups.</p>
+        <p>When we use them <strong>together</strong>, we can solve <strong>real-world problems</strong>! Let's see how! 💪</p>
+        <div class="big-idea">🧠 Multiply × Divide = Real-World Problem Solving! 🎯</div>
+      </div>
+
+      <!-- Quick Refresher: What are they? -->
+      <section>
+        <h3>📚 Quick Refresher</h3>
+        <div class="op-cards">
+          <div class="op-card mult-card">
+            <div class="op-icon">✖️</div>
+            <h4>Multiplication</h4>
+            <p>Repeated addition! If you have <strong>3 bags</strong> with <strong>4 apples</strong> each:</p>
+            <div class="op-example">3 × 4 = 12 🍎</div>
+          </div>
+          <div class="op-card div-card">
+            <div class="op-icon">➗</div>
+            <h4>Division</h4>
+            <p>Sharing equally! If <strong>12 apples</strong> go into <strong>3 bags</strong>:</p>
+            <div class="op-example">12 ÷ 3 = 4 🍎</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Real-World Story -->
+      <section>
+        <h3>🌍 Real-World Problem</h3>
+        <div class="real-story">
+          <div class="story-title">🍪 The Cookie Fundraiser!</div>
+          <p>You and your friends are selling cookies to raise money for a school trip! 🏫</p>
+          <p><strong>You have 5 boxes</strong> of cookies. Each box has <strong>12 cookies</strong>. You want to share them equally among <strong>4 friends</strong> to sell.</p>
+          <p style="font-weight:700;font-size:1.2rem;color:#E65100;">❓ How many cookies does each friend get to sell?</p>
+        </div>
+      </section>
+
+      <!-- Visual: Boxes of cookies -->
+      <section>
+        <h3>📦 What We Know</h3>
+        <div class="visual-area" id="visualArea">
+          <div class="visual-card">
+            <div class="items-row">
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+            </div>
+            <div class="v-label">Box 1 (12 cookies)</div>
+          </div>
+          <div class="visual-card">
+            <div class="items-row">
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+            </div>
+            <div class="v-label">Box 2 (12 cookies)</div>
+          </div>
+          <div class="visual-card">
+            <div class="items-row">
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+            </div>
+            <div class="v-label">Box 3 (12 cookies)</div>
+          </div>
+          <div class="visual-card">
+            <div class="items-row">
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+            </div>
+            <div class="v-label">Box 4 (12 cookies)</div>
+          </div>
+          <div class="visual-card">
+            <div class="items-row">
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+              <span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span><span class="item">🍪</span>
+            </div>
+            <div class="v-label">Box 5 (12 cookies)</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:1.2rem;font-weight:700;color:var(--color-text-light);">
+          5 boxes × 12 cookies each = <span id="totalCookiesLabel">?</span> cookies total
+        </div>
+      </section>
+
+      <!-- Combined Steps -->
+      <section>
+        <h3>🧠 Let's Solve It Step by Step!</h3>
+
+        <div class="action-buttons">
+          <button id="solveBtn" class="btn btn-solve">🚀 Let's Solve It!</button>
+        </div>
+
+        <div class="combined-steps" id="stepReveal">
+          <div class="cs-step" id="s1">
+            <span class="step-tag mult-tag">✖️ Multiply</span>
+            <div class="step-content">First, find the <strong>total cookies</strong>: <strong>5 boxes × 12 cookies</strong> = <strong class="highlight-orange">60 cookies</strong></div>
+          </div>
+          <div class="cs-step" id="s2">
+            <span class="step-tag div-tag">➗ Divide</span>
+            <div class="step-content">Now, share the <strong>60 cookies</strong> equally among <strong>4 friends</strong>: <strong>60 ÷ 4</strong> = <strong class="highlight-orange">15 cookies each</strong></div>
+          </div>
+          <div class="cs-step" id="s3" style="border-left-color:#E65100;">
+            <span class="step-tag" style="background:#E65100;">✅ Answer</span>
+            <div class="step-content">Each friend gets <strong style="color:#E65100;font-size:1.3rem;">15 cookies</strong> to sell! 🎉</div>
+          </div>
+        </div>
+
+        <!-- Visual: Friends sharing -->
+        <div class="visual-area" id="friendsVisual" style="display:none;">
+          <div class="visual-card" style="border-color:#42A5F5;">
+            <div class="items-row" id="friend1Cookies"></div>
+            <div class="v-label" style="background:#E3F2FD;">Friend 1: 15 🍪</div>
+          </div>
+          <div class="visual-card" style="border-color:#66BB6A;">
+            <div class="items-row" id="friend2Cookies"></div>
+            <div class="v-label" style="background:#E8F5E9;">Friend 2: 15 🍪</div>
+          </div>
+          <div class="visual-card" style="border-color:#FFA726;">
+            <div class="items-row" id="friend3Cookies"></div>
+            <div class="v-label" style="background:#FFF3E0;">Friend 3: 15 🍪</div>
+          </div>
+          <div class="visual-card" style="border-color:#AB47BC;">
+            <div class="items-row" id="friend4Cookies"></div>
+            <div class="v-label" style="background:#F3E5F5;">Friend 4: 15 🍪</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Final Answer -->
+      <div class="answer-box" id="answerBox">
+        <div class="ans-big">🍪 15 cookies per friend! 🎉</div>
+        <div class="ans-detail">
+          <strong>Step 1 (Multiply):</strong> 5 boxes × 12 cookies = 60 total cookies<br>
+          <strong>Step 2 (Divide):</strong> 60 cookies ÷ 4 friends = 15 each<br>
+          <strong>Check:</strong> 15 × 4 = 60 ✅
+        </div>
+      </div>
+
+      <!-- Thinking Steps -->
+      <div class="thinking-steps" style="background:#E3F2FD;border-left-color:#1565C0;">
+        <h4 style="color:#1565C0;">🧠 The Secret: Multiply Then Divide!</h4>
+        <div class="step">
+          <span class="step-number" style="background:#42A5F5;">✖️</span>
+          <span class="step-text"><strong>Multiply</strong> to find the <strong>total</strong> (combine groups)</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#66BB6A;">➗</span>
+          <span class="step-text"><strong>Divide</strong> to <strong>share</strong> the total equally</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#E65100;">💡</span>
+          <span class="step-text"><strong>Together</strong> they solve problems like: "5 boxes × 12 cookies ÷ 4 friends = 15 each!"</span>
+        </div>
+      </div>
+
+      <!-- Interactive: Try Your Own -->
+      <section class="interactive-area">
+        <h3>🧮 Try Your Own Problem!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:0.5rem;">
+          Change the numbers and see how multiply + divide works together!
+        </p>
+        <div class="inputs-row">
+          <div class="inp-group">
+            <label for="numBoxes">📦 Number of Boxes</label>
+            <input type="number" id="numBoxes" min="1" max="20" value="5">
+          </div>
+          <div style="font-size:2rem;font-weight:800;color:#42A5F5;">×</div>
+          <div class="inp-group">
+            <label for="itemsPerBox">🍪 Cookies per Box</label>
+            <input type="number" id="itemsPerBox" min="1" max="20" value="12">
+          </div>
+          <div style="font-size:2rem;font-weight:800;color:#66BB6A;">÷</div>
+          <div class="inp-group">
+            <label for="numFriends">👥 Number of Friends</label>
+            <input type="number" id="numFriends" min="1" max="20" value="4">
+          </div>
+        </div>
+        <button id="calcBtn" class="btn btn-primary" style="background:#1565C0;">🧮 Calculate!</button>
+        <div class="interactive-result">
+          <div class="ir-card">
+            <div class="ir-label">📦 Total Items</div>
+            <div class="ir-value" id="calcTotal">60</div>
+          </div>
+          <div class="ir-card green-card">
+            <div class="ir-label">👤 Each Friend Gets</div>
+            <div class="ir-value" id="calcEach">15</div>
+          </div>
+        </div>
+        <div style="font-size:1rem;color:var(--color-text-light);margin-top:0.75rem;font-weight:600;">
+          <span id="calcBreakdown">5 × 12 = 60 &nbsp;|&nbsp; 60 ÷ 4 = 15 each</span>
+        </div>
+      </section>
+
+      <!-- Quiz -->
+      <section class="quiz-section" style="border-color:#1565C0;">
+        <h3>🧠 Can You Do It Too?</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Use multiply + divide to solve these real-world problems!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🍪 3 boxes × 10 cookies ÷ 5 friends = ? cookies each</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">3</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">5</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">6</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">10</button>
+          </div>
+          <div class="quiz-result-msg" id="qr1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🎈 4 packs × 8 balloons ÷ 2 kids = ? balloons each</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">8</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">12</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">24</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">16</button>
+          </div>
+          <div class="quiz-result-msg" id="qr2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🧮 6 bags × 5 apples ÷ 3 people = ? apples each</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">10</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">15</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">5</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">30</button>
+          </div>
+          <div class="quiz-result-msg" id="qr3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 💡 In our cookie problem: what do we do FIRST?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">Divide 12 ÷ 4</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">Multiply 5 × 12</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">Add 5 + 12</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">Subtract 12 − 5</button>
+          </div>
+          <div class="quiz-result-msg" id="qr4"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Solve Animation ============
+    var solved = false;
+    var solveBtn = document.getElementById('solveBtn');
+    var stepReveal = document.getElementById('stepReveal');
+    var answerBox = document.getElementById('answerBox');
+    var friendsVisual = document.getElementById('friendsVisual');
+
+    function revealStep(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      gsap.to(el, { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' });
+    }
+
+    function populateFriendCookies(friendId) {
+      var container = document.getElementById(friendId);
+      if (!container) return;
+      container.innerHTML = '';
+      for (var i = 0; i < 15; i++) {
+        var span = document.createElement('span');
+        span.textContent = '🍪';
+        span.style.fontSize = '1.2rem';
+        span.style.animation = 'popIn 0.3s ease';
+        container.appendChild(span);
+      }
+    }
+
+    function solveProblem() {
+      if (solved) {
+        // Reset
+        solved = false;
+        solveBtn.textContent = '🚀 Let\'s Solve It!';
+        document.querySelectorAll('.cs-step').forEach(function(s) {
+          s.style.opacity = '0';
+          s.style.transform = 'translateX(-20px)';
+        });
+        answerBox.style.display = 'none';
+        friendsVisual.style.display = 'none';
+        document.getElementById('totalCookiesLabel').textContent = '?';
+        return;
+      }
+
+      solved = true;
+      solveBtn.textContent = '🔄 Reset';
+      solveBtn.disabled = true;
+
+      // Show total
+      document.getElementById('totalCookiesLabel').textContent = '60';
+
+      var tl = gsap.timeline({ onComplete: function() { solveBtn.disabled = false; } });
+
+      // Reveal steps
+      tl.add(function() { revealStep('s1'); }, '+=0.3');
+      tl.add(function() { revealStep('s2'); }, '+=0.6');
+      tl.add(function() { revealStep('s3'); }, '+=0.6');
+
+      // Show answer box
+      tl.add(function() {
+        answerBox.style.display = 'block';
+        gsap.from(answerBox, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(2)' });
+      }, '+=0.5');
+
+      // Show friend visuals
+      tl.add(function() {
+        friendsVisual.style.display = 'flex';
+        populateFriendCookies('friend1Cookies');
+        populateFriendCookies('friend2Cookies');
+        populateFriendCookies('friend3Cookies');
+        populateFriendCookies('friend4Cookies');
+        gsap.from('#friendsVisual .visual-card', {
+          scale: 0,
+          duration: 0.4,
+          stagger: 0.15,
+          ease: 'back.out(2)'
+        });
+      }, '+=0.3');
+    }
+
+    solveBtn.addEventListener('click', solveProblem);
+
+    // ============ Interactive Calculator ============
+    var numBoxes = document.getElementById('numBoxes');
+    var itemsPerBox = document.getElementById('itemsPerBox');
+    var numFriends = document.getElementById('numFriends');
+    var calcBtn = document.getElementById('calcBtn');
+    var calcTotal = document.getElementById('calcTotal');
+    var calcEach = document.getElementById('calcEach');
+    var calcBreakdown = document.getElementById('calcBreakdown');
+
+    function calculate() {
+      var boxes = Math.max(1, Math.min(20, parseInt(numBoxes.value) || 1));
+      var items = Math.max(1, Math.min(20, parseInt(itemsPerBox.value) || 1));
+      var friends = Math.max(1, Math.min(20, parseInt(numFriends.value) || 1));
+
+      numBoxes.value = boxes;
+      itemsPerBox.value = items;
+      numFriends.value = friends;
+
+      var total = boxes * items;
+      var each = total / friends;
+
+      calcTotal.textContent = total;
+      calcEach.textContent = each % 1 === 0 ? each : each.toFixed(1);
+      calcBreakdown.innerHTML = boxes + ' × ' + items + ' = ' + total + ' &nbsp;|&nbsp; ' + total + ' ÷ ' + friends + ' = ' + (each % 1 === 0 ? each : each.toFixed(1)) + ' each';
+
+      gsap.from('.ir-card', { scale: 0.8, opacity: 0, duration: 0.3, stagger: 0.1, ease: 'back.out(2)' });
+    }
+
+    calcBtn.addEventListener('click', calculate);
+
+    // ============ Quiz ============
+    function checkQuizAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.quiz-option');
+      var resultDiv = parentCard.querySelector('.quiz-result-msg');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-msg');
+        resultDiv.classList.remove('wrong-msg');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-msg');
+        resultDiv.classList.remove('correct-msg');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      calculate();
+
+      gsap.from('.op-card', {
+        y: 30,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.op-card',
+          start: 'top 85%'
+        }
+      });
+
+      gsap.from('.visual-card', {
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.1,
+        ease: 'back.out(2)',
+        scrollTrigger: {
+          trigger: '.visual-card',
+          start: 'top 85%'
+        }
+      });
+    });
+  </script>
+</body>
+</html>

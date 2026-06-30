@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Finding the Mean (Average)!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Mean (Average) Specific Styles ============ */
+    .mean-intro {
+      background: linear-gradient(135deg, #FFF3E0 0%, #FCE4EC 100%);
+      border-left: 6px solid #FF6F00;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .mean-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .mean-intro p:last-child { margin-bottom: 0; }
+
+    /* Student card (cupcake example) */
+    .student-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    .student-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1.25rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 3px solid #FFE0B2;
+      min-width: 130px;
+      transition: transform 0.2s ease;
+    }
+    .student-card:hover {
+      transform: translateY(-4px);
+    }
+    .student-card .student-avatar {
+      font-size: 3rem;
+      line-height: 1;
+    }
+    .student-card .student-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .student-card .student-cupcakes {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-height: 2rem;
+      padding: 0.5rem;
+    }
+    .student-card .student-cupcakes .cupcake-item {
+      font-size: 1.8rem;
+      animation: popIn 0.3s ease;
+    }
+    .student-card .student-count {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #E65100;
+      background: #FFF3E0;
+      padding: 0.2rem 1rem;
+      border-radius: 20px;
+    }
+
+    /* Step-by-step calculation */
+    .calc-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1.5rem 2rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      margin: 1.5rem 0;
+    }
+    .calc-steps .step-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .calc-steps .step-row .step-label {
+      font-weight: 700;
+      color: var(--color-text-light);
+      min-width: 60px;
+    }
+    .calc-steps .step-row .step-value {
+      font-weight: 800;
+      color: #E65100;
+    }
+    .calc-steps .step-row .step-result {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #2E7D32;
+    }
+    .calc-steps .divider-line {
+      height: 2px;
+      background: var(--color-border);
+      margin: 0.25rem 0;
+    }
+
+    /* Mean display box */
+    .mean-result-box {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #E8F5E9 0%, #FFF8E1 100%);
+      border-radius: var(--radius-lg);
+      border: 3px solid #4CAF50;
+      margin: 1.5rem 0;
+    }
+    .mean-result-box .big-mean {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #2E7D32;
+    }
+    .mean-result-box .mean-desc {
+      font-size: 1.2rem;
+      color: var(--color-text);
+      margin-top: 0.5rem;
+      font-weight: 600;
+    }
+
+    /* Interactive cupcake builder */
+    .interactive-mean {
+      background: linear-gradient(135deg, #FFF3E0 0%, #FCE4EC 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2.5rem 0;
+      border: 3px solid #FF6F00;
+    }
+    .interactive-mean h3 {
+      color: #E65100;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .interactive-mean .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    .interactive-mean .input-group .field {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .interactive-mean .input-group .field label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--color-text);
+    }
+    .interactive-mean .input-group .field input {
+      width: 60px;
+      padding: 0.5rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      border: 3px solid #FFE0B2;
+      border-radius: 12px;
+      font-family: var(--cds-font-sans);
+      color: #E65100;
+    }
+    .btn-calculate {
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: linear-gradient(135deg, #FF6F00, #E65100);
+      color: white;
+      box-shadow: 0 4px 12px rgba(230, 81, 0, 0.3);
+    }
+    .btn-calculate:hover {
+      transform: translateY(-3px) scale(1.05);
+    }
+    .btn-reset-mean {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: 2px solid #E0E0E0;
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--color-text-light);
+    }
+    .btn-reset-mean:hover {
+      border-color: #BDBDBD;
+      background: #F5F5F5;
+    }
+
+    /* Example cards */
+    .example-mean-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid #FFE0B2;
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .example-mean-card .ex-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    .example-mean-card h4 {
+      font-size: 1.4rem;
+      color: #E65100;
+      margin-bottom: 0.75rem;
+    }
+    .example-mean-card p {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+    .example-mean-card .ex-data {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .example-mean-card .ex-data .data-bubble {
+      background: #FFF3E0;
+      padding: 0.5rem 1.2rem;
+      border-radius: 50px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #E65100;
+      border: 3px solid #FFE0B2;
+    }
+    .example-mean-card .ex-equation {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0.75rem 0;
+      padding: 0.75rem;
+      background: #E8F5E9;
+      border-radius: var(--radius-md);
+    }
+    .example-mean-card .ex-equation strong {
+      color: #2E7D32;
+      font-size: 1.5rem;
+    }
+
+    /* Quiz styles */
+    .mean-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .mean-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .mean-option:hover {
+      border-color: #FF6F00;
+      background: #FFF3E0;
+      transform: scale(1.05);
+    }
+    .mean-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .mean-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .mean-option:disabled { cursor: default; opacity: 0.7; }
+    .mean-option.correct:disabled { opacity: 1; }
+
+    .mean-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .mean-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .mean-result.correct-result {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .mean-result.wrong-result {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 768px) {
+      .student-card { min-width: 100px; padding: 1rem; }
+      .student-card .student-cupcakes .cupcake-item { font-size: 1.4rem; }
+      .mean-result-box .big-mean { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="page2.html">Multiply by 3</a></li>
+        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page5.html">Rate of Change</a></li>
+        <li><a href="page6.html">Shapes</a></li>
+        <li><a href="page7.html" class="active">Mean</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🧁 Finding the Mean (Average)! 📊</h2>
+
+      <!-- Intro -->
+      <div class="mean-intro">
+        <p><strong>What is the Mean?</strong></p>
+        <p>The <strong>mean</strong> (also called the <strong>average</strong>) is a way to find a <strong>fair share</strong> for everyone! 🚀</p>
+        <p>If we have different amounts of something, the mean tells us <strong>how much each person would get if we shared equally</strong>. ✨</p>
+        <p>To find the mean: <strong>Add up all the numbers, then divide by how many numbers there are</strong>! 🎉</p>
+      </div>
+
+      <!-- ============ CUPCAKE EXAMPLE ============ -->
+      <section>
+        <h3>🧁 Cupcake Class Party!</h3>
+
+        <div class="explain-box" style="background:#FFF3E0; border-left-color:#FF6F00;">
+          <p>📚 Three students brought cupcakes for a class party:</p>
+          <p>👧 <strong>Lily</strong> brought <strong>3 cupcakes</strong> &nbsp;|&nbsp; 👦 <strong>Max</strong> brought <strong>4 cupcakes</strong> &nbsp;|&nbsp; 👧 <strong>Ava</strong> brought <strong>2 cupcakes</strong></p>
+          <p>How many cupcakes would each student get if they <strong>shared equally</strong>?</p>
+        </div>
+
+        <!-- Student cards -->
+        <div class="student-row" id="studentRow">
+          <!-- Lily - 3 -->
+          <div class="student-card">
+            <div class="student-avatar">👧</div>
+            <div class="student-name">Lily</div>
+            <div class="student-cupcakes" id="lilyCupcakes">
+              <span class="cupcake-item">🧁</span>
+              <span class="cupcake-item">🧁</span>
+              <span class="cupcake-item">🧁</span>
+            </div>
+            <div class="student-count">3</div>
+          </div>
+          <!-- Max - 4 -->
+          <div class="student-card">
+            <div class="student-avatar">👦</div>
+            <div class="student-name">Max</div>
+            <div class="student-cupcakes" id="maxCupcakes">
+              <span class="cupcake-item">🧁</span>
+              <span class="cupcake-item">🧁</span>
+              <span class="cupcake-item">🧁</span>
+              <span class="cupcake-item">🧁</span>
+            </div>
+            <div class="student-count">4</div>
+          </div>
+          <!-- Ava - 2 -->
+          <div class="student-card">
+            <div class="student-avatar">👧</div>
+            <div class="student-name">Ava</div>
+            <div class="student-cupcakes" id="avaCupcakes">
+              <span class="cupcake-item">🧁</span>
+              <span class="cupcake-item">🧁</span>
+            </div>
+            <div class="student-count">2</div>
+          </div>
+        </div>
+
+        <!-- Step-by-step -->
+        <div class="calc-steps" id="calcSteps">
+          <div class="step-row">
+            <span class="step-label">📌 Step 1:</span>
+            <span>Add up all cupcakes:</span>
+            <span class="step-value">3 + 4 + 2</span>
+            <span class="step-sym">=</span>
+            <span class="step-result" id="totalSum">9</span>
+            <span>🧁</span>
+          </div>
+          <div class="divider-line"></div>
+          <div class="step-row">
+            <span class="step-label">📌 Step 2:</span>
+            <span>Divide by number of students:</span>
+            <span class="step-value" id="divisionDisplay">9 ÷ 3</span>
+            <span class="step-sym">=</span>
+            <span class="step-result" id="meanResult">3</span>
+          </div>
+          <div class="divider-line"></div>
+          <div class="step-row" style="justify-content:center;">
+            <span style="font-size:1.2rem; font-weight:700;">🧁 The mean is <span class="step-result" style="font-size:1.8rem;">3</span> cupcakes per student!</span>
+          </div>
+        </div>
+
+        <div class="mean-result-box">
+          <div class="big-mean">3</div>
+          <div class="mean-desc">✨ If they share equally, <strong>each student gets 3 cupcakes</strong>!<br>
+          <span style="font-size:1rem; color:var(--color-text-light); font-weight:500;">(3 + 4 + 2) ÷ 3 = 9 ÷ 3 = <strong>3</strong></span></div>
+        </div>
+      </section>
+
+      <!-- ============ EXAMPLE 2: Books Read ============ -->
+      <section>
+        <h3>📚 Example 2: Books Read This Month</h3>
+
+        <div class="example-mean-card">
+          <div class="ex-icon">📖</div>
+          <h4>Books Read by 4 Friends</h4>
+          <p>Four friends read different numbers of books this month. What is the <strong>mean number of books</strong> read?</p>
+          
+          <div class="ex-data">
+            <span class="data-bubble">Tom: 5 📖</span>
+            <span class="data-bubble">Sarah: 3 📖</span>
+            <span class="data-bubble">Jake: 7 📖</span>
+            <span class="data-bubble">Emma: 5 📖</span>
+          </div>
+
+          <div class="ex-equation">
+            <strong>Step 1:</strong> Add: 5 + 3 + 7 + 5 = <strong>20</strong> 📖<br>
+            <strong>Step 2:</strong> Divide: 20 ÷ 4 = <strong>5</strong><br>
+            📊 Mean = <strong style="font-size:1.8rem; color:#2E7D32;">5</strong> books per friend
+          </div>
+
+          <p style="font-size:1.05rem; color:var(--color-text-light);">
+            The mean is <strong>5 books</strong> — if they shared equally, each friend read 5 books! 🎉
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ EXAMPLE 3: Fruit Picking ============ -->
+      <section>
+        <h3>🍎 Example 3: Fruit Picking</h3>
+
+        <div class="example-mean-card">
+          <div class="ex-icon">🍎</div>
+          <h4>Apples Picked by 5 Children</h4>
+          <p>Five children went apple picking. What is the <strong>mean number of apples</strong> picked?</p>
+          
+          <div class="ex-data">
+            <span class="data-bubble">Sam: 6 🍎</span>
+            <span class="data-bubble">Zoe: 4 🍎</span>
+            <span class="data-bubble">Ben: 8 🍎</span>
+            <span class="data-bubble">Ella: 5 🍎</span>
+            <span class="data-bubble">Noah: 7 🍎</span>
+          </div>
+
+          <div class="ex-equation">
+            <strong>Step 1:</strong> Add: 6 + 4 + 8 + 5 + 7 = <strong>30</strong> 🍎<br>
+            <strong>Step 2:</strong> Divide: 30 ÷ 5 = <strong>6</strong><br>
+            📊 Mean = <strong style="font-size:1.8rem; color:#2E7D32;">6</strong> apples per child
+          </div>
+
+          <p style="font-size:1.05rem; color:var(--color-text-light);">
+            The mean is <strong>6 apples</strong> — if they shared equally, each child gets 6 apples! 🎉
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ INTERACTIVE: Build Your Own Mean ============ -->
+      <section class="interactive-mean">
+        <h3>🧮 Build Your Own Mean!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:0.5rem;">
+          Enter numbers below to calculate the mean!
+        </p>
+
+        <div class="input-group" id="meanInputs">
+          <div class="field">
+            <label>Number 1</label>
+            <input type="number" id="meanVal1" value="3" min="0" max="20">
+          </div>
+          <div class="field">
+            <label>Number 2</label>
+            <input type="number" id="meanVal2" value="4" min="0" max="20">
+          </div>
+          <div class="field">
+            <label>Number 3</label>
+            <input type="number" id="meanVal3" value="2" min="0" max="20">
+          </div>
+          <div class="field">
+            <label>Number 4</label>
+            <input type="number" id="meanVal4" value="0" min="0" max="20">
+          </div>
+          <div class="field">
+            <label>Number 5</label>
+            <input type="number" id="meanVal5" value="0" min="0" max="20">
+          </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-top:1rem;">
+          <button class="btn-calculate" id="calcMeanBtn">🧮 Calculate Mean!</button>
+          <button class="btn-reset-mean" id="resetMeanBtn">↺ Reset</button>
+        </div>
+
+        <!-- Result display -->
+        <div style="margin-top:1.5rem; padding:1.5rem; background:white; border-radius:var(--radius-lg); border:3px solid #FFE0B2;">
+          <div style="font-size:1.1rem; font-weight:600; color:var(--color-text);" id="meanCalcDesc">
+            Enter numbers and click "Calculate Mean!"
+          </div>
+          <div style="font-size:2.5rem; font-weight:800; color:#E65100; margin-top:0.5rem;" id="meanCalcResult">
+            —
+          </div>
+          <div style="font-size:1rem; font-weight:500; color:var(--color-text-light); margin-top:0.25rem;" id="meanCalcDetail">
+            Sum: — &nbsp;|&nbsp; Count: —
+          </div>
+        </div>
+      </section>
+
+      <div class="thinking-steps">
+        <h4>🧠 Remember: How to Find the Mean</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text"><strong>Add</strong> up all the numbers in the group.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text"><strong>Count</strong> how many numbers there are.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text"><strong>Divide</strong> the total by the count. That's the mean! 🎉</span>
+        </div>
+      </div>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section">
+        <h3>🧠 Mean (Average) Quiz!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Test your understanding of the mean!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🧁 3 students have 3, 4, and 2 cupcakes. What is the mean?</p>
+          <div class="mean-quiz-options">
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq1', false)">2</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq1', true)">3</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq1', false)">4</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq1', false)">9</button>
+          </div>
+          <div id="mq1result" class="mean-result"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 📖 4 friends read 5, 3, 7, 5 books. What is the mean?</p>
+          <div class="mean-quiz-options">
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq2', false)">4</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq2', true)">5</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq2', false)">6</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq2', false)">20</button>
+          </div>
+          <div id="mq2result" class="mean-result"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🍎 5 children pick 6, 4, 8, 5, 7 apples. What is the mean?</p>
+          <div class="mean-quiz-options">
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq3', false)">5</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq3', true)">6</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq3', false)">7</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq3', false)">30</button>
+          </div>
+          <div id="mq3result" class="mean-result"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 🧮 What is the first step to find the mean?</p>
+          <div class="mean-quiz-options">
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq4', false)">Divide the numbers</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq4', false)">Subtract the numbers</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq4', true)">Add up all the numbers</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq4', false)">Multiply the numbers</button>
+          </div>
+          <div id="mq4result" class="mean-result"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🧠 What is the mean of 2, 3, and 7?</p>
+          <div class="mean-quiz-options">
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq5', false)">3</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq5', false)">5</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq5', false)">3.5</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq5', true)">4</button>
+          </div>
+          <div id="mq5result" class="mean-result"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ 🧠 What is the mean of 10, 20, and 30?</p>
+          <div class="mean-quiz-options">
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq6', false)">10</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq6', true)">20</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq6', false)">30</button>
+            <button class="mean-option" onclick="checkMeanAnswer(this, 'mq6', false)">60</button>
+          </div>
+          <div id="mq6result" class="mean-result"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Interactive Mean Calculator ============
+    var inputIds = ['meanVal1', 'meanVal2', 'meanVal3', 'meanVal4', 'meanVal5'];
+    var calcMeanBtn = document.getElementById('calcMeanBtn');
+    var resetMeanBtn = document.getElementById('resetMeanBtn');
+    var meanCalcResult = document.getElementById('meanCalcResult');
+    var meanCalcDesc = document.getElementById('meanCalcDesc');
+    var meanCalcDetail = document.getElementById('meanCalcDetail');
+
+    function calculateMean() {
+      var values = [];
+      inputIds.forEach(function(id) {
+        var val = parseInt(document.getElementById(id).value);
+        if (!isNaN(val)) {
+          values.push(val);
+        }
+      });
+
+      if (values.length === 0) {
+        meanCalcResult.textContent = '—';
+        meanCalcDesc.textContent = 'Please enter at least one number!';
+        meanCalcDetail.textContent = 'Sum: — | Count: —';
+        return;
+      }
+
+      var sum = 0;
+      for (var i = 0; i < values.length; i++) {
+        sum += values[i];
+      }
+      var count = values.length;
+      var mean = sum / count;
+
+      meanCalcResult.textContent = mean;
+      meanCalcDesc.textContent = 'The mean of ' + values.join(', ') + ' is:';
+      meanCalcDetail.textContent = 'Sum: ' + sum + ' | Count: ' + count + ' | ' + sum + ' ÷ ' + count + ' = ' + mean;
+    }
+
+    function resetMean() {
+      document.getElementById('meanVal1').value = 3;
+      document.getElementById('meanVal2').value = 4;
+      document.getElementById('meanVal3').value = 2;
+      document.getElementById('meanVal4').value = 0;
+      document.getElementById('meanVal5').value = 0;
+      meanCalcResult.textContent = '—';
+      meanCalcDesc.textContent = 'Enter numbers and click "Calculate Mean!"';
+      meanCalcDetail.textContent = 'Sum: — | Count: —';
+    }
+
+    calcMeanBtn.addEventListener('click', calculateMean);
+    resetMeanBtn.addEventListener('click', resetMean);
+
+    // ============ Quiz ============
+    function checkMeanAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.mean-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ GSAP Animations on Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      var studentCards = document.querySelectorAll('.student-card');
+      if (studentCards.length > 0) {
+        gsap.from(studentCards, {
+          y: 30,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.15,
+          ease: 'back.out(2)',
+          scrollTrigger: {
+            trigger: studentCards[0],
+            start: 'top 85%'
+          }
+        });
+      }
+
+      var exampleCards = document.querySelectorAll('.example-mean-card');
+      if (exampleCards.length > 0) {
+        gsap.from(exampleCards, {
+          y: 30,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.3,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: exampleCards[0],
+            start: 'top 85%'
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

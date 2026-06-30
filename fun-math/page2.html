@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Ratios: Mixing Solutions!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Ratios Specific Styles ============ */
+    .ratio-intro {
+      background: linear-gradient(135deg, #E8F5E9 0%, #B2EBF2 100%);
+      border-left: 6px solid #00838F;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .ratio-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .ratio-intro p:last-child { margin-bottom: 0; }
+    .ratio-intro .big-question {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #006064;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    /* Equation Box */
+    .ratio-equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      padding: 2rem;
+      background: linear-gradient(135deg, #E0F7FA 0%, #E8F5E9 100%);
+      border-radius: var(--radius-lg);
+      border: 3px solid #00838F;
+      margin: 1.5rem 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    .ratio-equation .eq-label {
+      font-size: 1rem;
+      color: var(--color-text-light);
+      font-weight: 600;
+    }
+    .ratio-equation .eq-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 70px;
+      height: 70px;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 3px solid #B2EBF2;
+      color: #006064;
+      font-size: 1.8rem;
+    }
+    .ratio-equation .eq-value.bleach-val {
+      border-color: #90CAF9;
+      background: #E3F2FD;
+      color: #0D47A1;
+    }
+    .ratio-equation .eq-value.water-val {
+      border-color: #80DEEA;
+      background: #E0F7FA;
+      color: #006064;
+    }
+    .ratio-equation .eq-value.result-val {
+      border-color: #A5D6A7;
+      background: #E8F5E9;
+      color: #1B5E20;
+    }
+    .ratio-equation .eq-sym {
+      font-size: 1.8rem;
+      color: var(--color-orange);
+    }
+
+    /* Visual Bottles */
+    .bottles-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .bottle-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      min-width: 160px;
+      flex: 1;
+      max-width: 220px;
+    }
+    .bottle-card h4 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--color-text);
+    }
+    .bottle-visual {
+      width: 80px;
+      height: 160px;
+      position: relative;
+      border: 4px solid #B0BEC5;
+      border-radius: 0 0 20px 20px;
+      border-top: none;
+      overflow: hidden;
+      background: #F5F5F5;
+    }
+    .bottle-visual::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: -4px;
+      right: -4px;
+      height: 18px;
+      background: #B0BEC5;
+      border-radius: 10px 10px 0 0;
+    }
+    .bottle-visual .fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      transition: height 0.6s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: white;
+    }
+    .bottle-visual .fill.bleach-fill {
+      background: linear-gradient(180deg, #64B5F6, #1565C0);
+    }
+    .bottle-visual .fill.water-fill {
+      background: linear-gradient(180deg, #4DD0E1, #00838F);
+    }
+    .bottle-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+      text-align: center;
+    }
+
+    /* Container Mix */
+    .mix-container {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      height: 220px;
+      margin: 1.5rem auto;
+      border: 4px solid #78909C;
+      border-radius: 0 0 30px 30px;
+      border-top: none;
+      overflow: hidden;
+      background: #F5F5F5;
+    }
+    .mix-container::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -4px;
+      right: -4px;
+      height: 22px;
+      background: #78909C;
+      border-radius: 12px 12px 0 0;
+      z-index: 2;
+    }
+    .mix-container .layer {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      transition: height 0.8s ease, bottom 0.8s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      color: white;
+    }
+    .mix-container .layer.bleach-layer {
+      background: linear-gradient(180deg, #42A5F5, #1565C0);
+      z-index: 1;
+    }
+    .mix-container .layer.water-layer {
+      background: linear-gradient(180deg, #26C6DA, #00838F);
+      z-index: 0;
+    }
+    .mix-container .mix-label {
+      position: absolute;
+      bottom: -32px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--color-text-light);
+    }
+
+    /* Step reveal cards */
+    .step-reveal {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .step-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border-left: 6px solid #00838F;
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    .step-card .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: #00838F;
+      color: white;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .step-card .step-content {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      font-weight: 600;
+    }
+    .step-card .step-content strong {
+      color: #006064;
+    }
+    .step-card .step-content .highlight-bleach {
+      color: #1565C0;
+    }
+    .step-card .step-content .highlight-water {
+      color: #00838F;
+    }
+
+    /* Interactive Controls */
+    .interactive-mix {
+      background: linear-gradient(135deg, #E0F7FA 0%, #E8F5E9 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2.5rem 0;
+      border: 3px solid #00838F;
+    }
+    .interactive-mix h3 {
+      color: #006064;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .interactive-mix .mix-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .interactive-mix .mix-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .interactive-mix .mix-group label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .interactive-mix .mix-group input {
+      width: 80px;
+      padding: 0.6rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--cds-font-sans);
+      color: var(--color-text);
+      transition: all 0.2s ease;
+    }
+    .interactive-mix .mix-group input:focus {
+      outline: none;
+      border-color: #00838F;
+      box-shadow: 0 0 0 4px rgba(0, 131, 143, 0.15);
+    }
+    .interactive-mix .mix-result-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .interactive-mix .mix-result-card {
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 3px solid #B2EBF2;
+      min-width: 100px;
+      text-align: center;
+    }
+    .interactive-mix .mix-result-card .result-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .interactive-mix .mix-result-card .result-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+    .interactive-mix .mix-result-card.bleach-card {
+      border-color: #90CAF9;
+    }
+    .interactive-mix .mix-result-card.bleach-card .result-value {
+      color: #1565C0;
+    }
+    .interactive-mix .mix-result-card.water-card {
+      border-color: #80DEEA;
+    }
+    .interactive-mix .mix-result-card.water-card .result-value {
+      color: #00838F;
+    }
+    .interactive-mix .mix-result-card.total-card {
+      border-color: #A5D6A7;
+    }
+    .interactive-mix .mix-result-card.total-card .result-value {
+      color: #1B5E20;
+    }
+
+    /* Step by step thinking styles */
+    .thinking-steps.ratio-think {
+      background: #E0F7FA;
+      border-left-color: #00838F;
+    }
+    .thinking-steps.ratio-think h4 {
+      color: #006064;
+    }
+    .thinking-steps.ratio-think .step-number {
+      background: #00838F;
+    }
+
+    @keyframes floatBottle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .bottle-card.animate-bottle {
+      animation: floatBottle 2s ease-in-out infinite;
+    }
+
+    @media (max-width: 768px) {
+      .bottle-visual { width: 60px; height: 120px; }
+      .mix-container { height: 160px; }
+      .ratio-equation { font-size: 1.2rem; }
+      .ratio-equation .eq-value { width: 55px; height: 55px; font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html" class="active">Adventure 2</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🧪 Ratios: Mixing Cleaning Solution! 🧹</h2>
+
+      <!-- Intro -->
+      <div class="ratio-intro">
+        <p><strong>What is a Ratio?</strong></p>
+        <p>A <strong>ratio</strong> compares two quantities. It tells us how much of one thing we need compared to another!</p>
+        <p>Today, we're mixing a <strong>cleaning solution</strong>. The instructions say: mix <strong>2 parts bleach</strong> with <strong>13 parts water</strong>. Let's figure out how much of each we need!</p>
+        <div class="big-question">🧴 Bleach : Water = 2 : 13 &nbsp;|&nbsp; We need <strong>60 L total</strong> — how much bleach? 🤔</div>
+      </div>
+
+      <!-- Problem Display -->
+      <section>
+        <h3>📝 The Problem</h3>
+        <div class="ratio-equation">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span class="eq-label">Bleach</span>
+            <span class="eq-value bleach-val" id="eqBleachParts">2</span>
+          </div>
+          <span class="eq-sym">:</span>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span class="eq-label">Water</span>
+            <span class="eq-value water-val" id="eqWaterParts">13</span>
+          </div>
+          <span class="eq-sym">→</span>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span class="eq-label">Total</span>
+            <span class="eq-value result-val" id="eqTotalParts">15</span>
+          </div>
+          <span class="eq-sym">=</span>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span class="eq-label">60 L</span>
+            <span class="eq-value result-val" id="eqTotalVolume" style="background:#E8F5E9;border-color:#A5D6A7;color:#1B5E20;">60</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Visual Bottles Before Mixing -->
+      <section>
+        <h3>🧴 What We're Mixing</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          We have <strong>bleach</strong> and <strong>water</strong>. The ratio tells us how many parts of each to use!
+        </p>
+        <div class="bottles-area" id="bottlesArea">
+          <div class="bottle-card" id="bleachBottle">
+            <h4 style="color:#1565C0;">🧴 Bleach</h4>
+            <div class="bottle-visual">
+              <div class="fill bleach-fill" id="bleachFill" style="height: 0%;">0 L</div>
+            </div>
+            <div class="bottle-label" id="bleachLabel">2 parts</div>
+          </div>
+          <div class="bottle-card" id="waterBottle">
+            <h4 style="color:#00838F;">💧 Water</h4>
+            <div class="bottle-visual">
+              <div class="fill water-fill" id="waterFill" style="height: 0%;">0 L</div>
+            </div>
+            <div class="bottle-label" id="waterLabel">13 parts</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The Big Mix Container -->
+      <section>
+        <h3>🧪 The Mixed Solution</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          When we mix them together, we get <strong>60 L</strong> of cleaning solution!
+        </p>
+        <div class="mix-container" id="mixContainer">
+          <div class="layer water-layer" id="waterLayer" style="height: 0%; bottom: 0%;">Water: 0 L</div>
+          <div class="layer bleach-layer" id="bleachLayer" style="height: 0%; bottom: 0%;">Bleach: 0 L</div>
+          <div class="mix-label" id="mixLabel">Click "Solve It!" to see the answer</div>
+        </div>
+      </section>
+
+      <!-- Action Button -->
+      <div class="action-buttons">
+        <button id="solveBtn" class="btn btn-primary" style="background:#00838F;box-shadow:0 8px 20px rgba(0,131,143,0.3);font-size:1.3rem;padding:1rem 2.5rem;">🔬 Solve It!</button>
+      </div>
+
+      <!-- Step-by-Step Reveal -->
+      <div class="step-reveal" id="stepReveal">
+        <div class="step-card" id="step1">
+          <div class="step-num">1</div>
+          <div class="step-content">The ratio is <strong>2 : 13</strong>. That means <strong>2 parts bleach</strong> and <strong>13 parts water</strong>.</div>
+        </div>
+        <div class="step-card" id="step2">
+          <div class="step-num">2</div>
+          <div class="step-content">Total parts = <strong class="highlight-bleach">2</strong> + <strong class="highlight-water">13</strong> = <strong>15 parts</strong> total.</div>
+        </div>
+        <div class="step-card" id="step3">
+          <div class="step-num">3</div>
+          <div class="step-content">Each part = Total Volume ÷ Total Parts = <strong>60 L ÷ 15 = <strong class="result-value" style="color:#006064;">4 L per part</strong></strong></div>
+        </div>
+        <div class="step-card" id="step4">
+          <div class="step-num">4</div>
+          <div class="step-content">Bleach needed = <strong class="highlight-bleach">2 parts</strong> × 4 L = <strong class="result-value" style="color:#1565C0;">8 L of bleach</strong> 🧴</div>
+        </div>
+        <div class="step-card" id="step5">
+          <div class="step-num">5</div>
+          <div class="step-content">Water needed = <strong class="highlight-water">13 parts</strong> × 4 L = <strong class="result-value" style="color:#00838F;">52 L of water</strong> 💧</div>
+        </div>
+        <div class="step-card" id="step6" style="border-left-color:#4CAF50;">
+          <div class="step-num" style="background:#4CAF50;">✅</div>
+          <div class="step-content"><strong>Check:</strong> 8 L + 52 L = <strong>60 L</strong> total! 🎉</div>
+        </div>
+      </div>
+
+      <!-- Final Answer Box -->
+      <div class="answer-reveal" id="answerReveal" style="display:none;background:#E0F7FA;border-color:#00838F;">
+        <p>🎯 <strong>The Answer:</strong></p>
+        <div class="big-answer" style="color:#006064;" id="finalAnswer">We need 8 L of bleach and 52 L of water!</div>
+        <div class="fun-fact" style="color:#006064;">Ratio 2:13 → 8 L bleach + 52 L water = 60 L total cleaning solution 🧹✨</div>
+      </div>
+
+      <!-- Thinking Steps -->
+      <div class="thinking-steps ratio-think">
+        <h4>🧠 The Ratio Method</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text">Add the <strong>ratio parts</strong> together to find total parts: 2 + 13 = <strong>15</strong></span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text">Divide total volume by total parts: 60 ÷ 15 = <strong>4 L per part</strong></span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text">Multiply each ratio part by the value per part!</span>
+        </div>
+        <div class="step">
+          <span class="step-number">💡</span>
+          <span class="step-text"><strong>Bleach:</strong> 2 × 4 = <strong>8 L</strong> &nbsp;|&nbsp; <strong>Water:</strong> 13 × 4 = <strong>52 L</strong></span>
+        </div>
+      </div>
+
+      <!-- Interactive Ratio Calculator -->
+      <section class="interactive-mix">
+        <h3>🧮 Try Your Own Ratio!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:0.75rem;">
+          Change the numbers below and see how the amounts change!
+        </p>
+        <div class="mix-controls">
+          <div class="mix-group">
+            <label for="bleachParts">🧴 Bleach Parts</label>
+            <input type="number" id="bleachParts" min="1" max="20" value="2">
+          </div>
+          <div class="mix-group">
+            <label for="waterParts">💧 Water Parts</label>
+            <input type="number" id="waterParts" min="1" max="20" value="13">
+          </div>
+          <div class="mix-group">
+            <label for="totalVolume">🧪 Total Volume (L)</label>
+            <input type="number" id="totalVolume" min="1" max="500" value="60">
+          </div>
+        </div>
+        <button id="calculateBtn" class="btn btn-primary" style="background:#00838F;box-shadow:0 8px 20px rgba(0,131,143,0.3);">🧮 Calculate!</button>
+        <div class="mix-result-display" id="mixResults">
+          <div class="mix-result-card bleach-card">
+            <div class="result-label">🧴 Bleach</div>
+            <div class="result-value" id="resultBleach">8 L</div>
+          </div>
+          <div class="mix-result-card water-card">
+            <div class="result-label">💧 Water</div>
+            <div class="result-value" id="resultWater">52 L</div>
+          </div>
+          <div class="mix-result-card total-card">
+            <div class="result-label">🧪 Total</div>
+            <div class="result-value" id="resultTotal">60 L</div>
+          </div>
+        </div>
+        <div class="mult-breakdown" style="font-size:1.1rem;color:var(--color-text-light);margin-top:1rem;font-weight:600;">
+          <span id="interactiveBreakdown">2 : 13 = 8 L bleach + 52 L water = 60 L total</span>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Main Solve Animation ============
+    var solved = false;
+    var solveBtn = document.getElementById('solveBtn');
+    var stepReveal = document.getElementById('stepReveal');
+    var answerReveal = document.getElementById('answerReveal');
+
+    function solveProblem() {
+      if (solved) {
+        // Reset to initial state
+        solved = false;
+        solveBtn.textContent = '🔬 Solve It!';
+        // Hide steps
+        var steps = document.querySelectorAll('.step-card');
+        steps.forEach(function(s) { s.style.opacity = '0'; s.style.transform = 'translateX(-20px)'; });
+        answerReveal.style.display = 'none';
+        // Reset bottles
+        document.getElementById('bleachFill').style.height = '0%';
+        document.getElementById('bleachFill').textContent = '0 L';
+        document.getElementById('waterFill').style.height = '0%';
+        document.getElementById('waterFill').textContent = '0 L';
+        // Reset container
+        document.getElementById('bleachLayer').style.height = '0%';
+        document.getElementById('waterLayer').style.height = '0%';
+        document.getElementById('bleachLayer').textContent = 'Bleach: 0 L';
+        document.getElementById('waterLayer').textContent = 'Water: 0 L';
+        document.getElementById('mixLabel').textContent = 'Click "Solve It!" to see the answer';
+        return;
+      }
+
+      solved = true;
+      solveBtn.textContent = '🔄 Reset';
+      solveBtn.disabled = true;
+
+      var bleachParts = 2;
+      var waterParts = 13;
+      var totalVol = 60;
+      var totalParts = bleachParts + waterParts;
+      var perPart = totalVol / totalParts;
+      var bleachVol = bleachParts * perPart;
+      var waterVol = waterParts * perPart;
+
+      var bleachPct = (bleachVol / totalVol) * 100;
+      var waterPct = (waterVol / totalVol) * 100;
+
+      // Step 1: Show problem
+      document.getElementById('mixLabel').textContent = 'Mix 2:13 into 60 L...';
+
+      var tl = gsap.timeline({ onComplete: function() { solveBtn.disabled = false; } });
+
+      // Animate bottles filling
+      tl.to('#bleachFill', { height: bleachPct + '%', duration: 0.8, ease: 'power2.out' });
+      tl.to('#waterFill', { height: waterPct + '%', duration: 0.8, ease: 'power2.out' }, '-=0.6');
+      tl.add(function() {
+        document.getElementById('bleachFill').textContent = bleachVol.toFixed(1) + ' L';
+        document.getElementById('waterFill').textContent = waterVol.toFixed(1) + ' L';
+      });
+
+      // Animate container filling (water first, then bleach on top)
+      tl.to('#waterLayer', { height: waterPct + '%', duration: 0.8, ease: 'power2.out' }, '+=0.2');
+      tl.add(function() {
+        document.getElementById('waterLayer').textContent = 'Water: ' + waterVol.toFixed(1) + ' L';
+        document.getElementById('waterLayer').style.bottom = '0%';
+      });
+      tl.to('#bleachLayer', { height: bleachPct + '%', duration: 0.8, ease: 'power2.out' }, '-=0.4');
+      tl.add(function() {
+        document.getElementById('bleachLayer').textContent = 'Bleach: ' + bleachVol.toFixed(1) + ' L';
+        document.getElementById('bleachLayer').style.bottom = waterPct + '%';
+        document.getElementById('mixLabel').textContent = '🧪 ' + totalVol + ' L Cleaning Solution!';
+      });
+
+      // Reveal steps one by one
+      tl.add(function() { revealStep('step1'); }, '+=0.3');
+      tl.add(function() { revealStep('step2'); }, '+=0.5');
+      tl.add(function() { revealStep('step3'); }, '+=0.5');
+      tl.add(function() { revealStep('step4'); }, '+=0.5');
+      tl.add(function() { revealStep('step5'); }, '+=0.5');
+      tl.add(function() { revealStep('step6'); }, '+=0.5');
+
+      // Show final answer
+      tl.add(function() {
+        answerReveal.style.display = 'block';
+        gsap.from(answerReveal, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(2)' });
+      }, '+=0.3');
+    }
+
+    function revealStep(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      gsap.to(el, { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' });
+    }
+
+    solveBtn.addEventListener('click', solveProblem);
+
+    // ============ Interactive Calculator ============
+    var bleachPartsInput = document.getElementById('bleachParts');
+    var waterPartsInput = document.getElementById('waterParts');
+    var totalVolumeInput = document.getElementById('totalVolume');
+    var calculateBtn = document.getElementById('calculateBtn');
+    var resultBleach = document.getElementById('resultBleach');
+    var resultWater = document.getElementById('resultWater');
+    var resultTotal = document.getElementById('resultTotal');
+    var interactiveBreakdown = document.getElementById('interactiveBreakdown');
+
+    function calculateMix() {
+      var bp = Math.max(1, Math.min(20, parseInt(bleachPartsInput.value) || 1));
+      var wp = Math.max(1, Math.min(20, parseInt(waterPartsInput.value) || 1));
+      var tv = Math.max(1, Math.min(500, parseInt(totalVolumeInput.value) || 1));
+
+      bleachPartsInput.value = bp;
+      waterPartsInput.value = wp;
+      totalVolumeInput.value = tv;
+
+      var totalParts = bp + wp;
+      var perPart = tv / totalParts;
+      var bv = bp * perPart;
+      var wv = wp * perPart;
+
+      resultBleach.textContent = bv.toFixed(2) + ' L';
+      resultWater.textContent = wv.toFixed(2) + ' L';
+      resultTotal.textContent = (bv + wv).toFixed(2) + ' L';
+      interactiveBreakdown.innerHTML = bp + ' : ' + wp + ' = <strong>' + bv.toFixed(2) + ' L</strong> bleach + <strong>' + wv.toFixed(2) + ' L</strong> water = <strong>' + (bv + wv).toFixed(2) + ' L</strong> total';
+
+      // Animate
+      gsap.from('.mix-result-card', { scale: 0.8, opacity: 0, duration: 0.3, stagger: 0.1, ease: 'back.out(2)' });
+    }
+
+    calculateBtn.addEventListener('click', calculateMix);
+
+    // Initial calculation
+    document.addEventListener('DOMContentLoaded', function() {
+      calculateMix();
+
+      // Animate introductory bottles
+      gsap.from('.bottle-card', {
+        y: 30,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.bottle-card',
+          start: 'top 85%'
+        }
+      });
+    });
+  </script>
+</body>
+</html>
