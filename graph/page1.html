@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Let's Read Graphs!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Graph Reading Specific Styles ============ */
+    .graph-intro {
+      background: linear-gradient(135deg, #FFF3E0 0%, #E8F5E9 100%);
+      border-left: 6px solid #E65100;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .graph-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .graph-intro p:last-child { margin-bottom: 0; }
+    .graph-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #BF360C;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    /* Graph container */
+    .graph-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .graph-container h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .chart-area {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.8rem;
+      padding: 1rem 1.5rem;
+      background: #FAFAFA;
+      border-radius: var(--radius-md);
+      border: 2px solid #E0E0E0;
+      min-height: 220px;
+      width: 100%;
+      max-width: 550px;
+      justify-content: center;
+    }
+
+    /* Bar styles */
+    .bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      flex: 1;
+      max-width: 80px;
+    }
+    .bar {
+      width: 100%;
+      min-height: 8px;
+      border-radius: 8px 8px 4px 4px;
+      transition: height 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 0.3rem;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: white;
+      position: relative;
+    }
+    .bar .bar-value {
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .bar.show-value .bar-value {
+      opacity: 1;
+    }
+    .bar-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+      text-align: center;
+    }
+    .bar-icon-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.1rem;
+      flex-wrap: wrap;
+    }
+    .bar-icon-row .icon-item {
+      font-size: 0.7rem;
+    }
+
+    /* Y-axis labels */
+    .chart-with-axis {
+      display: flex;
+      align-items: stretch;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 550px;
+    }
+    .y-axis {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-right: 0.5rem;
+      min-width: 30px;
+      text-align: right;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--color-text-light);
+    }
+
+    /* Graph info / stats */
+    .graph-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #F5F5F5;
+      border-radius: var(--radius-md);
+    }
+    .graph-stat {
+      padding: 0.5rem 1rem;
+      text-align: center;
+    }
+    .graph-stat .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #E65100;
+    }
+    .graph-stat .stat-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+
+    /* Thinking steps for graph reading */
+    .graph-tips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .graph-tip {
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 2px solid #FFE0B2;
+      text-align: center;
+    }
+    .graph-tip .tip-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .graph-tip h5 { font-size: 1rem; font-weight: 800; color: #E65100; margin-bottom: 0.3rem; }
+    .graph-tip p { font-size: 0.9rem; color: var(--color-text-light); }
+
+    /* Interactive button */
+    .btn-reveal {
+      font-size: 1.2rem;
+      padding: 0.9rem 2rem;
+      background: linear-gradient(135deg, #FFA726, #E65100);
+      color: white;
+      border: none;
+      box-shadow: 0 8px 20px rgba(230, 81, 0, 0.3);
+    }
+    .btn-reveal:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 12px 25px rgba(230, 81, 0, 0.4);
+    }
+
+    /* Quiz */
+    .graph-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .graph-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .graph-option:hover {
+      border-color: #E65100;
+      background: #FFF3E0;
+      transform: scale(1.05);
+    }
+    .graph-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .graph-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .graph-option:disabled { cursor: default; opacity: 0.7; }
+    .graph-option.correct:disabled { opacity: 1; }
+
+    .graph-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .graph-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .graph-result.correct-result { background: #E8F5E9; color: #2E7D32; }
+    .graph-result.wrong-result { background: #FFEBEE; color: #C62828; }
+
+    @media (max-width: 768px) {
+      .chart-area { min-height: 160px; padding: 0.8rem; }
+      .bar-wrapper { max-width: 55px; }
+      .bar .bar-value { font-size: 0.7rem; }
+      .bar-label { font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html" class="active">Adventure 1</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>📊 Let's Read Graphs! 🧮</h2>
+
+      <!-- Intro -->
+      <div class="graph-intro">
+        <p><strong>What is a Graph?</strong></p>
+        <p>A <strong>graph</strong> is a picture that shows information (data) in a way that's easy to understand! Instead of reading a long list of numbers, you can just <strong>look at the bars</strong> to compare things quickly! 📈</p>
+        <p>Graphs are used everywhere — in schools, newspapers, TV, and even video games! They help us answer questions like: "Which animal is most popular?" or "How many cupcakes were sold?"</p>
+        <div class="big-idea">🧠 Graphs turn numbers into pictures — so we can <strong>see</strong> the data! 👀</div>
+      </div>
+
+      <!-- Parts of a graph -->
+      <section>
+        <h3>🔍 Parts of a Bar Graph</h3>
+        <div class="graph-tips">
+          <div class="graph-tip">
+            <div class="tip-icon">📏</div>
+            <h5>Y-Axis (Height)</h5>
+            <p>The vertical line on the left. It shows the <strong>numbers</strong> — like how many or how much!</p>
+          </div>
+          <div class="graph-tip">
+            <div class="tip-icon">↔️</div>
+            <h5>X-Axis (Bottom)</h5>
+            <p>The horizontal line at the bottom. It shows the <strong>categories</strong> — like animal names or days of the week!</p>
+          </div>
+          <div class="graph-tip">
+            <div class="tip-icon">📊</div>
+            <h5>Bars</h5>
+            <p>Each bar shows the <strong>value</strong> for one category. The taller the bar, the bigger the number!</p>
+          </div>
+          <div class="graph-tip">
+            <div class="tip-icon">🎯</div>
+            <h5>Title</h5>
+            <p>The title tells you what the graph is about — always read it first!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ EXAMPLE 1: Animals ============ -->
+      <section>
+        <h3>🐾 Example 1: Favorite Pets</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          A class of kids voted for their <strong>favorite pet</strong>. The graph below shows how many votes each animal got!
+        </p>
+
+        <div class="graph-container">
+          <h4>🐶 Favorite Pets in Mr. Smith's Class</h4>
+
+          <div class="chart-wrapper">
+            <div class="chart-with-axis">
+              <div class="y-axis" id="animalYAxis">
+                <span>10</span>
+                <span>8</span>
+                <span>6</span>
+                <span>4</span>
+                <span>2</span>
+                <span>0</span>
+              </div>
+              <div class="chart-area" id="animalChart">
+                <!-- Dog -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="dogBar" style="height:0px;background:linear-gradient(180deg,#42A5F5,#1565C0);">
+                    <span class="bar-value" id="dogVal">0</span>
+                  </div>
+                  <div class="bar-label">🐶 Dog</div>
+                </div>
+                <!-- Cat -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="catBar" style="height:0px;background:linear-gradient(180deg,#66BB6A,#2E7D32);">
+                    <span class="bar-value" id="catVal">0</span>
+                  </div>
+                  <div class="bar-label">🐱 Cat</div>
+                </div>
+                <!-- Rabbit -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="rabbitBar" style="height:0px;background:linear-gradient(180deg,#FFA726,#E65100);">
+                    <span class="bar-value" id="rabbitVal">0</span>
+                  </div>
+                  <div class="bar-label">🐰 Rabbit</div>
+                </div>
+                <!-- Hamster -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="hamsterBar" style="height:0px;background:linear-gradient(180deg,#AB47BC,#6A1B9A);">
+                    <span class="bar-value" id="hamsterVal">0</span>
+                  </div>
+                  <div class="bar-label">🐹 Hamster</div>
+                </div>
+                <!-- Fish -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="fishBar" style="height:0px;background:linear-gradient(180deg,#26C6DA,#00838F);">
+                    <span class="bar-value" id="fishVal">0</span>
+                  </div>
+                  <div class="bar-label">🐟 Fish</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button id="animalRevealBtn" class="btn btn-reveal">👀 Show Animal Data!</button>
+          </div>
+
+          <div class="graph-stats" id="animalStats" style="display:none;">
+            <div class="graph-stat">
+              <div class="stat-value" id="mostPopularAnimal">Dog</div>
+              <div class="stat-label">🏆 Most Popular</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" id="totalAnimalVotes">26</div>
+              <div class="stat-label">📊 Total Votes</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" id="animalDiff">3</div>
+              <div class="stat-label">📐 Dogs more than Cats</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ EXAMPLE 2: Cupcakes ============ -->
+      <section>
+        <h3>🧁 Example 2: Cupcake Sales</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          A bakery tracked how many <strong>cupcakes</strong> they sold each day last week! Let's read the graph!
+        </p>
+
+        <div class="graph-container">
+          <h4>🧁 Cupcake Sales Last Week</h4>
+
+          <div class="chart-wrapper">
+            <div class="chart-with-axis">
+              <div class="y-axis" id="cupcakeYAxis">
+                <span>50</span>
+                <span>40</span>
+                <span>30</span>
+                <span>20</span>
+                <span>10</span>
+                <span>0</span>
+              </div>
+              <div class="chart-area" id="cupcakeChart">
+                <!-- Mon -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="monBar" style="height:0px;background:linear-gradient(180deg,#F48FB1,#C2185B);">
+                    <span class="bar-value" id="monVal">0</span>
+                  </div>
+                  <div class="bar-label">Mon</div>
+                </div>
+                <!-- Tue -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="tueBar" style="height:0px;background:linear-gradient(180deg,#CE93D8,#7B1FA2);">
+                    <span class="bar-value" id="tueVal">0</span>
+                  </div>
+                  <div class="bar-label">Tue</div>
+                </div>
+                <!-- Wed -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="wedBar" style="height:0px;background:linear-gradient(180deg,#90CAF9,#1565C0);">
+                    <span class="bar-value" id="wedVal">0</span>
+                  </div>
+                  <div class="bar-label">Wed</div>
+                </div>
+                <!-- Thu -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="thuBar" style="height:0px;background:linear-gradient(180deg,#A5D6A7,#2E7D32);">
+                    <span class="bar-value" id="thuVal">0</span>
+                  </div>
+                  <div class="bar-label">Thu</div>
+                </div>
+                <!-- Fri -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="friBar" style="height:0px;background:linear-gradient(180deg,#FFCC80,#E65100);">
+                    <span class="bar-value" id="friVal">0</span>
+                  </div>
+                  <div class="bar-label">Fri</div>
+                </div>
+                <!-- Sat -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="satBar" style="height:0px;background:linear-gradient(180deg,#EF9A9A,#C62828);">
+                    <span class="bar-value" id="satVal">0</span>
+                  </div>
+                  <div class="bar-label">Sat</div>
+                </div>
+                <!-- Sun -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="sunBar" style="height:0px;background:linear-gradient(180deg,#B39DDB,#4527A0);">
+                    <span class="bar-value" id="sunVal">0</span>
+                  </div>
+                  <div class="bar-label">Sun</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button id="cupcakeRevealBtn" class="btn btn-reveal">👀 Show Cupcake Data!</button>
+          </div>
+
+          <div class="graph-stats" id="cupcakeStats" style="display:none;">
+            <div class="graph-stat">
+              <div class="stat-value" id="busiestDay">Saturday</div>
+              <div class="stat-label">🏆 Busiest Day</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" id="totalCupcakes">210</div>
+              <div class="stat-label">🧁 Total Cupcakes Sold</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" id="cupcakeAvg">30</div>
+              <div class="stat-label">📊 Average per Day</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How to Read a Graph -->
+      <div class="thinking-steps" style="background:#FFF3E0;border-left-color:#E65100;">
+        <h4 style="color:#BF360C;">🧠 How to Read a Bar Graph</h4>
+        <div class="step">
+          <span class="step-number" style="background:#E65100;">1</span>
+          <span class="step-text">Read the <strong>title</strong> — what is this graph about?</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#E65100;">2</span>
+          <span class="step-text">Look at the <strong>bottom (x-axis)</strong> — what categories are shown?</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#E65100;">3</span>
+          <span class="step-text">Look at the <strong>side (y-axis)</strong> — what numbers are we counting?</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#E65100;">4</span>
+          <span class="step-text">Compare the <strong>bar heights</strong> — the tallest bar = the biggest number!</span>
+        </div>
+      </div>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section" style="border-color:#E65100;">
+        <h3>🧠 Graph Reading Quiz!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Use the animal graph above to answer these questions!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🐶 Which animal got the most votes?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Cat</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">Dog</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Rabbit</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Hamster</button>
+          </div>
+          <div class="graph-result" id="gq1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🐟 How many votes did Fish get?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">5</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">6</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">4</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">3</button>
+          </div>
+          <div class="graph-result" id="gq2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🐰 How many more votes did Rabbit get than Hamster?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">2</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">3</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">4</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">1</button>
+          </div>
+          <div class="graph-result" id="gq3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 🧁 How many cupcakes were sold on Saturday?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">30</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">35</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">45</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">40</button>
+          </div>
+          <div class="graph-result" id="gq4"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🧁 Which day sold the LEAST cupcakes?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Monday</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">Tuesday</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Wednesday</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Sunday</button>
+          </div>
+          <div class="graph-result" id="gq5"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ 📊 What does the Y-axis (side) of a bar graph show?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">The names of things</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">The numbers/amounts</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">The title</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">The colors</button>
+          </div>
+          <div class="graph-result" id="gq6"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Animal Graph Data ============
+    var animalData = [
+      { name: '🐶 Dog', value: 8, barId: 'dogBar', valId: 'dogVal' },
+      { name: '🐱 Cat', value: 5, barId: 'catBar', valId: 'catVal' },
+      { name: '🐰 Rabbit', value: 6, barId: 'rabbitBar', valId: 'rabbitVal' },
+      { name: '🐹 Hamster', value: 4, barId: 'hamsterBar', valId: 'hamsterVal' },
+      { name: '🐟 Fish', value: 4, barId: 'fishBar', valId: 'fishVal' }
+    ];
+    var animalRevealed = false;
+
+    function revealAnimalData() {
+      if (animalRevealed) {
+        // Reset
+        animalRevealed = false;
+        document.getElementById('animalRevealBtn').textContent = '👀 Show Animal Data!';
+        animalData.forEach(function(d) {
+          document.getElementById(d.barId).style.height = '0px';
+          document.getElementById(d.valId).textContent = '0';
+        });
+        document.getElementById('animalStats').style.display = 'none';
+        return;
+      }
+
+      animalRevealed = true;
+      document.getElementById('animalRevealBtn').textContent = '🔄 Reset';
+      document.getElementById('animalRevealBtn').disabled = true;
+
+      var tl = gsap.timeline({ onComplete: function() {
+        document.getElementById('animalRevealBtn').disabled = false;
+        // Show stats with animation
+        document.getElementById('animalStats').style.display = 'flex';
+        gsap.from('#animalStats', { opacity: 0, y: 10, duration: 0.3, ease: 'power2.out' });
+      }});
+
+      animalData.forEach(function(d, i) {
+        var heightPx = d.value * 20; // 20px per unit
+        tl.to('#' + d.barId, { height: heightPx, duration: 0.6, ease: 'back.out(2)' }, i * 0.15);
+        tl.add(function() {
+          document.getElementById(d.valId).textContent = d.value;
+          document.getElementById(d.barId).classList.add('show-value');
+        }, '-=0.2');
+      });
+
+      // Set stat values
+      document.getElementById('mostPopularAnimal').textContent = 'Dog (8 votes)';
+      document.getElementById('totalAnimalVotes').textContent = '27';
+      document.getElementById('animalDiff').textContent = '3 more';
+    }
+
+    document.getElementById('animalRevealBtn').addEventListener('click', revealAnimalData);
+
+    // ============ Cupcake Graph Data ============
+    var cupcakeData = [
+      { name: 'Mon', value: 20, barId: 'monBar', valId: 'monVal' },
+      { name: 'Tue', value: 15, barId: 'tueBar', valId: 'tueVal' },
+      { name: 'Wed', value: 25, barId: 'wedBar', valId: 'wedVal' },
+      { name: 'Thu', value: 30, barId: 'thuBar', valId: 'thuVal' },
+      { name: 'Fri', value: 35, barId: 'friBar', valId: 'friVal' },
+      { name: 'Sat', value: 45, barId: 'satBar', valId: 'satVal' },
+      { name: 'Sun', value: 40, barId: 'sunBar', valId: 'sunVal' }
+    ];
+    var cupcakeRevealed = false;
+
+    function revealCupcakeData() {
+      if (cupcakeRevealed) {
+        cupcakeRevealed = false;
+        document.getElementById('cupcakeRevealBtn').textContent = '👀 Show Cupcake Data!';
+        cupcakeData.forEach(function(d) {
+          document.getElementById(d.barId).style.height = '0px';
+          document.getElementById(d.valId).textContent = '0';
+        });
+        document.getElementById('cupcakeStats').style.display = 'none';
+        return;
+      }
+
+      cupcakeRevealed = true;
+      document.getElementById('cupcakeRevealBtn').textContent = '🔄 Reset';
+      document.getElementById('cupcakeRevealBtn').disabled = true;
+
+      var tl = gsap.timeline({ onComplete: function() {
+        document.getElementById('cupcakeRevealBtn').disabled = false;
+        document.getElementById('cupcakeStats').style.display = 'flex';
+        gsap.from('#cupcakeStats', { opacity: 0, y: 10, duration: 0.3, ease: 'power2.out' });
+      }});
+
+      cupcakeData.forEach(function(d, i) {
+        var heightPx = d.value * 3.5; // scale
+        tl.to('#' + d.barId, { height: heightPx, duration: 0.6, ease: 'back.out(2)' }, i * 0.12);
+        tl.add(function() {
+          document.getElementById(d.valId).textContent = d.value;
+          document.getElementById(d.barId).classList.add('show-value');
+        }, '-=0.2');
+      });
+
+      document.getElementById('busiestDay').textContent = 'Saturday (45)';
+      document.getElementById('totalCupcakes').textContent = '210';
+      document.getElementById('cupcakeAvg').textContent = '30';
+    }
+
+    document.getElementById('cupcakeRevealBtn').addEventListener('click', revealCupcakeData);
+
+    // ============ Quiz ============
+    function checkGraphAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.graph-option');
+      var resultDiv = parentCard.querySelector('.graph-result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job reading the graph! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! Look at the bar heights carefully. The correct answer is highlighted above! 💪';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      gsap.from('.graph-tip', {
+        y: 20,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.15,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.graph-tip',
+          start: 'top 85%'
+        }
+      });
+    });
+  </script>
+</body>
+</html>

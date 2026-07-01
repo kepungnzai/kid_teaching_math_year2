@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Slope & Rate of Change!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Slope & Rate of Change Styles ============ */
+    .slope-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #FCE4EC 100%);
+      border-left: 6px solid #1565C0;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .slope-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .slope-intro p:last-child { margin-bottom: 0; }
+    .slope-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #C62828;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    /* Slope type cards */
+    .slope-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .slope-card {
+      flex: 1;
+      min-width: 200px;
+      max-width: 280px;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .slope-card:hover { transform: translateY(-6px); }
+    .slope-card.steep-card { border-color: #E53935; }
+    .slope-card.gentle-card { border-color: #FB8C00; }
+    .slope-card.flat-card { border-color: #43A047; }
+
+    .slope-card .slope-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .slope-card h4 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .slope-card.steep-card h4 { color: #C62828; }
+    .slope-card.gentle-card h4 { color: #E65100; }
+    .slope-card.flat-card h4 { color: #2E7D32; }
+    .slope-card p { font-size: 0.95rem; color: var(--color-text-light); line-height: 1.5; }
+
+    /* SVG graph area */
+    .graph-display {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .graph-display h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      margin-bottom: 1rem;
+    }
+    .graph-display .graph-svg-wrapper {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .graph-display .graph-svg-wrapper svg {
+      width: 100%;
+      height: auto;
+    }
+
+    /* Mini slope visual in cards */
+    .mini-svg {
+      width: 100%;
+      max-width: 160px;
+      margin: 0.75rem auto;
+      display: block;
+    }
+
+    /* Interactive slope explorer */
+    .explorer-area {
+      background: linear-gradient(135deg, #E3F2FD 0%, #FCE4EC 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2.5rem 0;
+      border: 3px solid #1565C0;
+    }
+    .explorer-area h3 {
+      color: #1565C0;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+    .explorer-area .slider-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .explorer-area .slider-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .explorer-area .slider-group label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .explorer-area .slider-group input[type="range"] {
+      width: 200px;
+      height: 8px;
+      border-radius: 4px;
+      background: #E0E0E0;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+    .explorer-area .slider-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1565C0;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(21, 101, 192, 0.3);
+    }
+    .explorer-area .slider-group .slider-value {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #1565C0;
+    }
+    .explorer-area .explorer-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .explorer-area .explorer-stat {
+      padding: 0.5rem 1.2rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 2px solid #BBDEFB;
+      min-width: 100px;
+    }
+    .explorer-area .explorer-stat .stat-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .explorer-area .explorer-stat .stat-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #1565C0;
+    }
+
+    /* Comparison table */
+    .compare-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .compare-item {
+      flex: 1;
+      min-width: 150px;
+      max-width: 200px;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .compare-item .cmp-label { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .compare-item .cmp-desc { font-size: 0.85rem; }
+    .compare-item.cmp-steep { background: #FFEBEE; border: 2px solid #E53935; }
+    .compare-item.cmp-steep .cmp-label { color: #C62828; }
+    .compare-item.cmp-gentle { background: #FFF3E0; border: 2px solid #FB8C00; }
+    .compare-item.cmp-gentle .cmp-label { color: #E65100; }
+    .compare-item.cmp-flat { background: #E8F5E9; border: 2px solid #43A047; }
+    .compare-item.cmp-flat .cmp-label { color: #2E7D32; }
+
+    /* Quiz */
+    .slope-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .slope-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .slope-option:hover {
+      border-color: #1565C0;
+      background: #E3F2FD;
+      transform: scale(1.05);
+    }
+    .slope-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .slope-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .slope-option:disabled { cursor: default; opacity: 0.7; }
+    .slope-option.correct:disabled { opacity: 1; }
+
+    .slope-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .slope-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .slope-result.correct-result { background: #E8F5E9; color: #2E7D32; }
+    .slope-result.wrong-result { background: #FFEBEE; color: #C62828; }
+
+    @media (max-width: 768px) {
+      .slope-card { min-width: 160px; }
+      .explorer-area .slider-group input[type="range"] { width: 150px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html" class="active">Adventure 2</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>📈 Slope & Rate of Change! 🚀</h2>
+
+      <!-- Intro -->
+      <div class="slope-intro">
+        <p><strong>What is Slope?</strong></p>
+        <p><strong>Slope</strong> tells us how steep a line is on a graph. It's like climbing a hill — some hills are steep, some are gentle, and some are flat!</p>
+        <p>The <strong>steeper</strong> the line, the <strong>faster</strong> things are changing. A <strong>flat</strong> line means nothing is changing at all!</p>
+        <p>We use slope to understand <strong>speed, growth, and change</strong> in the real world! 🌍</p>
+        <div class="big-idea">🧠 Steep = Fast change &nbsp;|&nbsp; Gentle = Slow change &nbsp;|&nbsp; Flat = No change</div>
+      </div>
+
+      <!-- 3 Types of Slope -->
+      <section>
+        <h3>🏔️ Three Types of Slope</h3>
+        <div class="slope-cards">
+          <!-- Steep -->
+          <div class="slope-card steep-card">
+            <div class="slope-icon">📈</div>
+            <h4>Steep Slope</h4>
+            <svg class="mini-svg" viewBox="0 0 160 80">
+              <line x1="10" y1="70" x2="150" y2="10" stroke="#E53935" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="10" cy="70" r="4" fill="#E53935"/>
+              <circle cx="150" cy="10" r="4" fill="#E53935"/>
+              <text x="80" y="45" text-anchor="middle" font-size="11" font-weight="700" fill="#C62828">Rising fast!</text>
+            </svg>
+            <p>The line goes up <strong>sharply</strong>. A small change horizontally = a big change vertically. <strong>High rate of change!</strong> 🚀</p>
+          </div>
+
+          <!-- Gentle -->
+          <div class="slope-card gentle-card">
+            <div class="slope-icon">↗️</div>
+            <h4>Gentle Slope</h4>
+            <svg class="mini-svg" viewBox="0 0 160 80">
+              <line x1="10" y1="65" x2="150" y2="35" stroke="#FB8C00" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="10" cy="65" r="4" fill="#FB8C00"/>
+              <circle cx="150" cy="35" r="4" fill="#FB8C00"/>
+              <text x="80" y="55" text-anchor="middle" font-size="11" font-weight="700" fill="#E65100">Slow rise...</text>
+            </svg>
+            <p>The line goes up <strong>gradually</strong>. A big change horizontally = a small change vertically. <strong>Low rate of change!</strong> 🐢</p>
+          </div>
+
+          <!-- Flat -->
+          <div class="slope-card flat-card">
+            <div class="slope-icon">➡️</div>
+            <h4>Flat Slope</h4>
+            <svg class="mini-svg" viewBox="0 0 160 80">
+              <line x1="10" y1="45" x2="150" y2="45" stroke="#43A047" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="10" cy="45" r="4" fill="#43A047"/>
+              <circle cx="150" cy="45" r="4" fill="#43A047"/>
+              <text x="80" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#2E7D32">No change...</text>
+            </svg>
+            <p>The line is <strong>horizontal</strong>. No matter how far you go, the value stays the same. <strong>Zero rate of change!</strong> 🧊</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Real World Comparison -->
+      <section>
+        <h3>🌍 Real-World Examples</h3>
+        <div class="compare-row">
+          <div class="compare-item cmp-steep">
+            <div style="font-size:2rem;margin-bottom:0.3rem;">🏎️</div>
+            <div class="cmp-label">Steep = Fast Car</div>
+            <div class="cmp-desc">A sports car goes 0 to 100 km/h in 3 seconds — that's a <strong>steep slope</strong> on a speed graph!</div>
+          </div>
+          <div class="compare-item cmp-gentle">
+            <div style="font-size:2rem;margin-bottom:0.3rem;">🚲</div>
+            <div class="cmp-label">Gentle = Bicycle</div>
+            <div class="cmp-desc">A bicycle slowly climbs a hill — that's a <strong>gentle slope</strong> on a distance graph!</div>
+          </div>
+          <div class="compare-item cmp-flat">
+            <div style="font-size:2rem;margin-bottom:0.3rem;">🧊</div>
+            <div class="cmp-label">Flat = Water Freezing</div>
+            <div class="cmp-desc">Water stays at 0°C while freezing — that's a <strong>flat slope</strong> on a temperature graph!</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Interactive Slope Explorer ============ -->
+      <section class="explorer-area">
+        <h3>🎮 Slope Explorer!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:0.75rem;">
+          Drag the slider to change the slope! Watch how the line changes color and steepness!
+        </p>
+
+        <div class="graph-svg-wrapper" style="max-width:500px;margin:0 auto;">
+          <svg viewBox="0 0 400 220" id="interactiveSlopeSvg">
+            <!-- Grid lines -->
+            <line x1="40" y1="10" x2="40" y2="200" stroke="#E0E0E0" stroke-width="1"/>
+            <line x1="40" y1="200" x2="390" y2="200" stroke="#E0E0E0" stroke-width="1"/>
+            <!-- Grid horizontal -->
+            <line x1="40" y1="50" x2="390" y2="50" stroke="#F5F5F5" stroke-width="1"/>
+            <line x1="40" y1="90" x2="390" y2="90" stroke="#F5F5F5" stroke-width="1"/>
+            <line x1="40" y1="130" x2="390" y2="130" stroke="#F5F5F5" stroke-width="1"/>
+            <line x1="40" y1="170" x2="390" y2="170" stroke="#F5F5F5" stroke-width="1"/>
+            <!-- Grid vertical -->
+            <line x1="110" y1="10" x2="110" y2="200" stroke="#F5F5F5" stroke-width="1"/>
+            <line x1="180" y1="10" x2="180" y2="200" stroke="#F5F5F5" stroke-width="1"/>
+            <line x1="250" y1="10" x2="250" y2="200" stroke="#F5F5F5" stroke-width="1"/>
+            <line x1="320" y1="10" x2="320" y2="200" stroke="#F5F5F5" stroke-width="1"/>
+            <!-- Y-Axis label -->
+            <text x="25" y="105" text-anchor="middle" font-size="12" font-weight="600" fill="#9E9E9E" transform="rotate(-90,25,105)">Amount</text>
+            <!-- X-Axis label -->
+            <text x="215" y="218" text-anchor="middle" font-size="12" font-weight="600" fill="#9E9E9E">Time</text>
+            <!-- The line (will be updated by JS) -->
+            <line id="slopeLine" x1="50" y1="180" x2="350" y2="180" stroke="#43A047" stroke-width="5" stroke-linecap="round"/>
+            <!-- Points -->
+            <circle id="startPoint" cx="50" cy="180" r="6" fill="#1B5E20" stroke="white" stroke-width="2"/>
+            <circle id="endPoint" cx="350" cy="180" r="6" fill="#1B5E20" stroke="white" stroke-width="2"/>
+            <!-- Angle label -->
+            <text id="slopeLabel" x="200" y="30" text-anchor="middle" font-size="16" font-weight="800" fill="#2E7D32">Flat — No Change</text>
+          </svg>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-group">
+            <label for="slopeSlider">🎚️ Slope Steepness</label>
+            <input type="range" id="slopeSlider" min="0" max="100" value="0">
+            <div class="slider-value" id="sliderValue">0% (Flat)</div>
+          </div>
+        </div>
+
+        <div class="explorer-stats">
+          <div class="explorer-stat">
+            <div class="stat-label">📐 Rise (up)</div>
+            <div class="stat-value" id="riseValue">0</div>
+          </div>
+          <div class="explorer-stat">
+            <div class="stat-label">↔️ Run (across)</div>
+            <div class="stat-value" id="runValue">300</div>
+          </div>
+          <div class="explorer-stat">
+            <div class="stat-label">📊 Slope Type</div>
+            <div class="stat-value" id="slopeTypeValue" style="font-size:1rem;">Flat</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Steepness Spectrum -->
+      <section>
+        <h3>🌈 Slope Spectrum</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          As the slope gets steeper, the color changes from <strong style="color:#43A047;">green</strong> → <strong style="color:#FB8C00;">orange</strong> → <strong style="color:#E53935;">red</strong>!
+        </p>
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;padding:1.5rem;background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);border:2px solid var(--color-border);">
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 1rem;background:#E8F5E9;border-radius:12px;">
+            <div style="width:40px;height:40px;background:#43A047;border-radius:50%;flex-shrink:0;"></div>
+            <div>
+              <div style="font-weight:800;color:#2E7D32;">🟢 Flat (Slope = 0)</div>
+              <div style="font-size:0.9rem;color:var(--color-text-light);">No change — the line is horizontal</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 1rem;background:#FFF3E0;border-radius:12px;">
+            <div style="width:40px;height:40px;background:#FB8C00;border-radius:50%;flex-shrink:0;"></div>
+            <div>
+              <div style="font-weight:800;color:#E65100;">🟠 Gentle (Low Slope)</div>
+              <div style="font-size:0.9rem;color:var(--color-text-light);">Slow change — the line goes up gradually</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 1rem;background:#FFEBEE;border-radius:12px;">
+            <div style="width:40px;height:40px;background:#E53935;border-radius:50%;flex-shrink:0;"></div>
+            <div>
+              <div style="font-weight:800;color:#C62828;">🔴 Steep (High Slope)</div>
+              <div style="font-size:0.9rem;color:var(--color-text-light);">Fast change — the line rises sharply</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Thinking Steps -->
+      <div class="thinking-steps" style="background:#E3F2FD;border-left-color:#1565C0;">
+        <h4 style="color:#1565C0;">🧠 How to Read Slope</h4>
+        <div class="step">
+          <span class="step-number" style="background:#1565C0;">1</span>
+          <span class="step-text">Look at the <strong>direction</strong> of the line — is it going up, down, or staying flat?</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#1565C0;">2</span>
+          <span class="step-text">Check the <strong>steepness</strong> — a steep line means a <strong>fast</strong> rate of change!</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#1565C0;">3</span>
+          <span class="step-text">A <strong style="color:#43A047;">green line</strong> = flat (no change), <strong style="color:#FB8C00;">orange</strong> = gentle (slow change), <strong style="color:#E53935;">red</strong> = steep (fast change)</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#E65100;">💡</span>
+          <span class="step-text">Slope = <strong>Rise ÷ Run</strong>. The bigger the rise for the same run, the steeper the slope!</span>
+        </div>
+      </div>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section" style="border-color:#1565C0;">
+        <h3>🧠 Slope Quiz!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Test your understanding of slope and rate of change!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 📈 Which type of slope means the FASTEST rate of change?</p>
+          <div class="slope-quiz-options">
+            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">Steep</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Gentle</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Flat</button>
+          </div>
+          <div class="slope-result" id="sq1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🧊 What does a flat (horizontal) line on a graph mean?</p>
+          <div class="slope-quiz-options">
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Fast change</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Slow change</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">No change</button>
+          </div>
+          <div class="slope-result" id="sq2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🚲 You ride a bicycle up a hill slowly. What type of slope is on your distance graph?</p>
+          <div class="slope-quiz-options">
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Steep</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">Gentle</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Flat</button>
+          </div>
+          <div class="slope-result" id="sq3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 🏎️ A car accelerates from 0 to 100 quickly. What color represents this steep slope?</p>
+          <div class="slope-quiz-options">
+            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">🔴 Red</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">🟠 Orange</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">🟢 Green</button>
+          </div>
+          <div class="slope-result" id="sq4"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 📐 What is the formula for calculating slope?</p>
+          <div class="slope-quiz-options">
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Run ÷ Rise</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">Rise ÷ Run</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Rise × Run</button>
+          </div>
+          <div class="slope-result" id="sq5"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ 🟢 What color represents a flat slope with NO change?</p>
+          <div class="slope-quiz-options">
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">🔴 Red</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">🟠 Orange</button>
+            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">🟢 Green</button>
+          </div>
+          <div class="slope-result" id="sq6"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Interactive Slope Explorer ============
+    var slopeSlider = document.getElementById('slopeSlider');
+    var sliderValue = document.getElementById('sliderValue');
+    var slopeLine = document.getElementById('slopeLine');
+    var startPoint = document.getElementById('startPoint');
+    var endPoint = document.getElementById('endPoint');
+    var slopeLabel = document.getElementById('slopeLabel');
+    var riseValue = document.getElementById('riseValue');
+    var runValue = document.getElementById('runValue');
+    var slopeTypeValue = document.getElementById('slopeTypeValue');
+
+    var x1 = 50, x2 = 350, yBase = 180;
+    var maxRise = 160; // max pixels up
+
+    function updateSlope() {
+      var val = parseInt(slopeSlider.value);
+      var rise = (val / 100) * maxRise;
+      var y2 = yBase - rise;
+
+      // Color based on steepness
+      var color, label, typeText;
+      if (val === 0) {
+        color = '#43A047';
+        label = '🟢 Flat — No Change';
+        typeText = 'Flat (0)';
+      } else if (val < 33) {
+        color = '#FB8C00';
+        label = '🟠 Gentle — Slow Change';
+        typeText = 'Gentle';
+      } else if (val < 66) {
+        color = '#FF7043';
+        label = '🔶 Moderate — Medium Change';
+        typeText = 'Moderate';
+      } else {
+        color = '#E53935';
+        label = '🔴 Steep — Fast Change!';
+        typeText = 'Steep!';
+      }
+
+      // Update SVG
+      slopeLine.setAttribute('y1', yBase);
+      slopeLine.setAttribute('y2', y2);
+      slopeLine.setAttribute('stroke', color);
+      startPoint.setAttribute('cy', yBase);
+      startPoint.setAttribute('fill', color);
+      endPoint.setAttribute('cy', y2);
+      endPoint.setAttribute('fill', color);
+
+      // Update label
+      slopeLabel.textContent = label;
+      slopeLabel.setAttribute('fill', color);
+
+      // Update stats
+      riseValue.textContent = rise.toFixed(0);
+      runValue.textContent = (x2 - x1).toFixed(0);
+      slopeTypeValue.textContent = typeText;
+      slopeTypeValue.style.color = color;
+
+      // Slider value text
+      var pctText = val === 0 ? 'Flat' : val + '% steep';
+      sliderValue.textContent = pctText;
+    }
+
+    slopeSlider.addEventListener('input', updateSlope);
+
+    // ============ Quiz ============
+    function checkSlopeAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.slope-option');
+      var resultDiv = parentCard.querySelector('.slope-result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. 💪';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      updateSlope();
+
+      gsap.from('.slope-card', {
+        y: 30,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.slope-card',
+          start: 'top 85%'
+        }
+      });
+
+      gsap.from('.compare-item', {
+        y: 20,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.15,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.compare-item',
+          start: 'top 85%'
+        }
+      });
+    });
+  </script>
+</body>
+</html>
