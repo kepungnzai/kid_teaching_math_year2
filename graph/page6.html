@@ -1,0 +1,1054 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - How Far Did They Go?</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Distance Traveled Styles ============ */
+
+    body {
+      background: linear-gradient(180deg, #E3F2FD 0%, #FFF8E1 100%);
+    }
+
+    .page5-header-text {
+      color: #1565C0 !important;
+    }
+    .page5-header-text span {
+      color: #E65100 !important;
+    }
+
+    /* Intro */
+    .dist-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #FFF3E0 100%);
+      border-left: 6px solid #1565C0;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .dist-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .dist-intro p:last-child { margin-bottom: 0; }
+    .dist-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #C62828;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    /* Graph container */
+    .graph-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .graph-container h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Line Chart SVG */
+    .line-chart-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .line-chart-svg {
+      width: 100%;
+      max-width: 640px;
+      height: auto;
+      background: #FAFAFA;
+      border-radius: var(--radius-md);
+      border: 2px solid #E0E0E0;
+      padding: 0.5rem 0.25rem;
+    }
+    .line-chart-svg .grid-line {
+      stroke: #E8E8E8;
+      stroke-width: 1;
+      stroke-dasharray: 5,5;
+    }
+    .line-chart-svg .axis-line {
+      stroke: #BDBDBD;
+      stroke-width: 2;
+    }
+    .line-chart-svg .y-label {
+      font-size: 12px;
+      font-weight: 600;
+      fill: #888;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .line-chart-svg .x-label {
+      font-size: 12px;
+      font-weight: 700;
+      fill: #555;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .line-chart-svg .value-label {
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      opacity: 0;
+    }
+    .line-chart-svg .dot-circle {
+      opacity: 0;
+    }
+    .line-chart-svg .chart-line {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Highlight markers */
+    .highlight-marker {
+      stroke-width: 3;
+      stroke-dasharray: 8,4;
+    }
+    .highlight-label {
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      opacity: 0;
+    }
+    .highlight-circle {
+      opacity: 0;
+    }
+
+    /* Legend */
+    .bird-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin: 0.5rem 0 1rem;
+    }
+    .bird-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .bird-legend-item .legend-line {
+      width: 25px;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* ===== Distance Comparison Table ===== */
+    .distance-table-wrap {
+      overflow-x: auto;
+      margin: 2rem 0;
+    }
+    .distance-table {
+      width: 100%;
+      max-width: 580px;
+      margin: 0 auto;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .distance-table thead th {
+      padding: 1rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-align: center;
+      background: #E3F2FD;
+      color: #1565C0;
+      border-bottom: 3px solid #90CAF9;
+    }
+    .distance-table thead th:first-child {
+      text-align: left;
+      padding-left: 1.5rem;
+    }
+    .distance-table tbody td {
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      border-bottom: 1px solid #E0E0E0;
+      background: white;
+    }
+    .distance-table tbody td:first-child {
+      text-align: left;
+      padding-left: 1.5rem;
+      font-weight: 700;
+    }
+    .distance-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .distance-table .highlight-cell {
+      background: #FFF8E1;
+      font-weight: 800;
+      font-size: 1.15rem;
+      border: 2px solid #FFC107;
+    }
+    .distance-table .falcon-cell { color: #C62828; }
+    .distance-table .pigeon-cell { color: #F57F17; }
+    .distance-table .ostrich-cell { color: #2E7D32; }
+    .distance-table tfoot td {
+      padding: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+      text-align: center;
+      background: #F5F5F5;
+      font-style: italic;
+    }
+
+    /* Distance bars (visual comparison) */
+    .dist-bars-section {
+      margin: 2rem 0;
+    }
+    .dist-bars-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1rem 0;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 2px solid #E0E0E0;
+    }
+    .dist-bars-row h5 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+    .dist-bar-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .dist-bar-group .bird-icon {
+      width: 36px;
+      font-size: 1.5rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .dist-bar-track {
+      flex: 1;
+      height: 32px;
+      background: #F5F5F5;
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dist-bar-fill {
+      height: 100%;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 0.75rem;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: white;
+      transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: 0%;
+    }
+    .dist-bar-fill.falcon-fill { background: linear-gradient(90deg, #EF5350, #C62828); }
+    .dist-bar-fill.pigeon-fill { background: linear-gradient(90deg, #FFB74D, #F57F17); }
+    .dist-bar-fill.ostrich-fill { background: linear-gradient(90deg, #66BB6A, #2E7D32); }
+
+    /* Time marker labels */
+    .time-marker-note {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .time-marker-note span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .marker-3s {
+      background: #FFF8E1;
+      border: 2px solid #FFC107;
+      color: #F57F17;
+    }
+    .marker-5s {
+      background: #E8F5E9;
+      border: 2px solid #66BB6A;
+      color: #2E7D32;
+    }
+
+    /* Bird info mini cards */
+    .bird-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .bird-card {
+      padding: 1.25rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      border: 3px solid #E0E0E0;
+    }
+    .bird-card .bird-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .bird-card h5 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .bird-card p { font-size: 0.9rem; color: var(--color-text-light); }
+    .bird-card .dist-stat {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-top: 0.5rem;
+    }
+
+    /* Quiz */
+    .graph-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .graph-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .graph-option:hover {
+      border-color: #1565C0;
+      background: #E3F2FD;
+      transform: scale(1.05);
+    }
+    .graph-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .graph-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .graph-option:disabled { cursor: default; opacity: 0.7; }
+    .graph-option.correct:disabled { opacity: 1; }
+
+    .graph-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .graph-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .graph-result.correct-result { background: #E8F5E9; color: #2E7D32; }
+    .graph-result.wrong-result { background: #FFEBEE; color: #C62828; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    @media (max-width: 768px) {
+      .bird-cards { grid-template-columns: 1fr; }
+      .line-chart-svg .x-label { font-size: 10px; }
+      .line-chart-svg .y-label { font-size: 10px; }
+      .distance-table tbody td { font-size: 0.9rem; padding: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page3.html">Adventure 3</a></li>
+        <li><a href="page4.html">Adventure 4</a></li>
+        <li><a href="page5.html" class="active">Adventure 5</a></li>
+        <li><a href="page6.html">Adventure 6</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article" style="border: 3px solid #BBDEFB;">
+      <h2 class="page5-header-text">📏 How Far Did <span>They Go</span>? 🦅🐦🦃</h2>
+
+      <!-- Intro -->
+      <div class="dist-intro">
+        <p><strong>Distance vs Time — A New Way to See Speed!</strong></p>
+        <p>Remember how the <strong>Peregrine Falcon</strong> zoomed up fast and dropped fast? And the <strong>Ostrich</strong> ran at a constant speed? In Adventure 4 we saw their <strong>speed</strong>. But now we ask: <strong>How far did each bird travel?</strong> 🏃</p>
+        <p>The distance a bird travels depends on its speed. A bird that goes <strong>fast for longer</strong> covers more ground. Let's see who goes the <strong>farthest</strong> after 3 seconds and 5 seconds!</p>
+        <div class="big-idea">🧠 Distance = Speed × Time. Fast bird + more time = more distance! 📏</div>
+      </div>
+
+      <!-- Quick bird recap -->
+      <section>
+        <h3>🦜 Quick Recap: The Three Birds</h3>
+        <div class="bird-cards">
+          <div class="bird-card" style="border-color: #C62828;">
+            <div class="bird-emoji">🦅</div>
+            <h5 style="color:#C62828;">Peregrine Falcon</h5>
+            <p>Speeds up <strong>very fast</strong> (0→90 km/h in 2s) then slows down fast. It covers a lot of distance quickly!</p>
+          </div>
+          <div class="bird-card" style="border-color: #F57F17;">
+            <div class="bird-emoji">🐦</div>
+            <h5 style="color:#F57F17;">Pigeon</h5>
+            <p>Speeds up and down <strong>gently</strong> (0→30→0). It doesn't travel very far in a short time.</p>
+          </div>
+          <div class="bird-card" style="border-color: #2E7D32;">
+            <div class="bird-emoji">🦃</div>
+            <h5 style="color:#2E7D32;">Ostrich (Running)</h5>
+            <p>Speeds up <strong>steadily</strong> (0→50 km/h at a constant rate). Keeps going farther and farther!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ THE DISTANCE-TIME GRAPH ============ -->
+      <section>
+        <h3>📈 Distance Traveled Over Time</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          This graph shows <strong>how far each bird has traveled</strong> after each second. Look at 3 seconds ⏱️ and 5 seconds ⏱️!
+        </p>
+
+        <div class="graph-container" style="border-color: #90CAF9;">
+          <h4>🦅🐦🦃 Distance Traveled (meters) Over Time</h4>
+
+          <!-- Legend -->
+          <div class="bird-legend">
+            <div class="bird-legend-item" style="background:#FFEBEE;">
+              <span class="legend-line" style="background:#C62828;"></span>
+              🦅 Falcon
+            </div>
+            <div class="bird-legend-item" style="background:#FFF8E1;">
+              <span class="legend-line" style="background:#F57F17;"></span>
+              🐦 Pigeon
+            </div>
+            <div class="bird-legend-item" style="background:#E8F5E9;">
+              <span class="legend-line" style="background:#2E7D32;"></span>
+              🦃 Ostrich
+            </div>
+            <span class="marker-3s">⏱️ 3 seconds</span>
+            <span class="marker-5s">⏱️ 5 seconds</span>
+          </div>
+
+          <div class="line-chart-wrapper">
+            <svg class="line-chart-svg" viewBox="0 0 640 380" id="distChart">
+              <!-- Background grid lines -->
+              <line class="grid-line" x1="60" y1="40" x2="590" y2="40" />
+              <line class="grid-line" x1="60" y1="78" x2="590" y2="78" />
+              <line class="grid-line" x1="60" y1="116" x2="590" y2="116" />
+              <line class="grid-line" x1="60" y1="154" x2="590" y2="154" />
+              <line class="grid-line" x1="60" y1="192" x2="590" y2="192" />
+              <line class="grid-line" x1="60" y1="230" x2="590" y2="230" />
+              <line class="grid-line" x1="60" y1="268" x2="590" y2="268" />
+              <line class="grid-line" x1="60" y1="306" x2="590" y2="306" />
+
+              <!-- Axes -->
+              <line class="axis-line" x1="60" y1="306" x2="590" y2="306" />
+              <line class="axis-line" x1="60" y1="40" x2="60" y2="306" />
+
+              <!-- Y-axis labels (0-80 meters) -->
+              <text class="y-label" x="50" y="44" text-anchor="end">80m</text>
+              <text class="y-label" x="50" y="82" text-anchor="end">70m</text>
+              <text class="y-label" x="50" y="120" text-anchor="end">60m</text>
+              <text class="y-label" x="50" y="158" text-anchor="end">50m</text>
+              <text class="y-label" x="50" y="196" text-anchor="end">40m</text>
+              <text class="y-label" x="50" y="234" text-anchor="end">30m</text>
+              <text class="y-label" x="50" y="272" text-anchor="end">20m</text>
+              <text class="y-label" x="50" y="310" text-anchor="end">0m</text>
+
+              <!-- X-axis labels -->
+              <text class="x-label" x="60" y="328" text-anchor="middle">0s</text>
+              <text class="x-label" x="166" y="328" text-anchor="middle">1s</text>
+              <text class="x-label" x="272" y="328" text-anchor="middle">2s</text>
+              <text class="x-label" x="378" y="328" text-anchor="middle">3s 🎯</text>
+              <text class="x-label" x="484" y="328" text-anchor="middle">4s</text>
+              <text class="x-label" x="590" y="328" text-anchor="middle">5s 🎯</text>
+
+              <!-- X-axis unit label -->
+              <text class="x-label" x="325" y="350" text-anchor="middle" font-size="13" fill="#888">Time (seconds)</text>
+
+              <!-- ===== FALCON ===== -->
+              <!-- Distance: 0s=0, 1s=6, 2s=24, 3s=49, 4s=65, 5s=70 meters -->
+              <!-- y = 306 - (value * 266/80) = 306 - value*3.325 -->
+              <!-- 0: 306, 6: 306-19.95=286.05, 24: 306-79.8=226.2, 49: 306-162.9=143.1, 65: 306-216.1=89.9, 70: 306-232.75=73.25 -->
+              <!-- x: (590-60)/5 = 106. x0=60, x1=166, x2=272, x3=378, x4=484, x5=590 -->
+              <polyline class="chart-line" id="falconDistLine"
+                points="60,306 166,286.1 272,226.2 378,143.1 484,89.9 590,73.3"
+                stroke="#C62828" stroke-width="4" />
+
+              <!-- ===== PIGEON ===== -->
+              <!-- Distance: 0s=0, 1s=2, 2s=8, 3s=17, 4s=23, 5s=25 meters -->
+              <!-- 0: 306, 2: 306-6.65=299.4, 8: 306-26.6=279.4, 17: 306-56.5=249.5, 23: 306-76.5=229.5, 25: 306-83.1=222.9 -->
+              <polyline class="chart-line" id="pigeonDistLine"
+                points="60,306 166,299.4 272,279.4 378,249.5 484,229.5 590,222.9"
+                stroke="#F57F17" stroke-width="4" stroke-dasharray="8,4" />
+
+              <!-- ===== OSTRICH ===== -->
+              <!-- Distance: 0s=0, 1s=1, 2s=5, 3s=12, 4s=22, 5s=35 meters -->
+              <!-- 0: 306, 1: 306-3.3=302.7, 5: 306-16.6=289.4, 12: 306-39.9=266.1, 22: 306-73.2=232.8, 35: 306-116.4=189.6 -->
+              <polyline class="chart-line" id="ostrichDistLine"
+                points="60,306 166,302.7 272,289.4 378,266.1 484,232.8 590,189.6"
+                stroke="#2E7D32" stroke-width="4" stroke-dasharray="2,4" />
+
+              <!-- ===== Data Dots ===== -->
+              <!-- Falcon dots -->
+              <circle class="dot-circle" id="falconDot0" cx="60" cy="306" r="7" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="value-label" id="falconVal0" x="60" y="298" text-anchor="middle" fill="#C62828">0m</text>
+
+              <circle class="dot-circle" id="falconDot1" cx="166" cy="286.1" r="7" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="value-label" id="falconVal1" x="166" y="277" text-anchor="middle" fill="#C62828">6m</text>
+
+              <circle class="dot-circle" id="falconDot2" cx="272" cy="226.2" r="7" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="value-label" id="falconVal2" x="272" y="217" text-anchor="middle" fill="#C62828">24m</text>
+
+              <!-- FALCON AT 3s - HIGHLIGHTED -->
+              <circle class="highlight-circle" id="falconDot3" cx="378" cy="143.1" r="12" fill="#FFEBEE" stroke="#C62828" stroke-width="4" />
+              <circle class="highlight-circle" id="falconDot3Inner" cx="378" cy="143.1" r="7" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="highlight-label" id="falconVal3" x="378" y="132" text-anchor="middle" fill="#C62828">🔴 49m</text>
+
+              <circle class="dot-circle" id="falconDot4" cx="484" cy="89.9" r="7" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="value-label" id="falconVal4" x="484" y="81" text-anchor="middle" fill="#C62828">65m</text>
+
+              <!-- FALCON AT 5s - HIGHLIGHTED -->
+              <circle class="highlight-circle" id="falconDot5" cx="590" cy="73.3" r="12" fill="#FFEBEE" stroke="#C62828" stroke-width="4" />
+              <circle class="highlight-circle" id="falconDot5Inner" cx="590" cy="73.3" r="7" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="highlight-label" id="falconVal5" x="590" y="62" text-anchor="middle" fill="#C62828">🔴 70m</text>
+
+              <!-- Pigeon dots -->
+              <circle class="dot-circle" id="pigeonDot0" cx="60" cy="306" r="6" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal0" x="60" y="298" text-anchor="middle" fill="#F57F17">0m</text>
+
+              <circle class="dot-circle" id="pigeonDot1" cx="166" cy="299.4" r="6" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal1" x="166" y="291" text-anchor="middle" fill="#F57F17">2m</text>
+
+              <circle class="dot-circle" id="pigeonDot2" cx="272" cy="279.4" r="6" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal2" x="272" y="270" text-anchor="middle" fill="#F57F17">8m</text>
+
+              <!-- PIGEON AT 3s - HIGHLIGHTED -->
+              <circle class="highlight-circle" id="pigeonDot3" cx="378" cy="249.5" r="10" fill="#FFF8E1" stroke="#F57F17" stroke-width="3" />
+              <circle class="highlight-circle" id="pigeonDot3Inner" cx="378" cy="249.5" r="6" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="highlight-label" id="pigeonVal3" x="378" y="240" text-anchor="middle" fill="#F57F17">🟠 17m</text>
+
+              <circle class="dot-circle" id="pigeonDot4" cx="484" cy="229.5" r="6" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal4" x="484" y="220" text-anchor="middle" fill="#F57F17">23m</text>
+
+              <!-- PIGEON AT 5s - HIGHLIGHTED -->
+              <circle class="highlight-circle" id="pigeonDot5" cx="590" cy="222.9" r="10" fill="#FFF8E1" stroke="#F57F17" stroke-width="3" />
+              <circle class="highlight-circle" id="pigeonDot5Inner" cx="590" cy="222.9" r="6" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="highlight-label" id="pigeonVal5" x="590" y="213" text-anchor="middle" fill="#F57F17">🟠 25m</text>
+
+              <!-- Ostrich dots -->
+              <circle class="dot-circle" id="ostrichDot0" cx="60" cy="306" r="6" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal0" x="60" y="298" text-anchor="middle" fill="#2E7D32">0m</text>
+
+              <circle class="dot-circle" id="ostrichDot1" cx="166" cy="302.7" r="6" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal1" x="166" y="294" text-anchor="middle" fill="#2E7D32">1m</text>
+
+              <circle class="dot-circle" id="ostrichDot2" cx="272" cy="289.4" r="6" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal2" x="272" y="280" text-anchor="middle" fill="#2E7D32">5m</text>
+
+              <!-- OSTRICH AT 3s - HIGHLIGHTED -->
+              <circle class="highlight-circle" id="ostrichDot3" cx="378" cy="266.1" r="10" fill="#E8F5E9" stroke="#2E7D32" stroke-width="3" />
+              <circle class="highlight-circle" id="ostrichDot3Inner" cx="378" cy="266.1" r="6" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="highlight-label" id="ostrichVal3" x="378" y="257" text-anchor="middle" fill="#2E7D32">🟢 12m</text>
+
+              <circle class="dot-circle" id="ostrichDot4" cx="484" cy="232.8" r="6" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal4" x="484" y="223" text-anchor="middle" fill="#2E7D32">22m</text>
+
+              <!-- OSTRICH AT 5s - HIGHLIGHTED -->
+              <circle class="highlight-circle" id="ostrichDot5" cx="590" cy="189.6" r="10" fill="#E8F5E9" stroke="#2E7D32" stroke-width="3" />
+              <circle class="highlight-circle" id="ostrichDot5Inner" cx="590" cy="189.6" r="6" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="highlight-label" id="ostrichVal5" x="590" y="180" text-anchor="middle" fill="#2E7D32">🟢 35m</text>
+
+              <!-- Vertical highlight lines at 3s and 5s -->
+              <line class="highlight-marker" id="marker3s" x1="378" y1="40" x2="378" y2="306" stroke="#FFC107" opacity="0" />
+              <text class="highlight-label" id="marker3sLabel" x="378" y="22" text-anchor="middle" fill="#F57F17" font-size="15">⏱️ 3s</text>
+
+              <line class="highlight-marker" id="marker5s" x1="590" y1="40" x2="590" y2="306" stroke="#66BB6A" opacity="0" />
+              <text class="highlight-label" id="marker5sLabel" x="590" y="22" text-anchor="middle" fill="#2E7D32" font-size="15">⏱️ 5s</text>
+            </svg>
+          </div>
+
+          <div class="action-buttons">
+            <button id="distRevealBtn" class="btn btn-reveal">📏 Show Distance Data!</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DISTANCE COMPARISON TABLE ============ -->
+      <section>
+        <h3>📊 Distance Comparison at ⏱️ 3s and ⏱️ 5s</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          Let's look at the <strong>exact numbers</strong> side by side!
+        </p>
+
+        <div class="distance-table-wrap">
+          <table class="distance-table">
+            <thead>
+              <tr>
+                <th>🦜 Bird</th>
+                <th>🏁 Distance at 3 seconds</th>
+                <th>🏁 Distance at 5 seconds</th>
+                <th>📈 Distance gained (3s → 5s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="color:#C62828;">🦅 Falcon</span></td>
+                <td class="highlight-cell falcon-cell">49 meters</td>
+                <td class="highlight-cell falcon-cell">70 meters</td>
+                <td class="falcon-cell">+21 meters</td>
+              </tr>
+              <tr>
+                <td><span style="color:#F57F17;">🐦 Pigeon</span></td>
+                <td class="highlight-cell pigeon-cell">17 meters</td>
+                <td class="highlight-cell pigeon-cell">25 meters</td>
+                <td class="pigeon-cell">+8 meters</td>
+              </tr>
+              <tr>
+                <td><span style="color:#2E7D32;">🦃 Ostrich</span></td>
+                <td class="highlight-cell ostrich-cell">12 meters</td>
+                <td class="highlight-cell ostrich-cell">35 meters</td>
+                <td class="ostrich-cell">+23 meters</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4">
+                  🧠 <strong>Interesting!</strong> The Falcon is <strong>farthest</strong> at both times, but the <strong>Ostrich gains the most distance</strong> between 3s and 5s (+23m) — because it keeps speeding up!
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ VISUAL BAR COMPARISON ============ -->
+      <section>
+        <h3>📊 See the Difference — Bar Comparison!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          These bars show <strong>how far each bird traveled</strong> at 3 seconds and 5 seconds. Bigger bar = more distance!
+        </p>
+
+        <div class="dist-bars-section">
+
+          <!-- 3 Seconds -->
+          <div class="dist-bars-row" style="border-color: #FFC107;">
+            <h5>⏱️ At 3 Seconds</h5>
+            <div class="dist-bar-group">
+              <div class="bird-icon">🦅</div>
+              <div class="dist-bar-track">
+                <div class="dist-bar-fill falcon-fill" id="barFalcon3s" style="width:0%;">49m</div>
+              </div>
+            </div>
+            <div class="dist-bar-group">
+              <div class="bird-icon">🐦</div>
+              <div class="dist-bar-track">
+                <div class="dist-bar-fill pigeon-fill" id="barPigeon3s" style="width:0%;">17m</div>
+              </div>
+            </div>
+            <div class="dist-bar-group">
+              <div class="bird-icon">🦃</div>
+              <div class="dist-bar-track">
+                <div class="dist-bar-fill ostrich-fill" id="barOstrich3s" style="width:0%;">12m</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 Seconds -->
+          <div class="dist-bars-row" style="border-color: #66BB6A;">
+            <h5>⏱️ At 5 Seconds</h5>
+            <div class="dist-bar-group">
+              <div class="bird-icon">🦅</div>
+              <div class="dist-bar-track">
+                <div class="dist-bar-fill falcon-fill" id="barFalcon5s" style="width:0%;">70m</div>
+              </div>
+            </div>
+            <div class="dist-bar-group">
+              <div class="bird-icon">🐦</div>
+              <div class="dist-bar-track">
+                <div class="dist-bar-fill pigeon-fill" id="barPigeon5s" style="width:0%;">25m</div>
+              </div>
+            </div>
+            <div class="dist-bar-group">
+              <div class="bird-icon">🦃</div>
+              <div class="dist-bar-track">
+                <div class="dist-bar-fill ostrich-fill" id="barOstrich5s" style="width:0%;">35m</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- What We Learned -->
+      <div class="thinking-steps" style="background:#E3F2FD;border-left-color:#1565C0;">
+        <h4 style="color:#1565C0;">🧠 What We Learned About Distance</h4>
+        <div class="step">
+          <span class="step-number" style="background:#C62828;">1</span>
+          <span class="step-text"><strong>🦅 Falcon at 3s:</strong> 49m — It zoomed ahead fast, but then <strong>slowed down</strong>, so it only gained 21m more in the next 2 seconds.</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#2E7D32;">2</span>
+          <span class="step-text"><strong>🦃 Ostrich at 3s:</strong> 12m — It started slowly, but <strong>kept speeding up</strong>, gaining 23m in the next 2 seconds!</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#1565C0;">3</span>
+          <span class="step-text"><strong>🔍 Compare the lines:</strong> The Falcon's line <strong>curves and flattens</strong> (it stops gaining distance fast). The Ostrich's line <strong>curves upward</strong> (it keeps going faster)!</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#E65100;">💡</span>
+          <span class="step-text"><strong>Distance = Speed × Time!</strong> If you go fast, you cover more ground. But if you <strong>keep speeding up</strong>, you cover even more!</span>
+        </div>
+      </div>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section" style="border-color:#1565C0;">
+        <h3>🧠 Distance Traveled Quiz!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Use the distance graph and table above to answer these questions!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🏆 Which bird traveled the <strong>farthest</strong> at both 3 seconds and 5 seconds?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">🦅 Peregrine Falcon</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🐦 Pigeon</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🦃 Ostrich</button>
+          </div>
+          <div class="graph-result" id="gq1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🔢 How far did the <strong>Falcon</strong> travel in 3 seconds?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">24 meters</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">49 meters</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">70 meters</button>
+          </div>
+          <div class="graph-result" id="gq2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🦃 What distance did the <strong>Ostrich</strong> cover at 5 seconds?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">12 meters</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">22 meters</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">35 meters</button>
+          </div>
+          <div class="graph-result" id="gq3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 📈 Which bird gained the <strong>most</strong> distance between 3s and 5s?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🦅 Falcon (+21m)</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🐦 Pigeon (+8m)</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">🦃 Ostrich (+23m)</button>
+          </div>
+          <div class="graph-result" id="gq4"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🐦 How far did the <strong>Pigeon</strong> travel in 5 seconds?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">25 meters</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">17 meters</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">8 meters</button>
+          </div>
+          <div class="graph-result" id="gq5"></div>
+        </div>
+
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Distance Data ============
+    var distData = {
+      falcon: [
+        { value: 0, dotId: 'falconDot0', valId: 'falconVal0' },
+        { value: 6, dotId: 'falconDot1', valId: 'falconVal1' },
+        { value: 24, dotId: 'falconDot2', valId: 'falconVal2' },
+        { value: 49, dotId: 'falconDot3', valId: 'falconVal3', highlight: true },
+        { value: 65, dotId: 'falconDot4', valId: 'falconVal4' },
+        { value: 70, dotId: 'falconDot5', valId: 'falconVal5', highlight: true }
+      ],
+      pigeon: [
+        { value: 0, dotId: 'pigeonDot0', valId: 'pigeonVal0' },
+        { value: 2, dotId: 'pigeonDot1', valId: 'pigeonVal1' },
+        { value: 8, dotId: 'pigeonDot2', valId: 'pigeonVal2' },
+        { value: 17, dotId: 'pigeonDot3', valId: 'pigeonVal3', highlight: true },
+        { value: 23, dotId: 'pigeonDot4', valId: 'pigeonVal4' },
+        { value: 25, dotId: 'pigeonDot5', valId: 'pigeonVal5', highlight: true }
+      ],
+      ostrich: [
+        { value: 0, dotId: 'ostrichDot0', valId: 'ostrichVal0' },
+        { value: 1, dotId: 'ostrichDot1', valId: 'ostrichVal1' },
+        { value: 5, dotId: 'ostrichDot2', valId: 'ostrichVal2' },
+        { value: 12, dotId: 'ostrichDot3', valId: 'ostrichVal3', highlight: true },
+        { value: 22, dotId: 'ostrichDot4', valId: 'ostrichVal4' },
+        { value: 35, dotId: 'ostrichDot5', valId: 'ostrichVal5', highlight: true }
+      ]
+    };
+
+    var distRevealed = false;
+    var distTimeline = null;
+
+    // Elements to show/hide
+    var highlightElements = [
+      'falconDot3', 'falconDot3Inner', 'falconVal3',
+      'falconDot5', 'falconDot5Inner', 'falconVal5',
+      'pigeonDot3', 'pigeonDot3Inner', 'pigeonVal3',
+      'pigeonDot5', 'pigeonDot5Inner', 'pigeonVal5',
+      'ostrichDot3', 'ostrichDot3Inner', 'ostrichVal3',
+      'ostrichDot5', 'ostrichDot5Inner', 'ostrichVal5',
+      'marker3s', 'marker3sLabel',
+      'marker5s', 'marker5sLabel'
+    ];
+
+    function revealDistData() {
+      if (distRevealed) {
+        if (distTimeline) distTimeline.kill();
+        distRevealed = false;
+        document.getElementById('distRevealBtn').textContent = '📏 Show Distance Data!';
+        document.getElementById('distRevealBtn').disabled = false;
+
+        // Reset polylines
+        ['falconDistLine', 'pigeonDistLine', 'ostrichDistLine'].forEach(function(id) {
+          var line = document.getElementById(id);
+          var len = line.getTotalLength ? line.getTotalLength() : 600;
+          line.style.strokeDasharray = len;
+          line.style.strokeDashoffset = len;
+        });
+
+        // Hide all dots and values
+        Object.keys(distData).forEach(function(bird) {
+          distData[bird].forEach(function(d) {
+            document.getElementById(d.dotId).style.opacity = '0';
+            document.getElementById(d.valId).style.opacity = '0';
+          });
+        });
+
+        // Hide highlight elements
+        highlightElements.forEach(function(id) {
+          document.getElementById(id).style.opacity = '0';
+        });
+
+        // Reset bar widths
+        ['barFalcon3s', 'barPigeon3s', 'barOstrich3s', 'barFalcon5s', 'barPigeon5s', 'barOstrich5s'].forEach(function(id) {
+          document.getElementById(id).style.width = '0%';
+        });
+
+        return;
+      }
+
+      distRevealed = true;
+      document.getElementById('distRevealBtn').textContent = '🔄 Reset';
+      document.getElementById('distRevealBtn').disabled = true;
+
+      // Initialize all polylines
+      ['falconDistLine', 'pigeonDistLine', 'ostrichDistLine'].forEach(function(id) {
+        var line = document.getElementById(id);
+        var len = line.getTotalLength ? line.getTotalLength() : 600;
+        line.style.strokeDasharray = len;
+        line.style.strokeDashoffset = len;
+      });
+
+      // Hide highlight elements initially
+      highlightElements.forEach(function(id) {
+        document.getElementById(id).style.opacity = '0';
+      });
+
+      distTimeline = gsap.timeline({ onComplete: function() {
+        document.getElementById('distRevealBtn').disabled = false;
+
+        // Animate bars after graph
+        animateBars();
+      }});
+
+      // 1. Draw Falcon line
+      distTimeline.to('#falconDistLine', { strokeDashoffset: 0, duration: 1.0, ease: 'power2.inOut' }, 0);
+
+      // Falcon dots
+      distData.falcon.forEach(function(d, i) {
+        distTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)', transformOrigin: 'center' }, 0.3 + i * 0.12);
+        distTimeline.to('#' + d.valId, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 0.35 + i * 0.12);
+      });
+
+      // 2. Draw Pigeon line
+      distTimeline.to('#pigeonDistLine', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 1.2);
+
+      distData.pigeon.forEach(function(d, i) {
+        distTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.25, ease: 'back.out(2)', transformOrigin: 'center' }, 1.4 + i * 0.1);
+        distTimeline.to('#' + d.valId, { opacity: 1, duration: 0.2, ease: 'power2.out' }, 1.45 + i * 0.1);
+      });
+
+      // 3. Draw Ostrich line
+      distTimeline.to('#ostrichDistLine', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 2.0);
+
+      distData.ostrich.forEach(function(d, i) {
+        distTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.25, ease: 'back.out(2)', transformOrigin: 'center' }, 2.2 + i * 0.1);
+        distTimeline.to('#' + d.valId, { opacity: 1, duration: 0.2, ease: 'power2.out' }, 2.25 + i * 0.1);
+      });
+
+      // 4. Show highlight markers and circles
+      distTimeline.to('#marker3s', { opacity: 0.5, duration: 0.3, ease: 'power2.out' }, 2.8);
+      distTimeline.to('#marker3sLabel', { opacity: 1, y: -3, duration: 0.4, ease: 'back.out(2)' }, 2.85);
+
+      // Falcon at 3s
+      distTimeline.to('#falconDot3', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.0);
+      distTimeline.to('#falconDot3Inner', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.02);
+      distTimeline.to('#falconVal3', { opacity: 1, y: -3, duration: 0.3, ease: 'back.out(2)' }, 3.05);
+
+      // Pigeon at 3s
+      distTimeline.to('#pigeonDot3', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.15);
+      distTimeline.to('#pigeonDot3Inner', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.17);
+      distTimeline.to('#pigeonVal3', { opacity: 1, y: -3, duration: 0.3, ease: 'back.out(2)' }, 3.2);
+
+      // Ostrich at 3s
+      distTimeline.to('#ostrichDot3', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.3);
+      distTimeline.to('#ostrichDot3Inner', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.32);
+      distTimeline.to('#ostrichVal3', { opacity: 1, y: -3, duration: 0.3, ease: 'back.out(2)' }, 3.35);
+
+      // 5s markers
+      distTimeline.to('#marker5s', { opacity: 0.5, duration: 0.3, ease: 'power2.out' }, 3.6);
+      distTimeline.to('#marker5sLabel', { opacity: 1, y: -3, duration: 0.4, ease: 'back.out(2)' }, 3.65);
+
+      // Falcon at 5s
+      distTimeline.to('#falconDot5', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.8);
+      distTimeline.to('#falconDot5Inner', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.82);
+      distTimeline.to('#falconVal5', { opacity: 1, y: -3, duration: 0.3, ease: 'back.out(2)' }, 3.85);
+
+      // Pigeon at 5s
+      distTimeline.to('#pigeonDot5', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.95);
+      distTimeline.to('#pigeonDot5Inner', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 3.97);
+      distTimeline.to('#pigeonVal5', { opacity: 1, y: -3, duration: 0.3, ease: 'back.out(2)' }, 4.0);
+
+      // Ostrich at 5s
+      distTimeline.to('#ostrichDot5', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 4.1);
+      distTimeline.to('#ostrichDot5Inner', { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(3)', transformOrigin: 'center' }, 4.12);
+      distTimeline.to('#ostrichVal5', { opacity: 1, y: -3, duration: 0.3, ease: 'back.out(2)' }, 4.15);
+    }
+
+    function animateBars() {
+      // Animate 3s bars
+      gsap.to('#barFalcon3s', { width: '70%', duration: 0.6, ease: 'power2.out', delay: 0.2 });
+      gsap.to('#barPigeon3s', { width: '24%', duration: 0.6, ease: 'power2.out', delay: 0.3 });
+      gsap.to('#barOstrich3s', { width: '17%', duration: 0.6, ease: 'power2.out', delay: 0.4 });
+
+      // Animate 5s bars
+      gsap.to('#barFalcon5s', { width: '100%', duration: 0.6, ease: 'power2.out', delay: 0.6 });
+      gsap.to('#barPigeon5s', { width: '36%', duration: 0.6, ease: 'power2.out', delay: 0.7 });
+      gsap.to('#barOstrich5s', { width: '50%', duration: 0.6, ease: 'power2.out', delay: 0.8 });
+    }
+
+    document.getElementById('distRevealBtn').addEventListener('click', revealDistData);
+
+    // ============ Quiz ============
+    function checkGraphAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.graph-option');
+      var resultDiv = parentCard.querySelector('.graph-result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = "✅ Correct! You're a distance-tracker pro! 📏🌟";
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! Check the distance table and highlighted points on the graph. 💪';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize polylines as hidden
+      ['falconDistLine', 'pigeonDistLine', 'ostrichDistLine'].forEach(function(id) {
+        var line = document.getElementById(id);
+        var len = line.getTotalLength ? line.getTotalLength() : 600;
+        line.style.strokeDasharray = len;
+        line.style.strokeDashoffset = len;
+      });
+
+      gsap.from('.bird-card', {
+        y: 20,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.15,
+        ease: 'power2.out'
+      });
+
+      // Hide all dots, values, and highlights
+      Object.keys(distData).forEach(function(bird) {
+        distData[bird].forEach(function(d) {
+          document.getElementById(d.dotId).style.opacity = '0';
+          document.getElementById(d.valId).style.opacity = '0';
+        });
+      });
+
+      highlightElements.forEach(function(id) {
+        document.getElementById(id).style.opacity = '0';
+      });
+    });
+  </script>
+</body>
+</html>

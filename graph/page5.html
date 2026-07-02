@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Rocket Thrust & Dramatic Drop!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Rocket Thrust Styles ============ */
+
+    body {
+      background: linear-gradient(180deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+    header .logo-text { color: #FF6F00 !important; }
+    header .nav-links a { color: rgba(255,255,255,0.7); }
+    header .nav-links a:hover { background: rgba(255,107,0,0.2); color: #FF6F00; }
+    header .nav-links a.active { background: #FF6F00; color: white; }
+    footer {
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.5);
+      border-top: 2px solid rgba(255,255,255,0.1);
+    }
+    footer p span { color: #FF6F00; }
+
+    .content-wrapper { max-width: 850px; }
+    .back-btn { color: rgba(255,255,255,0.6); }
+    .back-btn:hover { color: #FF6F00; }
+
+    .article {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(5px);
+      border: 3px solid rgba(255,107,0,0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .page6-header-text {
+      color: #FF6F00 !important;
+    }
+    .page6-header-text span {
+      color: #FFD600 !important;
+    }
+
+    /* Intro */
+    .rocket-intro {
+      background: linear-gradient(135deg, rgba(255,107,0,0.15) 0%, rgba(255,214,0,0.1) 100%);
+      border-left: 6px solid #FF6F00;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .rocket-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.9);
+    }
+    .rocket-intro p:last-child { margin-bottom: 0; }
+    .rocket-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #FFD600;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+    .rocket-intro strong { color: #FF6F00; }
+
+    .article h2 { color: #FF6F00; }
+    .article h3 { color: #FFD600; }
+    .article p { color: rgba(255,255,255,0.85); }
+
+    /* Graph container */
+    .graph-container {
+      background: rgba(255,255,255,0.06);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border: 3px solid rgba(255,107,0,0.3);
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .graph-container h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #FFD600;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Line Chart SVG */
+    .line-chart-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .line-chart-svg {
+      width: 100%;
+      max-width: 620px;
+      height: auto;
+      background: rgba(0,0,0,0.3);
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(255,255,255,0.15);
+      padding: 0.5rem 0.25rem;
+    }
+    .line-chart-svg .grid-line {
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 1;
+      stroke-dasharray: 5,5;
+    }
+    .line-chart-svg .axis-line {
+      stroke: rgba(255,255,255,0.25);
+      stroke-width: 2;
+    }
+    .line-chart-svg .y-label {
+      font-size: 12px;
+      font-weight: 600;
+      fill: rgba(255,255,255,0.5);
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .line-chart-svg .x-label {
+      font-size: 12px;
+      font-weight: 700;
+      fill: rgba(255,255,255,0.6);
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .line-chart-svg .value-label {
+      font-size: 12px;
+      font-weight: 800;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      opacity: 0;
+    }
+    .line-chart-svg .dot-circle {
+      opacity: 0;
+    }
+    .line-chart-svg .chart-line {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Legend */
+    .rocket-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin: 0.5rem 0 1rem;
+    }
+    .rocket-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* Annotations */
+    .annotation {
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      opacity: 0;
+    }
+
+    /* Object cards */
+    .object-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin: 2rem 0;
+    }
+    .object-card {
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+    .object-card .obj-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .object-card h5 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .object-card p { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+    .object-card .thrust-tag {
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    .thrust-rocket { background: rgba(255,107,0,0.3); color: #FF6F00; border: 2px solid #FF6F00; }
+    .thrust-meteor { background: rgba(76,175,80,0.3); color: #4CAF50; border: 2px solid #4CAF50; }
+    .thrust-balloon { background: rgba(33,150,243,0.3); color: #42A5F5; border: 2px solid #42A5F5; }
+
+    /* Stats area */
+    .graph-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-md);
+    }
+    .graph-stat {
+      padding: 0.5rem 1rem;
+      text-align: center;
+    }
+    .graph-stat .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #FFD600;
+    }
+    .graph-stat .stat-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* Thinking steps */
+    .thinking-steps {
+      background: rgba(255,107,0,0.1);
+      border-left: 6px solid #FF6F00;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .thinking-steps h4 {
+      font-size: 1.3rem;
+      color: #FFD600;
+      margin-bottom: 1rem;
+      font-weight: 800;
+    }
+    .thinking-steps .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .thinking-steps .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: #FF6F00;
+      color: white;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .thinking-steps .step-text {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.85);
+      padding-top: 0.2rem;
+    }
+
+    /* Speedometer-style comparison */
+    .speed-compare {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-md);
+    }
+    .speed-compare-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .speed-compare-row .speed-icon {
+      width: 40px;
+      font-size: 1.8rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .speed-compare-row .speed-track {
+      flex: 1;
+      height: 36px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    .speed-compare-row .speed-fill {
+      height: 100%;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 0.75rem;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: white;
+      width: 0%;
+      transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Quiz */
+    .quiz-section {
+      margin-top: 3rem;
+      background: rgba(0,0,0,0.25);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      border: 2px solid rgba(255,107,0,0.3);
+    }
+    .quiz-section h3 {
+      font-size: 1.8rem;
+      color: #FFD600;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-card {
+      background: rgba(255,255,255,0.06);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+    .quiz-question {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .graph-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .graph-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.85);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .graph-option:hover {
+      border-color: #FF6F00;
+      background: rgba(255,107,0,0.15);
+      transform: scale(1.05);
+    }
+    .graph-option.correct {
+      border-color: #4CAF50;
+      background: rgba(76,175,80,0.2);
+      color: #81C784;
+    }
+    .graph-option.wrong {
+      border-color: #F44336;
+      background: rgba(244,67,54,0.2);
+      color: #EF9A9A;
+      animation: shake 0.4s ease;
+    }
+    .graph-option:disabled { cursor: default; opacity: 0.7; }
+    .graph-option.correct:disabled { opacity: 1; }
+
+    .graph-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .graph-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .graph-result.correct-result { background: rgba(76,175,80,0.15); color: #81C784; }
+    .graph-result.wrong-result { background: rgba(244,67,54,0.15); color: #EF9A9A; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    @media (max-width: 768px) {
+      .object-cards { grid-template-columns: 1fr; }
+      .line-chart-svg .x-label { font-size: 10px; }
+      .line-chart-svg .y-label { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page3.html">Adventure 3</a></li>
+        <li><a href="page4.html">Adventure 4</a></li>
+        <li><a href="page5.html">Adventure 5</a></li>
+        <li><a href="page6.html" class="active">Adventure 6</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2 class="page6-header-text">🚀 Rocket Thrust & <span>Dramatic Drop</span>! 🔥</h2>
+
+      <!-- Intro -->
+      <div class="rocket-intro">
+        <p><strong>What is Thrust?</strong></p>
+        <p><strong>Thrust</strong> is the force that pushes something forward or upward — like a <strong>rocket engine</strong> blasting off into space! The more thrust, the faster it goes up! 🚀</p>
+        <p>But what goes up must come down! Some things <strong>drop dramatically</strong> — like a meteor falling from the sky or a skydiver pulling a parachute! 💥</p>
+        <p>Let's see three objects on a graph: one that <strong>shoots up super fast</strong>, one that <strong>drops super fast</strong>, and one that <strong>drifts slowly</strong>!</p>
+        <div class="big-idea">🧠 Steep line up = powerful thrust! Steep line down = dramatic drop! 💪</div>
+      </div>
+
+      <!-- Meet the Objects -->
+      <section>
+        <h3>🚀 Meet the Objects!</h3>
+        <div class="object-cards">
+          <div class="object-card" style="border: 3px solid #FF6F00; background: rgba(255,107,0,0.1);">
+            <div class="obj-icon">🚀</div>
+            <h5 style="color:#FF6F00;">Rocket Ship</h5>
+            <p>A powerful rocket engine <strong>blasts off</strong> with enormous thrust! It shoots upward at incredible speed — 0 to 500 km/h in seconds!</p>
+            <span class="thrust-tag thrust-rocket">🔥 Thrust: EXTREME!</span>
+          </div>
+            <div class="object-card" style="border: 3px solid #4CAF50; background: rgba(76,175,80,0.1);">
+            <div class="obj-icon">☄️</div>
+            <h5 style="color:#4CAF50;">Falling Meteor</h5>
+            <p>A meteor <strong>plummets to Earth</strong> at insane speed! It doesn't have thrust — it has <strong>gravity pulling it down</strong> super fast!</p>
+            <span class="thrust-tag thrust-meteor">💥 Drop: EXTREME!</span>
+          </div>
+          <div class="object-card" style="border: 3px solid #42A5F5; background: rgba(33,150,243,0.1);">
+            <div class="obj-icon">🎈</div>
+            <h5 style="color:#42A5F5;">Floating Balloon</h5>
+            <p>A balloon <strong>drifts gently</strong> upward and downward. Very little thrust — it just <strong>floats along</strong> with the wind!</p>
+            <span class="thrust-tag thrust-balloon">🍃 Thrust: Gentle</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ THE GRAPH ============ -->
+      <section>
+        <h3>📈 Speed Over Time — Thrust & Drop!</h3>
+        <p style="font-size:1.05rem;color:rgba(255,255,255,0.6);margin-bottom:1rem;">
+          This graph shows <strong>speed (km/h)</strong> over 5 seconds. Watch the rocket zoom up 🚀 and the meteor come crashing down ☄️!
+        </p>
+
+        <div class="graph-container">
+          <h4>🚀 Speed Over Time: Thrust vs Drop!</h4>
+
+          <!-- Legend -->
+          <div class="rocket-legend">
+            <div class="rocket-legend-item" style="background:rgba(255,107,0,0.15);border:2px solid #FF6F00;">
+              <span style="width:20px;height:4px;background:#FF6F00;border-radius:2px;display:inline-block;"></span>
+              🚀 Rocket (Thrust UP!)
+            </div>
+            <div class="rocket-legend-item" style="background:rgba(76,175,80,0.15);border:2px solid #4CAF50;">
+              <span style="width:20px;height:4px;background:#4CAF50;border-radius:2px;display:inline-block;"></span>
+              ☄️ Meteor (Drop DOWN!)
+            </div>
+            <div class="rocket-legend-item" style="background:rgba(33,150,243,0.15);border:2px solid #42A5F5;">
+              <span style="width:20px;height:4px;background:#42A5F5;border-radius:2px;display:inline-block;"></span>
+              🎈 Balloon (Gentle Float)
+            </div>
+          </div>
+
+          <div class="line-chart-wrapper">
+            <svg class="line-chart-svg" viewBox="0 0 620 380" id="thrustChart">
+              <!-- Background grid lines -->
+              <line class="grid-line" x1="60" y1="40" x2="580" y2="40" />
+              <line class="grid-line" x1="60" y1="78" x2="580" y2="78" />
+              <line class="grid-line" x1="60" y1="116" x2="580" y2="116" />
+              <line class="grid-line" x1="60" y1="154" x2="580" y2="154" />
+              <line class="grid-line" x1="60" y1="192" x2="580" y2="192" />
+              <line class="grid-line" x1="60" y1="230" x2="580" y2="230" />
+              <line class="grid-line" x1="60" y1="268" x2="580" y2="268" />
+              <line class="grid-line" x1="60" y1="306" x2="580" y2="306" />
+
+              <!-- Axes -->
+              <line class="axis-line" x1="60" y1="306" x2="580" y2="306" />
+              <line class="axis-line" x1="60" y1="40" x2="60" y2="306" />
+
+              <!-- Y-axis labels (0-500 km/h) -->
+              <text class="y-label" x="50" y="44" text-anchor="end">500</text>
+              <text class="y-label" x="50" y="82" text-anchor="end">400</text>
+              <text class="y-label" x="50" y="120" text-anchor="end">300</text>
+              <text class="y-label" x="50" y="158" text-anchor="end">200</text>
+              <text class="y-label" x="50" y="196" text-anchor="end">100</text>
+              <text class="y-label" x="50" y="310" text-anchor="end">0</text>
+
+              <!-- X-axis labels -->
+              <text class="x-label" x="60" y="328" text-anchor="middle">0s</text>
+              <text class="x-label" x="164" y="328" text-anchor="middle">1s</text>
+              <text class="x-label" x="268" y="328" text-anchor="middle">2s</text>
+              <text class="x-label" x="372" y="328" text-anchor="middle">3s</text>
+              <text class="x-label" x="476" y="328" text-anchor="middle">4s</text>
+              <text class="x-label" x="580" y="328" text-anchor="middle">5s</text>
+
+              <text class="x-label" x="320" y="350" text-anchor="middle" font-size="13" fill="rgba(255,255,255,0.4)">Time (seconds)</text>
+
+              <!-- ===== ROCKET (Steep Thrust UP!) ===== -->
+              <!-- Speed: 0s=0, 1s=100, 2s=300, 3s=500, 4s=500, 5s=500 -->
+              <!-- y = 306 - (value * 266/500) = 306 - value*0.532 -->
+              <!-- 0: 306, 100: 306-53.2=252.8, 300: 306-159.6=146.4, 500: 306-266=40, 500: 40, 500: 40 -->
+              <!-- x: (580-60)/5 = 104. x0=60, x1=164, x2=268, x3=372, x4=476, x5=580 -->
+              <polyline class="chart-line" id="rocketLine"
+                points="60,306 164,252.8 268,146.4 372,40 476,40 580,40"
+                stroke="#FF6F00" stroke-width="5" />
+
+              <!-- Rocket dots -->
+              <circle class="dot-circle" id="rocketDot0" cx="60" cy="306" r="8" fill="#FF6F00" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="rocketVal0" x="60" y="298" text-anchor="middle" fill="#FF6F00">0</text>
+
+              <circle class="dot-circle" id="rocketDot1" cx="164" cy="252.8" r="8" fill="#FF6F00" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="rocketVal1" x="164" y="244" text-anchor="middle" fill="#FF6F00">100</text>
+
+              <circle class="dot-circle" id="rocketDot2" cx="268" cy="146.4" r="10" fill="#FF6F00" stroke="rgba(255,255,255,0.5)" stroke-width="3" />
+              <text class="value-label" id="rocketVal2" x="268" y="136" text-anchor="middle" fill="#FF6F00">300</text>
+
+              <circle class="dot-circle" id="rocketDot3" cx="372" cy="40" r="12" fill="#FFD600" stroke="#FF6F00" stroke-width="3" />
+              <text class="value-label" id="rocketVal3" x="372" y="28" text-anchor="middle" fill="#FFD600">500</text>
+
+              <circle class="dot-circle" id="rocketDot4" cx="476" cy="40" r="8" fill="#FF6F00" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="rocketVal4" x="476" y="28" text-anchor="middle" fill="#FF6F00">500</text>
+
+              <circle class="dot-circle" id="rocketDot5" cx="580" cy="40" r="8" fill="#FF6F00" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="rocketVal5" x="580" y="28" text-anchor="middle" fill="#FF6F00">500</text>
+
+              <!-- ===== METEOR (Steep Drop DOWN!) ===== -->
+              <!-- Speed: 0s=500, 1s=500, 2s=500, 3s=500, 4s=200, 5s=0 -->
+              <!-- y = 306 - value*0.532 -->
+              <!-- 500: 40, 500: 40, 500: 40, 500: 40, 200: 306-106.4=199.6, 0: 306 -->
+              <polyline class="chart-line" id="meteorLine"
+                points="60,40 164,40 268,40 372,40 476,199.6 580,306"
+                stroke="#4CAF50" stroke-width="5" stroke-dasharray="10,4" />
+
+              <!-- Meteor dots -->
+              <circle class="dot-circle" id="meteorDot0" cx="60" cy="40" r="8" fill="#4CAF50" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="meteorVal0" x="60" y="28" text-anchor="middle" fill="#4CAF50">500</text>
+
+              <circle class="dot-circle" id="meteorDot1" cx="164" cy="40" r="8" fill="#4CAF50" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="meteorVal1" x="164" y="28" text-anchor="middle" fill="#4CAF50">500</text>
+
+              <circle class="dot-circle" id="meteorDot2" cx="268" cy="40" r="8" fill="#4CAF50" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="meteorVal2" x="268" y="28" text-anchor="middle" fill="#4CAF50">500</text>
+
+              <circle class="dot-circle" id="meteorDot3" cx="372" cy="40" r="8" fill="#4CAF50" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="meteorVal3" x="372" y="28" text-anchor="middle" fill="#4CAF50">500</text>
+
+              <circle class="dot-circle" id="meteorDot4" cx="476" cy="199.6" r="10" fill="#4CAF50" stroke="rgba(255,255,255,0.5)" stroke-width="3" />
+              <text class="value-label" id="meteorVal4" x="476" y="190" text-anchor="middle" fill="#4CAF50">200</text>
+
+              <circle class="dot-circle" id="meteorDot5" cx="580" cy="306" r="8" fill="#4CAF50" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text class="value-label" id="meteorVal5" x="580" y="298" text-anchor="middle" fill="#4CAF50">0</text>
+
+              <!-- ===== BALLOON (Gentle Float) ===== -->
+              <!-- Speed: 0s=0, 1s=10, 2s=20, 3s=25, 4s=20, 5s=10 -->
+              <!-- y = 306 - value*0.532 -->
+              <!-- 0: 306, 10: 306-5.32=300.7, 20: 306-10.64=295.4, 25: 306-13.3=292.7, 20: 295.4, 10: 300.7 -->
+              <polyline class="chart-line" id="balloonLine"
+                points="60,306 164,300.7 268,295.4 372,292.7 476,295.4 580,300.7"
+                stroke="#42A5F5" stroke-width="3" stroke-dasharray="4,4" />
+
+              <!-- Balloon dots -->
+              <circle class="dot-circle" id="balloonDot0" cx="60" cy="306" r="6" fill="#42A5F5" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+              <text class="value-label" id="balloonVal0" x="60" y="298" text-anchor="middle" fill="#42A5F5">0</text>
+
+              <circle class="dot-circle" id="balloonDot1" cx="164" cy="300.7" r="6" fill="#42A5F5" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+              <text class="value-label" id="balloonVal1" x="164" y="292" text-anchor="middle" fill="#42A5F5">10</text>
+
+              <circle class="dot-circle" id="balloonDot2" cx="268" cy="295.4" r="6" fill="#42A5F5" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+              <text class="value-label" id="balloonVal2" x="268" y="286" text-anchor="middle" fill="#42A5F5">20</text>
+
+              <circle class="dot-circle" id="balloonDot3" cx="372" cy="292.7" r="6" fill="#42A5F5" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+              <text class="value-label" id="balloonVal3" x="372" y="283" text-anchor="middle" fill="#42A5F5">25</text>
+
+              <circle class="dot-circle" id="balloonDot4" cx="476" cy="295.4" r="6" fill="#42A5F5" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+              <text class="value-label" id="balloonVal4" x="476" y="286" text-anchor="middle" fill="#42A5F5">20</text>
+
+              <circle class="dot-circle" id="balloonDot5" cx="580" cy="300.7" r="6" fill="#42A5F5" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+              <text class="value-label" id="balloonVal5" x="580" y="292" text-anchor="middle" fill="#42A5F5">10</text>
+
+              <!-- Annotations -->
+              <text class="annotation" id="rocketAnnot" x="268" y="100" text-anchor="middle" font-size="15" fill="#FFD600" font-weight="800">
+                🚀 POWERFUL THRUST!
+              </text>
+              <text class="annotation" id="meteorAnnot" x="476" y="150" text-anchor="middle" font-size="15" fill="#4CAF50" font-weight="800">
+                ☄️ DRAMATIC DROP!
+              </text>
+              <text class="annotation" id="balloonAnnot" x="372" y="275" text-anchor="middle" font-size="12" fill="#42A5F5">
+                🎈 Gentle float...
+              </text>
+
+              <!-- Big arrows -->
+              <text class="annotation" id="arrowUp" x="268" y="60" text-anchor="middle" font-size="28" fill="#FFD600">⬆️⬆️⬆️</text>
+              <text class="annotation" id="arrowDown" x="476" y="120" text-anchor="middle" font-size="28" fill="#4CAF50">⬇️⬇️⬇️</text>
+            </svg>
+          </div>
+
+          <div class="action-buttons">
+            <button id="thrustRevealBtn" class="btn btn-reveal" style="background:linear-gradient(135deg,#FF6F00,#FF3D00);box-shadow:0 8px 20px rgba(255,107,0,0.4);">🚀 Launch the Data!</button>
+          </div>
+
+          <div class="graph-stats" id="thrustStats" style="display:none;">
+            <div class="graph-stat">
+              <div class="stat-value" style="color:#FFD600;">🚀 0 → 500 km/h</div>
+              <div class="stat-label">Rocket thrust in just 3 seconds! 🚀</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" style="color:#4CAF50;">☄️ 500 → 0 km/h</div>
+              <div class="stat-label">Meteor drop in just 2 seconds! 💥</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" style="color:#42A5F5;">🎈 0 → 25 → 10</div>
+              <div class="stat-label">Balloon drifts gently — no drama!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Speed Comparison Bars -->
+      <section>
+        <h3>📊 Thrust & Drop — Speed Comparison</h3>
+        <p style="font-size:1.05rem;color:rgba(255,255,255,0.6);margin-bottom:1rem;">
+          See how much faster the <strong>Rocket</strong> and <strong>Meteor</strong> change speed compared to the Balloon!
+        </p>
+
+        <div class="speed-compare">
+          <h5 style="color:#FFD600;font-size:1.1rem;font-weight:800;text-align:center;margin-bottom:0.5rem;">🚀 Speed Increase (0s → 3s)</h5>
+          <div class="speed-compare-row">
+            <div class="speed-icon">🚀</div>
+            <div class="speed-track">
+              <div class="speed-fill" id="barRocketUp" style="background:linear-gradient(90deg,#FF6F00,#FFD600);width:0%;">+500 km/h</div>
+            </div>
+          </div>
+          <div class="speed-compare-row">
+            <div class="speed-icon">🎈</div>
+            <div class="speed-track">
+              <div class="speed-fill" id="barBalloonUp" style="background:linear-gradient(90deg,#42A5F5,#90CAF9);width:0%;">+25 km/h</div>
+            </div>
+          </div>
+
+          <h5 style="color:#4CAF50;font-size:1.1rem;font-weight:800;text-align:center;margin:1rem 0 0.5rem;">☄️ Speed Decrease (3s → 5s)</h5>
+          <div class="speed-compare-row">
+            <div class="speed-icon">☄️</div>
+            <div class="speed-track">
+              <div class="speed-fill" id="barMeteorDown" style="background:linear-gradient(90deg,#4CAF50,#81C784);width:0%;">-500 km/h</div>
+            </div>
+          </div>
+          <div class="speed-compare-row">
+            <div class="speed-icon">🎈</div>
+            <div class="speed-track">
+              <div class="speed-fill" id="barBalloonDown" style="background:linear-gradient(90deg,#42A5F5,#90CAF9);width:0%;">-15 km/h</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- What We Learned -->
+      <div class="thinking-steps">
+        <h4>🧠 What We Learned About Thrust & Drop</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text"><strong>🚀 Rocket (Thrust)!</strong> — The steepest line going UP! In 3 seconds it went from 0 to 500 km/h. That's <strong>powerful thrust</strong>!</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text"><strong>☄️ Meteor (Drop)!</strong> — The steepest line going DOWN! In 2 seconds it went from 500 to 0 km/h. That's a <strong>dramatic drop</strong>!</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text"><strong>🎈 Balloon (Gentle)</strong> — The line barely moves! It slowly goes up to 25 km/h and back down. <strong>Very little thrust or drop</strong>.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">💡</span>
+          <span class="step-text"><strong>Compare!</strong> The steeper the line, the more powerful the thrust (up) or the more dramatic the drop (down)!</span>
+        </div>
+      </div>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section">
+        <h3>🧠 Thrust & Drop Quiz!</h3>
+        <p style="font-size:1.05rem;color:rgba(255,255,255,0.6);margin-bottom:1.5rem;">Use the graph to answer these questions!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🚀 Which object has the <strong>most powerful thrust</strong> (steepest line going UP)?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">🚀 Rocket</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">☄️ Meteor</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🎈 Balloon</button>
+          </div>
+          <div class="graph-result" id="gq1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ ☄️ Which object has the <strong>most dramatic drop</strong> (steepest line going DOWN)?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🚀 Rocket</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">☄️ Meteor</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🎈 Balloon</button>
+          </div>
+          <div class="graph-result" id="gq2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🚀 What speed did the <strong>Rocket</strong> reach after 3 seconds?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">100 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">300 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">500 km/h</button>
+          </div>
+          <div class="graph-result" id="gq3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ ☄️ How fast did the Meteor <strong>drop</strong> from 500 to 0 km/h?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">5 seconds</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">2 seconds</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">1 second</button>
+          </div>
+          <div class="graph-result" id="gq4"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🎈 What is the Balloon's <strong>highest speed</strong>?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">10 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">25 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">500 km/h</button>
+          </div>
+          <div class="graph-result" id="gq5"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ 📏 What does a <strong>steeper line</strong> on this graph tell us?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">The object is moving gently</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">The speed is changing very fast!</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">The object is not moving</button>
+          </div>
+          <div class="graph-result" id="gq6"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Thrust Data ============
+    var thrustData = {
+      rocket: [
+        { value: 0, dotId: 'rocketDot0', valId: 'rocketVal0' },
+        { value: 100, dotId: 'rocketDot1', valId: 'rocketVal1' },
+        { value: 300, dotId: 'rocketDot2', valId: 'rocketVal2' },
+        { value: 500, dotId: 'rocketDot3', valId: 'rocketVal3' },
+        { value: 500, dotId: 'rocketDot4', valId: 'rocketVal4' },
+        { value: 500, dotId: 'rocketDot5', valId: 'rocketVal5' }
+      ],
+      meteor: [
+        { value: 500, dotId: 'meteorDot0', valId: 'meteorVal0' },
+        { value: 500, dotId: 'meteorDot1', valId: 'meteorVal1' },
+        { value: 500, dotId: 'meteorDot2', valId: 'meteorVal2' },
+        { value: 500, dotId: 'meteorDot3', valId: 'meteorVal3' },
+        { value: 200, dotId: 'meteorDot4', valId: 'meteorVal4' },
+        { value: 0, dotId: 'meteorDot5', valId: 'meteorVal5' }
+      ],
+      balloon: [
+        { value: 0, dotId: 'balloonDot0', valId: 'balloonVal0' },
+        { value: 10, dotId: 'balloonDot1', valId: 'balloonVal1' },
+        { value: 20, dotId: 'balloonDot2', valId: 'balloonVal2' },
+        { value: 25, dotId: 'balloonDot3', valId: 'balloonVal3' },
+        { value: 20, dotId: 'balloonDot4', valId: 'balloonVal4' },
+        { value: 10, dotId: 'balloonDot5', valId: 'balloonVal5' }
+      ]
+    };
+
+    var thrustRevealed = false;
+    var thrustTimeline = null;
+    var annotElements = ['rocketAnnot', 'meteorAnnot', 'balloonAnnot', 'arrowUp', 'arrowDown'];
+
+    function revealThrustData() {
+      if (thrustRevealed) {
+        if (thrustTimeline) thrustTimeline.kill();
+        thrustRevealed = false;
+        document.getElementById('thrustRevealBtn').textContent = '🚀 Launch the Data!';
+        document.getElementById('thrustRevealBtn').disabled = false;
+
+        ['rocketLine', 'meteorLine', 'balloonLine'].forEach(function(id) {
+          var line = document.getElementById(id);
+          var len = line.getTotalLength ? line.getTotalLength() : 600;
+          line.style.strokeDasharray = len;
+          line.style.strokeDashoffset = len;
+        });
+
+        Object.keys(thrustData).forEach(function(obj) {
+          thrustData[obj].forEach(function(d) {
+            document.getElementById(d.dotId).style.opacity = '0';
+            document.getElementById(d.valId).style.opacity = '0';
+          });
+        });
+
+        annotElements.forEach(function(id) {
+          document.getElementById(id).style.opacity = '0';
+        });
+
+        ['barRocketUp', 'barBalloonUp', 'barMeteorDown', 'barBalloonDown'].forEach(function(id) {
+          document.getElementById(id).style.width = '0%';
+        });
+
+        document.getElementById('thrustStats').style.display = 'none';
+        return;
+      }
+
+      thrustRevealed = true;
+      document.getElementById('thrustRevealBtn').textContent = '🔄 Reset';
+      document.getElementById('thrustRevealBtn').disabled = true;
+
+      ['rocketLine', 'meteorLine', 'balloonLine'].forEach(function(id) {
+        var line = document.getElementById(id);
+        var len = line.getTotalLength ? line.getTotalLength() : 600;
+        line.style.strokeDasharray = len;
+        line.style.strokeDashoffset = len;
+      });
+
+      annotElements.forEach(function(id) {
+        document.getElementById(id).style.opacity = '0';
+      });
+
+      thrustTimeline = gsap.timeline({ onComplete: function() {
+        document.getElementById('thrustRevealBtn').disabled = false;
+        document.getElementById('thrustStats').style.display = 'flex';
+        gsap.from('#thrustStats', { opacity: 0, y: 10, duration: 0.3, ease: 'power2.out' });
+        animateSpeedBars();
+      }});
+
+      // 1. Draw Rocket line (most dramatic first)
+      thrustTimeline.to('#rocketLine', { strokeDashoffset: 0, duration: 1.0, ease: 'power2.inOut' }, 0);
+
+      thrustData.rocket.forEach(function(d, i) {
+        thrustTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)', transformOrigin: 'center' }, 0.3 + i * 0.12);
+        thrustTimeline.to('#' + d.valId, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 0.35 + i * 0.12);
+      });
+
+      thrustTimeline.to('#rocketAnnot', { opacity: 1, y: -5, duration: 0.5, ease: 'back.out(2)' }, 1.1);
+      thrustTimeline.to('#arrowUp', { opacity: 1, y: -3, duration: 0.5, ease: 'back.out(2)' }, 1.15);
+
+      // 2. Draw Meteor line
+      thrustTimeline.to('#meteorLine', { strokeDashoffset: 0, duration: 0.8, ease: 'power2.inOut' }, 1.5);
+
+      thrustData.meteor.forEach(function(d, i) {
+        thrustTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.25, ease: 'back.out(2)', transformOrigin: 'center' }, 1.7 + i * 0.1);
+        thrustTimeline.to('#' + d.valId, { opacity: 1, duration: 0.2, ease: 'power2.out' }, 1.75 + i * 0.1);
+      });
+
+      thrustTimeline.to('#meteorAnnot', { opacity: 1, y: -5, duration: 0.5, ease: 'back.out(2)' }, 2.3);
+      thrustTimeline.to('#arrowDown', { opacity: 1, y: -3, duration: 0.5, ease: 'back.out(2)' }, 2.35);
+
+      // 3. Draw Balloon line
+      thrustTimeline.to('#balloonLine', { strokeDashoffset: 0, duration: 0.6, ease: 'power2.inOut' }, 2.8);
+
+      thrustData.balloon.forEach(function(d, i) {
+        thrustTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.2, ease: 'back.out(2)', transformOrigin: 'center' }, 3.0 + i * 0.08);
+        thrustTimeline.to('#' + d.valId, { opacity: 1, duration: 0.2, ease: 'power2.out' }, 3.05 + i * 0.08);
+      });
+
+      thrustTimeline.to('#balloonAnnot', { opacity: 1, y: -3, duration: 0.4, ease: 'back.out(2)' }, 3.5);
+    }
+
+    function animateSpeedBars() {
+      gsap.to('#barRocketUp', { width: '100%', duration: 0.7, ease: 'power2.out', delay: 0.2 });
+      gsap.to('#barBalloonUp', { width: '5%', duration: 0.7, ease: 'power2.out', delay: 0.4 });
+      gsap.to('#barMeteorDown', { width: '100%', duration: 0.7, ease: 'power2.out', delay: 0.6 });
+      gsap.to('#barBalloonDown', { width: '3%', duration: 0.7, ease: 'power2.out', delay: 0.8 });
+    }
+
+    document.getElementById('thrustRevealBtn').addEventListener('click', revealThrustData);
+
+    // ============ Quiz ============
+    function checkGraphAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.graph-option');
+      var resultDiv = parentCard.querySelector('.graph-result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = "✅ Correct! That's some serious thrust (or drop)! 🚀🌟";
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! Look at which line is steepest going UP (thrust) or DOWN (drop)! 💪';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      ['rocketLine', 'meteorLine', 'balloonLine'].forEach(function(id) {
+        var line = document.getElementById(id);
+        var len = line.getTotalLength ? line.getTotalLength() : 600;
+        line.style.strokeDasharray = len;
+        line.style.strokeDashoffset = len;
+      });
+
+      Object.keys(thrustData).forEach(function(obj) {
+        thrustData[obj].forEach(function(d) {
+          document.getElementById(d.dotId).style.opacity = '0';
+          document.getElementById(d.valId).style.opacity = '0';
+        });
+      });
+
+      annotElements.forEach(function(id) {
+        document.getElementById(id).style.opacity = '0';
+      });
+    });
+  </script>
+</body>
+</html>

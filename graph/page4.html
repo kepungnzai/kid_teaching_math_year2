@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Bird Speed Showdown!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Bird Speed Styles ============ */
+
+    body {
+      background: linear-gradient(180deg, #E3F2FD 0%, #FFF8E1 100%);
+    }
+
+    .page4-header-text {
+      color: #1565C0 !important;
+    }
+    .page4-header-text span {
+      color: #E65100 !important;
+    }
+
+    /* Intro */
+    .bird-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #FFF3E0 100%);
+      border-left: 6px solid #1565C0;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .bird-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .bird-intro p:last-child { margin-bottom: 0; }
+    .bird-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #C62828;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    /* Graph container */
+    .graph-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .graph-container h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Line Chart SVG area */
+    .line-chart-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .line-chart-svg {
+      width: 100%;
+      max-width: 620px;
+      height: auto;
+      background: #FAFAFA;
+      border-radius: var(--radius-md);
+      border: 2px solid #E0E0E0;
+      padding: 0.5rem 0.25rem;
+    }
+    .line-chart-svg .grid-line {
+      stroke: #E8E8E8;
+      stroke-width: 1;
+      stroke-dasharray: 5,5;
+    }
+    .line-chart-svg .axis-line {
+      stroke: #BDBDBD;
+      stroke-width: 2;
+    }
+    .line-chart-svg .y-label {
+      font-size: 12px;
+      font-weight: 600;
+      fill: #888;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .line-chart-svg .x-label {
+      font-size: 12px;
+      font-weight: 700;
+      fill: #555;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .line-chart-svg .value-label {
+      font-size: 12px;
+      font-weight: 800;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      opacity: 0;
+    }
+    .line-chart-svg .dot-circle {
+      opacity: 0;
+    }
+    .line-chart-svg .chart-line {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Legend */
+    .bird-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    .bird-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .bird-legend-item .legend-line {
+      width: 30px;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* Bird info cards */
+    .bird-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .bird-card {
+      padding: 1.25rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      border: 3px solid #E0E0E0;
+    }
+    .bird-card .bird-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .bird-card h5 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .bird-card p { font-size: 0.9rem; color: var(--color-text-light); }
+    .bird-card .speed-tag {
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    .speed-fast { background: #FFEBEE; color: #C62828; border: 2px solid #C62828; }
+    .speed-medium { background: #FFF8E1; color: #F57F17; border: 2px solid #F57F17; }
+    .speed-steady { background: #E8F5E9; color: #2E7D32; border: 2px solid #2E7D32; }
+
+    /* Stats area */
+    .graph-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #F5F5F5;
+      border-radius: var(--radius-md);
+    }
+    .graph-stat {
+      padding: 0.5rem 1rem;
+      text-align: center;
+    }
+    .graph-stat .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1565C0;
+    }
+    .graph-stat .stat-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+
+    /* Graph tips */
+    .graph-tips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .graph-tip {
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 2px solid #BBDEFB;
+      text-align: center;
+    }
+    .graph-tip .tip-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .graph-tip h5 { font-size: 1rem; font-weight: 800; color: #1565C0; margin-bottom: 0.3rem; }
+    .graph-tip p { font-size: 0.9rem; color: var(--color-text-light); }
+
+    /* Annotations */
+    .annotation {
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      opacity: 0;
+    }
+    .annotation-falcon-rise { fill: #C62828; }
+    .annotation-falcon-drop { fill: #C62828; }
+    .annotation-pigeon { fill: #F57F17; }
+    .annotation-ostrich { fill: #2E7D32; }
+
+    /* Quiz */
+    .graph-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .graph-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .graph-option:hover {
+      border-color: #1565C0;
+      background: #E3F2FD;
+      transform: scale(1.05);
+    }
+    .graph-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .graph-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .graph-option:disabled { cursor: default; opacity: 0.7; }
+    .graph-option.correct:disabled { opacity: 1; }
+
+    .graph-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .graph-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .graph-result.correct-result { background: #E8F5E9; color: #2E7D32; }
+    .graph-result.wrong-result { background: #FFEBEE; color: #C62828; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    @media (max-width: 768px) {
+      .bird-cards { grid-template-columns: 1fr; }
+      .line-chart-svg .x-label { font-size: 10px; }
+      .line-chart-svg .y-label { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page3.html">Adventure 3</a></li>
+        <li><a href="page4.html" class="active">Adventure 4</a></li>
+        <li><a href="page5.html">Adventure 5</a></li>
+        <li><a href="page6.html">Adventure 6</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article" style="border: 3px solid #BBDEFB;">
+      <h2 class="page4-header-text">🦅 Bird Speed <span>Showdown</span>! 🐦</h2>
+
+      <!-- Intro -->
+      <div class="bird-intro">
+        <p><strong>How fast can birds fly?</strong></p>
+        <p>Different birds fly at <strong>very different speeds</strong>! Some zoom up and down like rockets 🚀, while others glide gently. Let's compare <strong>three amazing birds</strong> on a line graph and see how their speed changes over time!</p>
+        <p>Watch how the <strong>steepness</strong> of each line tells us who's fast and who's slow!</p>
+        <div class="big-idea">🧠 Steep line = fast change! Flat line = steady speed! Follow the lines to see each bird's story! 👀</div>
+      </div>
+
+      <!-- Meet the Birds -->
+      <section>
+        <h3>🦜 Meet the Birds!</h3>
+        <div class="bird-cards">
+          <div class="bird-card" style="border-color: #C62828;">
+            <div class="bird-emoji">🦅</div>
+            <h5 style="color:#C62828;">Peregrine Falcon</h5>
+            <p>The <strong>fastest animal on Earth!</strong> It dives at over 300 km/h! Watch it shoot up and drop like a rocket!</p>
+            <span class="speed-tag speed-fast">🚀 Super Fast!</span>
+          </div>
+          <div class="bird-card" style="border-color: #F57F17;">
+            <div class="bird-emoji">🐦</div>
+            <h5 style="color:#F57F17;">Pigeon</h5>
+            <p>A gentle flyer. Pigeons go up and down <strong>slowly and smoothly</strong>. No sudden moves!</p>
+            <span class="speed-tag speed-medium">🐢 Gentle Speed</span>
+          </div>
+          <div class="bird-card" style="border-color: #2E7D32;">
+            <div class="bird-emoji">🦃</div>
+            <h5 style="color:#2E7D32;">Ostrich</h5>
+            <p>Wait — ostriches <strong>can't fly!</strong> 🏃 They just run at a <strong>constant speed</strong> on the ground. No ups and downs!</p>
+            <span class="speed-tag speed-steady">➡️ Constant Speed</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ THE BIG GRAPH ============ -->
+      <section>
+        <h3>📈 Bird Speed Comparison</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          This graph shows how <strong>fast each bird is moving</strong> over 5 seconds. Watch the lines tell the story!
+        </p>
+
+        <div class="graph-container" style="border-color: #90CAF9;">
+          <h4>🦅 Bird Speed Over Time (km/h)</h4>
+
+          <!-- Legend -->
+          <div class="bird-legend">
+            <div class="bird-legend-item" style="background:#FFEBEE;">
+              <span class="legend-line" style="background:#C62828;"></span>
+              🦅 Peregrine Falcon
+            </div>
+            <div class="bird-legend-item" style="background:#FFF8E1;">
+              <span class="legend-line" style="background:#F57F17;"></span>
+              🐦 Pigeon
+            </div>
+            <div class="bird-legend-item" style="background:#E8F5E9;">
+              <span class="legend-line" style="background:#2E7D32;"></span>
+              🦃 Ostrich (running)
+            </div>
+          </div>
+
+          <div class="line-chart-wrapper">
+            <svg class="line-chart-svg" viewBox="0 0 620 360" id="birdChart">
+              <!-- Background grid lines -->
+              <line class="grid-line" x1="60" y1="30" x2="570" y2="30" />
+              <line class="grid-line" x1="60" y1="68" x2="570" y2="68" />
+              <line class="grid-line" x1="60" y1="106" x2="570" y2="106" />
+              <line class="grid-line" x1="60" y1="144" x2="570" y2="144" />
+              <line class="grid-line" x1="60" y1="182" x2="570" y2="182" />
+              <line class="grid-line" x1="60" y1="220" x2="570" y2="220" />
+              <line class="grid-line" x1="60" y1="258" x2="570" y2="258" />
+              <line class="grid-line" x1="60" y1="296" x2="570" y2="296" />
+
+              <!-- Axes -->
+              <line class="axis-line" x1="60" y1="296" x2="570" y2="296" /> <!-- X-axis -->
+              <line class="axis-line" x1="60" y1="30" x2="60" y2="296" />   <!-- Y-axis -->
+
+              <!-- Y-axis labels (0-100 km/h) -->
+              <text class="y-label" x="50" y="34" text-anchor="end">100</text>
+              <text class="y-label" x="50" y="72" text-anchor="end">80</text>
+              <text class="y-label" x="50" y="110" text-anchor="end">60</text>
+              <text class="y-label" x="50" y="148" text-anchor="end">40</text>
+              <text class="y-label" x="50" y="186" text-anchor="end">20</text>
+              <text class="y-label" x="50" y="300" text-anchor="end">0</text>
+
+              <!-- X-axis labels (seconds) -->
+              <text class="x-label" x="60" y="320" text-anchor="middle">0s</text>
+              <text class="x-label" x="162" y="320" text-anchor="middle">1s</text>
+              <text class="x-label" x="264" y="320" text-anchor="middle">2s</text>
+              <text class="x-label" x="366" y="320" text-anchor="middle">3s</text>
+              <text class="x-label" x="468" y="320" text-anchor="middle">4s</text>
+              <text class="x-label" x="570" y="320" text-anchor="middle">5s</text>
+
+              <!-- ===== PEREGRINE FALCON ===== -->
+              <!-- Data: 0s=0, 1s=40, 2s=90, 3s=90, 4s=40, 5s=0 -->
+              <!-- y = 296 - (value * 266/100) = 296 - value*2.66 -->
+              <!-- 0: 296, 40: 296-106.4=189.6, 90: 296-239.4=56.6, 90: 56.6, 40: 189.6, 0: 296 -->
+              <!-- x spacing: (570-60)/5 = 102. x0=60, x1=162, x2=264, x3=366, x4=468, x5=570 -->
+              <polyline class="chart-line" id="falconPolyline"
+                points="60,296 162,189.6 264,56.6 366,56.6 468,189.6 570,296"
+                stroke="#C62828" stroke-width="4" />
+
+              <!-- Falcon dots -->
+              <circle class="dot-circle" id="falconDot0" cx="60" cy="296" r="8" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="value-label" id="falconVal0" x="60" y="288" text-anchor="middle" fill="#C62828">0</text>
+
+              <circle class="dot-circle" id="falconDot1" cx="162" cy="189.6" r="8" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="value-label" id="falconVal1" x="162" y="180" text-anchor="middle" fill="#C62828">40</text>
+
+              <circle class="dot-circle" id="falconDot2" cx="264" cy="56.6" r="10" fill="#C62828" stroke="white" stroke-width="3" />
+              <text class="value-label" id="falconVal2" x="264" y="46" text-anchor="middle" fill="#C62828">90</text>
+
+              <circle class="dot-circle" id="falconDot3" cx="366" cy="56.6" r="10" fill="#C62828" stroke="white" stroke-width="3" />
+              <text class="value-label" id="falconVal3" x="366" y="46" text-anchor="middle" fill="#C62828">90</text>
+
+              <circle class="dot-circle" id="falconDot4" cx="468" cy="189.6" r="8" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="value-label" id="falconVal4" x="468" y="180" text-anchor="middle" fill="#C62828">40</text>
+
+              <circle class="dot-circle" id="falconDot5" cx="570" cy="296" r="8" fill="#C62828" stroke="white" stroke-width="2" />
+              <text class="value-label" id="falconVal5" x="570" y="288" text-anchor="middle" fill="#C62828">0</text>
+
+              <!-- ===== PIGEON ===== -->
+              <!-- Data: 0s=0, 1s=15, 2s=30, 3s=30, 4s=15, 5s=0 -->
+              <!-- y = 296 - value*2.66 -->
+              <!-- 0: 296, 15: 296-39.9=256.1, 30: 296-79.8=216.2, 30: 216.2, 15: 256.1, 0: 296 -->
+              <polyline class="chart-line" id="pigeonPolyline"
+                points="60,296 162,256.1 264,216.2 366,216.2 468,256.1 570,296"
+                stroke="#F57F17" stroke-width="4" stroke-dasharray="8,4" />
+
+              <!-- Pigeon dots -->
+              <circle class="dot-circle" id="pigeonDot0" cx="60" cy="296" r="7" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal0" x="60" y="288" text-anchor="middle" fill="#F57F17">0</text>
+
+              <circle class="dot-circle" id="pigeonDot1" cx="162" cy="256.1" r="7" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal1" x="162" y="247" text-anchor="middle" fill="#F57F17">15</text>
+
+              <circle class="dot-circle" id="pigeonDot2" cx="264" cy="216.2" r="7" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal2" x="264" y="207" text-anchor="middle" fill="#F57F17">30</text>
+
+              <circle class="dot-circle" id="pigeonDot3" cx="366" cy="216.2" r="7" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal3" x="366" y="207" text-anchor="middle" fill="#F57F17">30</text>
+
+              <circle class="dot-circle" id="pigeonDot4" cx="468" cy="256.1" r="7" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal4" x="468" y="247" text-anchor="middle" fill="#F57F17">15</text>
+
+              <circle class="dot-circle" id="pigeonDot5" cx="570" cy="296" r="7" fill="#F57F17" stroke="white" stroke-width="2" />
+              <text class="value-label" id="pigeonVal5" x="570" y="288" text-anchor="middle" fill="#F57F17">0</text>
+
+              <!-- ===== OSTRICH ===== -->
+              <!-- Data: 0s=0, 1s=10, 2s=20, 3s=30, 4s=40, 5s=50 -->
+              <!-- y = 296 - value*2.66 -->
+              <!-- 0: 296, 10: 296-26.6=269.4, 20: 296-53.2=242.8, 30: 296-79.8=216.2, 40: 296-106.4=189.6, 50: 296-133=163 -->
+              <polyline class="chart-line" id="ostrichPolyline"
+                points="60,296 162,269.4 264,242.8 366,216.2 468,189.6 570,163"
+                stroke="#2E7D32" stroke-width="4" stroke-dasharray="2,4" />
+
+              <!-- Ostrich dots -->
+              <circle class="dot-circle" id="ostrichDot0" cx="60" cy="296" r="7" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal0" x="60" y="288" text-anchor="middle" fill="#2E7D32">0</text>
+
+              <circle class="dot-circle" id="ostrichDot1" cx="162" cy="269.4" r="7" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal1" x="162" y="260" text-anchor="middle" fill="#2E7D32">10</text>
+
+              <circle class="dot-circle" id="ostrichDot2" cx="264" cy="242.8" r="7" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal2" x="264" y="233" text-anchor="middle" fill="#2E7D32">20</text>
+
+              <circle class="dot-circle" id="ostrichDot3" cx="366" cy="216.2" r="7" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal3" x="366" y="207" text-anchor="middle" fill="#2E7D32">30</text>
+
+              <circle class="dot-circle" id="ostrichDot4" cx="468" cy="189.6" r="7" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal4" x="468" y="180" text-anchor="middle" fill="#2E7D32">40</text>
+
+              <circle class="dot-circle" id="ostrichDot5" cx="570" cy="163" r="7" fill="#2E7D32" stroke="white" stroke-width="2" />
+              <text class="value-label" id="ostrichVal5" x="570" y="153" text-anchor="middle" fill="#2E7D32">50</text>
+
+              <!-- Annotations -->
+              <text class="annotation annotation-falcon-rise" x="162" y="130" text-anchor="middle" font-size="14" id="falconRiseAnnot">
+                🚀 Falcon shoots UP!
+              </text>
+              <text class="annotation annotation-falcon-drop" x="468" y="130" text-anchor="middle" font-size="14" id="falconDropAnnot">
+                💥 Falcon drops FAST!
+              </text>
+              <text class="annotation annotation-pigeon" x="264" y="240" text-anchor="middle" font-size="12" id="pigeonAnnot">
+                🐦 Pigeon gently glides
+              </text>
+              <text class="annotation annotation-ostrich" x="366" y="175" text-anchor="middle" font-size="12" id="ostrichAnnot">
+                🦃 Ostrich runs steady
+              </text>
+            </svg>
+          </div>
+
+          <div class="action-buttons">
+            <button id="birdRevealBtn" class="btn btn-reveal">🦅 Show Bird Speeds!</button>
+          </div>
+
+          <div class="graph-stats" id="birdStats" style="display:none;">
+            <div class="graph-stat">
+              <div class="stat-value" style="color:#C62828;">🦅 90 km/h</div>
+              <div class="stat-label">🚀 Falcon's top speed! Steepest line up & down!</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" style="color:#F57F17;">🐦 30 km/h</div>
+              <div class="stat-label">🐢 Pigeon's top speed — gentle slopes</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" style="color:#2E7D32;">🦃 50 km/h</div>
+              <div class="stat-label">➡️ Ostrich's constant speed — straight line!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- What We Learned -->
+      <div class="thinking-steps" style="background:#E3F2FD;border-left-color:#1565C0;">
+        <h4 style="color:#1565C0;">🧠 What the Lines Tell Us</h4>
+        <div class="step">
+          <span class="step-number" style="background:#C62828;">1</span>
+          <span class="step-text"><strong>🦅 Peregrine Falcon</strong> — The line goes up <strong>very steep</strong> (fast rise!) and down <strong>very steep</strong> (fast drop!). Steep = fast change!</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#F57F17;">2</span>
+          <span class="step-text"><strong>🐦 Pigeon</strong> — The line goes up and down with <strong>gentle slopes</strong>. Less steep = slower change!</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#2E7D32;">3</span>
+          <span class="step-text"><strong>🦃 Ostrich</strong> — The line is a <strong>straight diagonal</strong> going up at the same angle. Constant speed = no change in rate!</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#1565C0;">4</span>
+          <span class="step-text"><strong>📊 Compare the steepness!</strong> The steeper the line, the faster the change. Flat line = no change!</span>
+        </div>
+      </div>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section" style="border-color:#1565C0;">
+        <h3>🧠 Bird Speed Quiz!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Use the bird speed graph to answer these questions!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🦅 Which bird has the <strong>steepest</strong> line going up (fastest rise)?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">🦅 Peregrine Falcon</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🐦 Pigeon</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🦃 Ostrich</button>
+          </div>
+          <div class="graph-result" id="gq1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🦃 What is special about the Ostrich's line?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">It goes up and down fast</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">It's a straight line — constant speed!</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">It stays flat at zero</button>
+          </div>
+          <div class="graph-result" id="gq2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🐦 What is the Pigeon's <strong>top speed</strong> (highest point on the graph)?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">15 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">30 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">90 km/h</button>
+          </div>
+          <div class="graph-result" id="gq3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 🦅 What is the Falcon's <strong>top speed</strong> (highest point on the graph)?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">40 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">60 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">90 km/h</button>
+          </div>
+          <div class="graph-result" id="gq4"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 📏 A <strong>steep line</strong> going up means the bird is...</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Flying very slowly</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">Speeding up very fast!</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Staying the same speed</button>
+          </div>
+          <div class="graph-result" id="gq5"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ 🦃 At 5 seconds, how fast is the Ostrich going?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">30 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">40 km/h</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">50 km/h</button>
+          </div>
+          <div class="graph-result" id="gq6"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Bird Data ============
+    var birdData = {
+      falcon: [
+        { value: 0, dotId: 'falconDot0', valId: 'falconVal0' },
+        { value: 40, dotId: 'falconDot1', valId: 'falconVal1' },
+        { value: 90, dotId: 'falconDot2', valId: 'falconVal2' },
+        { value: 90, dotId: 'falconDot3', valId: 'falconVal3' },
+        { value: 40, dotId: 'falconDot4', valId: 'falconVal4' },
+        { value: 0, dotId: 'falconDot5', valId: 'falconVal5' }
+      ],
+      pigeon: [
+        { value: 0, dotId: 'pigeonDot0', valId: 'pigeonVal0' },
+        { value: 15, dotId: 'pigeonDot1', valId: 'pigeonVal1' },
+        { value: 30, dotId: 'pigeonDot2', valId: 'pigeonVal2' },
+        { value: 30, dotId: 'pigeonDot3', valId: 'pigeonVal3' },
+        { value: 15, dotId: 'pigeonDot4', valId: 'pigeonVal4' },
+        { value: 0, dotId: 'pigeonDot5', valId: 'pigeonVal5' }
+      ],
+      ostrich: [
+        { value: 0, dotId: 'ostrichDot0', valId: 'ostrichVal0' },
+        { value: 10, dotId: 'ostrichDot1', valId: 'ostrichVal1' },
+        { value: 20, dotId: 'ostrichDot2', valId: 'ostrichVal2' },
+        { value: 30, dotId: 'ostrichDot3', valId: 'ostrichVal3' },
+        { value: 40, dotId: 'ostrichDot4', valId: 'ostrichVal4' },
+        { value: 50, dotId: 'ostrichDot5', valId: 'ostrichVal5' }
+      ]
+    };
+
+    var birdRevealed = false;
+    var birdTimeline = null;
+
+    function revealBirdData() {
+      if (birdRevealed) {
+        if (birdTimeline) birdTimeline.kill();
+        birdRevealed = false;
+        document.getElementById('birdRevealBtn').textContent = '🦅 Show Bird Speeds!';
+        document.getElementById('birdRevealBtn').disabled = false;
+
+        // Reset all polylines
+        ['falconPolyline', 'pigeonPolyline', 'ostrichPolyline'].forEach(function(id) {
+          var line = document.getElementById(id);
+          var len = line.getTotalLength ? line.getTotalLength() : 500;
+          line.style.strokeDasharray = len;
+          line.style.strokeDashoffset = len;
+        });
+
+        // Hide all dots and values
+        Object.keys(birdData).forEach(function(bird) {
+          birdData[bird].forEach(function(d) {
+            document.getElementById(d.dotId).style.opacity = '0';
+            document.getElementById(d.valId).style.opacity = '0';
+          });
+        });
+
+        // Hide annotations
+        ['falconRiseAnnot', 'falconDropAnnot', 'pigeonAnnot', 'ostrichAnnot'].forEach(function(id) {
+          document.getElementById(id).style.opacity = '0';
+        });
+
+        document.getElementById('birdStats').style.display = 'none';
+        return;
+      }
+
+      birdRevealed = true;
+      document.getElementById('birdRevealBtn').textContent = '🔄 Reset';
+      document.getElementById('birdRevealBtn').disabled = true;
+
+      // Initialize all polylines
+      ['falconPolyline', 'pigeonPolyline', 'ostrichPolyline'].forEach(function(id) {
+        var line = document.getElementById(id);
+        var len = line.getTotalLength ? line.getTotalLength() : 500;
+        line.style.strokeDasharray = len;
+        line.style.strokeDashoffset = len;
+      });
+
+      birdTimeline = gsap.timeline({ onComplete: function() {
+        document.getElementById('birdRevealBtn').disabled = false;
+        document.getElementById('birdStats').style.display = 'flex';
+        gsap.from('#birdStats', { opacity: 0, y: 10, duration: 0.3, ease: 'power2.out' });
+      }});
+
+      // Draw Falcon line first (fastest, most dramatic)
+      var falconLine = document.getElementById('falconPolyline');
+      var falconLen = falconLine.getTotalLength ? falconLine.getTotalLength() : 500;
+      birdTimeline.to(falconLine, { strokeDashoffset: 0, duration: 1.0, ease: 'power2.inOut' }, 0);
+
+      // Falcon dots
+      birdData.falcon.forEach(function(d, i) {
+        birdTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)', transformOrigin: 'center' }, 0.3 + i * 0.15);
+        birdTimeline.to('#' + d.valId, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 0.35 + i * 0.15);
+      });
+
+      // Draw Pigeon line
+      var pigeonLine = document.getElementById('pigeonPolyline');
+      var pigeonLen = pigeonLine.getTotalLength ? pigeonLine.getTotalLength() : 500;
+      birdTimeline.to(pigeonLine, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.inOut' }, 1.2);
+
+      // Pigeon dots
+      birdData.pigeon.forEach(function(d, i) {
+        birdTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)', transformOrigin: 'center' }, 1.4 + i * 0.12);
+        birdTimeline.to('#' + d.valId, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 1.45 + i * 0.12);
+      });
+
+      // Draw Ostrich line
+      var ostrichLine = document.getElementById('ostrichPolyline');
+      var ostrichLen = ostrichLine.getTotalLength ? ostrichLine.getTotalLength() : 500;
+      birdTimeline.to(ostrichLine, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.inOut' }, 2.2);
+
+      // Ostrich dots
+      birdData.ostrich.forEach(function(d, i) {
+        birdTimeline.to('#' + d.dotId, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)', transformOrigin: 'center' }, 2.4 + i * 0.12);
+        birdTimeline.to('#' + d.valId, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 2.45 + i * 0.12);
+      });
+
+      // Show annotations
+      birdTimeline.to('#falconRiseAnnot', { opacity: 1, y: -5, duration: 0.4, ease: 'back.out(2)' }, 1.0);
+      birdTimeline.to('#falconDropAnnot', { opacity: 1, y: -5, duration: 0.4, ease: 'back.out(2)' }, 1.8);
+      birdTimeline.to('#pigeonAnnot', { opacity: 1, y: -3, duration: 0.4, ease: 'back.out(2)' }, 2.0);
+      birdTimeline.to('#ostrichAnnot', { opacity: 1, y: -3, duration: 0.4, ease: 'back.out(2)' }, 2.8);
+    }
+
+    document.getElementById('birdRevealBtn').addEventListener('click', revealBirdData);
+
+    // ============ Quiz ============
+    function checkGraphAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.graph-option');
+      var resultDiv = parentCard.querySelector('.graph-result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = "✅ Correct! You're a bird speed expert! 🦅🌟";
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! Look at the lines carefully. The steeper the line, the faster the change! 💪';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize all polylines as hidden
+      ['falconPolyline', 'pigeonPolyline', 'ostrichPolyline'].forEach(function(id) {
+        var line = document.getElementById(id);
+        var len = line.getTotalLength ? line.getTotalLength() : 500;
+        line.style.strokeDasharray = len;
+        line.style.strokeDashoffset = len;
+      });
+
+      gsap.from('.graph-tip', {
+        y: 20,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.15,
+        ease: 'power2.out'
+      });
+
+      // Initially hide all dots and values
+      Object.keys(birdData).forEach(function(bird) {
+        birdData[bird].forEach(function(d) {
+          document.getElementById(d.dotId).style.opacity = '0';
+          document.getElementById(d.valId).style.opacity = '0';
+        });
+      });
+
+      // Hide annotations
+      ['falconRiseAnnot', 'falconDropAnnot', 'pigeonAnnot', 'ostrichAnnot'].forEach(function(id) {
+        document.getElementById(id).style.opacity = '0';
+      });
+    });
+  </script>
+</body>
+</html>
