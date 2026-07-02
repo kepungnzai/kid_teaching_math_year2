@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Line Graphs Adventure!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Line Graph Specific Styles ============ */
+
+    body {
+      background: linear-gradient(180deg, #E8F5E9 0%, #FFF8E1 100%);
+    }
+
+    .page2-header-text {
+      color: var(--color-green) !important;
+    }
+    .page2-header-text span {
+      color: var(--color-orange) !important;
+    }
+
+    /* Intro */
+    .linegraph-intro {
+      background: linear-gradient(135deg, #E8F5E9 0%, #FFF8E1 100%);
+      border-left: 6px solid var(--color-green);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .linegraph-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .linegraph-intro p:last-child { margin-bottom: 0; }
+    .linegraph-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #2E7D32;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    /* Graph container */
+    .graph-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .graph-container h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Line Chart SVG area */
+    .line-chart-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .line-chart-svg {
+      width: 100%;
+      max-width: 580px;
+      height: auto;
+      background: #FAFAFA;
+      border-radius: var(--radius-md);
+      border: 2px solid #E0E0E0;
+      padding: 0.5rem 0.25rem;
+    }
+    .line-chart-svg .grid-line {
+      stroke: #E8E8E8;
+      stroke-width: 1;
+      stroke-dasharray: 5,5;
+    }
+    .line-chart-svg .axis-line {
+      stroke: #BDBDBD;
+      stroke-width: 2;
+    }
+    .line-chart-svg .y-label {
+      font-size: 12px;
+      font-weight: 600;
+      fill: #888;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .line-chart-svg .x-label {
+      font-size: 12px;
+      font-weight: 700;
+      fill: #555;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .line-chart-svg .value-label {
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      opacity: 0;
+    }
+    .line-chart-svg .dot-circle {
+      opacity: 0;
+    }
+    .line-chart-svg .chart-line {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Stats area */
+    .graph-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #F5F5F5;
+      border-radius: var(--radius-md);
+    }
+    .graph-stat {
+      padding: 0.5rem 1rem;
+      text-align: center;
+    }
+    .graph-stat .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #2E7D32;
+    }
+    .graph-stat .stat-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+
+    /* Graph tips grid */
+    .graph-tips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .graph-tip {
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 2px solid #C8E6C9;
+      text-align: center;
+    }
+    .graph-tip .tip-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .graph-tip h5 { font-size: 1rem; font-weight: 800; color: #2E7D32; margin-bottom: 0.3rem; }
+    .graph-tip p { font-size: 0.9rem; color: var(--color-text-light); }
+
+    /* Annotations */
+    .annotation {
+      font-size: 0.85rem;
+      font-weight: 700;
+      fill: #E65100;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .annotation-rise {
+      fill: #2E7D32;
+    }
+    .annotation-drop {
+      fill: #C62828;
+    }
+
+    /* Arrow marker */
+    .arrow-up, .arrow-down {
+      font-size: 18px;
+    }
+
+    /* Comparison box (bar vs line) */
+    .compare-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .compare-item {
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      border: 3px solid #E0E0E0;
+    }
+    .compare-item h5 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      margin-bottom: 0.5rem;
+    }
+    .compare-item p {
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+    }
+    .compare-item .compare-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Rise / Drop highlight tags */
+    .rise-tag, .drop-tag {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin: 0.25rem;
+    }
+    .rise-tag {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border: 2px solid #2E7D32;
+    }
+    .drop-tag {
+      background: #FFEBEE;
+      color: #C62828;
+      border: 2px solid #C62828;
+    }
+
+    /* Quiz */
+    .graph-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .graph-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .graph-option:hover {
+      border-color: #2E7D32;
+      background: #E8F5E9;
+      transform: scale(1.05);
+    }
+    .graph-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .graph-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .graph-option:disabled { cursor: default; opacity: 0.7; }
+    .graph-option.correct:disabled { opacity: 1; }
+
+    .graph-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .graph-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .graph-result.correct-result { background: #E8F5E9; color: #2E7D32; }
+    .graph-result.wrong-result { background: #FFEBEE; color: #C62828; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    @media (max-width: 768px) {
+      .compare-box {
+        grid-template-columns: 1fr;
+      }
+      .line-chart-svg .x-label {
+        font-size: 10px;
+      }
+      .line-chart-svg .y-label {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html" class="active">Adventure 2</a></li>
+        <li><a href="page3.html">Adventure 3</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article" style="border: 3px solid #C8E6C9;">
+      <h2 class="page2-header-text">📈 Let's Explore <span>Line Graphs</span>!</h2>
+
+      <!-- Intro -->
+      <div class="linegraph-intro">
+        <p><strong>What's a Line Graph?</strong></p>
+        <p>A <strong>line graph</strong> is like a bar graph's cousin! Instead of bars, we use <strong>dots</strong> connected by a <strong>line</strong>. This helps us see how things <strong>change over time</strong> — going up, going down, or staying the same! 📈📉</p>
+        <p>Line graphs are perfect for showing <strong>trends</strong> — like "Is it getting hotter each day?" or "Are my video game scores improving?"</p>
+        <div class="big-idea">🧠 Line graphs show <strong>change over time</strong> — follow the line to see the story! 👀</div>
+      </div>
+
+      <!-- Parts of a Line Graph -->
+      <section>
+        <h3>🔍 Parts of a Line Graph</h3>
+        <div class="graph-tips">
+          <div class="graph-tip">
+            <div class="tip-icon">📏</div>
+            <h5>Y-Axis (Height)</h5>
+            <p>The vertical line. Shows the <strong>amount</strong> — like scores, votes, or temperature!</p>
+          </div>
+          <div class="graph-tip">
+            <div class="tip-icon">↔️</div>
+            <h5>X-Axis (Bottom)</h5>
+            <p>The horizontal line. Shows the <strong>categories or time</strong> — like animals, days, or levels!</p>
+          </div>
+          <div class="graph-tip">
+            <div class="tip-icon">⏺️</div>
+            <h5>Data Points (Dots)</h5>
+            <p>Each <strong>dot</strong> shows the value at one point. Higher dot = bigger number!</p>
+          </div>
+          <div class="graph-tip">
+            <div class="tip-icon">〰️</div>
+            <h5>The Line</h5>
+            <p>The line <strong>connects</strong> the dots. Going up 📈 = increasing! Going down 📉 = decreasing!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bar Graph vs Line Graph -->
+      <section>
+        <h3>🔄 Bar Graph vs Line Graph</h3>
+        <div class="compare-box">
+          <div class="compare-item" style="border-color: #42A5F5;">
+            <div class="compare-icon">📊</div>
+            <h5>Bar Graphs</h5>
+            <p>Best for comparing <strong>separate groups</strong> side by side. Like comparing favorite pets!</p>
+          </div>
+          <div class="compare-item" style="border-color: #66BB6A;">
+            <div class="compare-icon">📈</div>
+            <h5>Line Graphs</h5>
+            <p>Best for showing <strong>change over time</strong> or in a sequence. Like scores going up and down!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ EXAMPLE 1: Same Animals (Line Chart) ============ -->
+      <section>
+        <h3>🐾 Example 1: Same Animals, New View!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          Remember the <strong>favorite pets</strong> bar graph? Here's the <strong>same data</strong> as a <strong>line graph</strong>! See how the line rises and falls between each animal?
+        </p>
+
+        <div class="graph-container">
+          <h4>🐶 Favorite Pets in Mr. Smith's Class (Line Graph)</h4>
+
+          <div class="line-chart-wrapper">
+            <svg class="line-chart-svg" viewBox="0 0 540 300" id="animalLineChart">
+              <!-- Background grid lines -->
+              <line class="grid-line" x1="60" y1="30" x2="510" y2="30" />
+              <line class="grid-line" x1="60" y1="68" x2="510" y2="68" />
+              <line class="grid-line" x1="60" y1="106" x2="510" y2="106" />
+              <line class="grid-line" x1="60" y1="144" x2="510" y2="144" />
+              <line class="grid-line" x1="60" y1="182" x2="510" y2="182" />
+              <line class="grid-line" x1="60" y1="220" x2="510" y2="220" />
+              <line class="grid-line" x1="60" y1="258" x2="510" y2="258" />
+
+              <!-- Axes -->
+              <line class="axis-line" x1="60" y1="258" x2="510" y2="258" /> <!-- X-axis -->
+              <line class="axis-line" x1="60" y1="30" x2="60" y2="258" />   <!-- Y-axis -->
+
+              <!-- Y-axis labels -->
+              <text class="y-label" x="50" y="34" text-anchor="end">10</text>
+              <text class="y-label" x="50" y="72" text-anchor="end">8</text>
+              <text class="y-label" x="50" y="110" text-anchor="end">6</text>
+              <text class="y-label" x="50" y="148" text-anchor="end">4</text>
+              <text class="y-label" x="50" y="186" text-anchor="end">2</text>
+              <text class="y-label" x="50" y="262" text-anchor="end">0</text>
+
+              <!-- The connecting line (polyline) - hidden initially via stroke-dashoffset -->
+              <!-- Data values: Dog=8, Cat=5, Rabbit=6, Hamster=4, Fish=4 -->
+              <!-- y = 258 - (value * 228/10) = 258 - value*22.8 -->
+              <!-- Dog(8): 258-182.4=75.6, Cat(5): 258-114=144, Rabbit(6): 258-136.8=121.2, Hamster(4): 258-91.2=166.8, Fish(4): 258-91.2=166.8 -->
+              <!-- x spacing: (510-60)/4 = 112.5. x0=60, x1=172.5, x2=285, x3=397.5, x4=510 -->
+              <polyline class="chart-line" id="animalPolyline"
+                points="60,75.6 172.5,144 285,121.2 397.5,166.8 510,166.8"
+                stroke="url(#animalGradient)" stroke-width="4" />
+
+              <!-- Gradient for the line -->
+              <defs>
+                <linearGradient id="animalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#1565C0" />
+                  <stop offset="50%" stop-color="#66BB6A" />
+                  <stop offset="100%" stop-color="#FFA726" />
+                </linearGradient>
+                <linearGradient id="gameGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#4CAF50" />
+                  <stop offset="40%" stop-color="#FFC107" />
+                  <stop offset="60%" stop-color="#FF5722" />
+                  <stop offset="100%" stop-color="#F44336" />
+                </linearGradient>
+              </defs>
+
+              <!-- Data dots and labels -->
+              <!-- Dog -->
+              <circle class="dot-circle" id="animalDot0" cx="60" cy="75.6" r="9" fill="#1565C0" stroke="white" stroke-width="3" />
+              <text class="value-label" id="animalVal0" x="60" y="65" text-anchor="middle" fill="#1565C0">8</text>
+              <text class="x-label" x="60" y="280" text-anchor="middle">🐶 Dog</text>
+
+              <!-- Cat -->
+              <circle class="dot-circle" id="animalDot1" cx="172.5" cy="144" r="9" fill="#2E7D32" stroke="white" stroke-width="3" />
+              <text class="value-label" id="animalVal1" x="172.5" y="133" text-anchor="middle" fill="#2E7D32">5</text>
+              <text class="x-label" x="172.5" y="280" text-anchor="middle">🐱 Cat</text>
+
+              <!-- Rabbit -->
+              <circle class="dot-circle" id="animalDot2" cx="285" cy="121.2" r="9" fill="#E65100" stroke="white" stroke-width="3" />
+              <text class="value-label" id="animalVal2" x="285" y="110" text-anchor="middle" fill="#E65100">6</text>
+              <text class="x-label" x="285" y="280" text-anchor="middle">🐰 Rabbit</text>
+
+              <!-- Hamster -->
+              <circle class="dot-circle" id="animalDot3" cx="397.5" cy="166.8" r="9" fill="#7B1FA2" stroke="white" stroke-width="3" />
+              <text class="value-label" id="animalVal3" x="397.5" y="156" text-anchor="middle" fill="#7B1FA2">4</text>
+              <text class="x-label" x="397.5" y="280" text-anchor="middle">🐹 Hamster</text>
+
+              <!-- Fish -->
+              <circle class="dot-circle" id="animalDot4" cx="510" cy="166.8" r="9" fill="#00838F" stroke="white" stroke-width="3" />
+              <text class="value-label" id="animalVal4" x="510" y="156" text-anchor="middle" fill="#00838F">4</text>
+              <text class="x-label" x="510" y="280" text-anchor="middle">🐟 Fish</text>
+            </svg>
+          </div>
+
+          <div class="action-buttons">
+            <button id="animalRevealBtn" class="btn btn-reveal">👀 Show Animal Line Data!</button>
+          </div>
+
+          <div class="graph-stats" id="animalStats" style="display:none;">
+            <div class="graph-stat">
+              <div class="stat-value" id="animalHighest">Dog (8)</div>
+              <div class="stat-label">🏆 Highest Point</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value" id="animalLowest">Hamster & Fish (4)</div>
+              <div class="stat-label">📉 Lowest Points</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value">📈 Up & Down</div>
+              <div class="stat-label">The line goes up from Cat→Rabbit, then down to Hamster!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ EXAMPLE 2: Dramatic Rise & Dramatic Drop ============ -->
+      <section>
+        <h3>🎮 Example 2: Dramatic Rise & Dramatic Drop!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          Now let's see a line graph that tells an <strong>exciting story</strong>! Watch how the line shoots up 🚀 and then drops dramatically 💥!
+        </p>
+
+        <div class="graph-container" style="border-color: #FFC107;">
+          <h4>🎮 Video Game Score — "The Bonus Level Adventure!"</h4>
+
+          <div class="line-chart-wrapper">
+            <svg class="line-chart-svg" viewBox="0 0 580 330" id="gameLineChart">
+              <!-- Background grid lines -->
+              <line class="grid-line" x1="60" y1="30" x2="530" y2="30" />
+              <line class="grid-line" x1="60" y1="68" x2="530" y2="68" />
+              <line class="grid-line" x1="60" y1="106" x2="530" y2="106" />
+              <line class="grid-line" x1="60" y1="144" x2="530" y2="144" />
+              <line class="grid-line" x1="60" y1="182" x2="530" y2="182" />
+              <line class="grid-line" x1="60" y1="220" x2="530" y2="220" />
+              <line class="grid-line" x1="60" y1="258" x2="530" y2="258" />
+
+              <!-- Axes -->
+              <line class="axis-line" x1="60" y1="258" x2="530" y2="258" /> <!-- X-axis -->
+              <line class="axis-line" x1="60" y1="30" x2="60" y2="258" />   <!-- Y-axis -->
+
+              <!-- Y-axis labels (0-100) -->
+              <text class="y-label" x="50" y="34" text-anchor="end">100</text>
+              <text class="y-label" x="50" y="72" text-anchor="end">80</text>
+              <text class="y-label" x="50" y="110" text-anchor="end">60</text>
+              <text class="y-label" x="50" y="148" text-anchor="end">40</text>
+              <text class="y-label" x="50" y="186" text-anchor="end">20</text>
+              <text class="y-label" x="50" y="262" text-anchor="end">0</text>
+
+              <!-- Data: Start(0), Level 1(10), Bonus(50), Super Bonus(100), Boss Fight(30), Game Over(10) -->
+              <!-- y = 258 - (value * 228/100) = 258 - value*2.28 -->
+              <!-- 0: 258-0=258, 10: 258-22.8=235.2, 50: 258-114=144, 100: 258-228=30, 30: 258-68.4=189.6, 10: 258-22.8=235.2 -->
+              <!-- x spacing: (530-60)/5 = 94. x0=60, x1=154, x2=248, x3=342, x4=436, x5=530 -->
+              <polyline class="chart-line" id="gamePolyline"
+                points="60,258 154,235.2 248,144 342,30 436,189.6 530,235.2"
+                stroke="url(#gameGradient)" stroke-width="5" />
+
+              <!-- Data dots -->
+              <!-- Start -->
+              <circle class="dot-circle" id="gameDot0" cx="60" cy="258" r="9" fill="#9E9E9E" stroke="white" stroke-width="3" />
+              <text class="value-label" id="gameVal0" x="60" y="250" text-anchor="middle" fill="#9E9E9E">0</text>
+              <text class="x-label" x="60" y="282" text-anchor="middle">🏁 Start</text>
+
+              <!-- Level 1 -->
+              <circle class="dot-circle" id="gameDot1" cx="154" cy="235.2" r="9" fill="#4CAF50" stroke="white" stroke-width="3" />
+              <text class="value-label" id="gameVal1" x="154" y="227" text-anchor="middle" fill="#4CAF50">10</text>
+              <text class="x-label" x="154" y="282" text-anchor="middle">🌟 Level 1</text>
+
+              <!-- Bonus -->
+              <circle class="dot-circle" id="gameDot2" cx="248" cy="144" r="12" fill="#FFC107" stroke="white" stroke-width="3" />
+              <text class="value-label" id="gameVal2" x="248" y="134" text-anchor="middle" fill="#FF8F00">50</text>
+              <text class="x-label" x="248" y="282" text-anchor="middle">💰 Bonus!</text>
+
+              <!-- Super Bonus - PEAK -->
+              <circle class="dot-circle" id="gameDot3" cx="342" cy="30" r="14" fill="#FF5722" stroke="white" stroke-width="4" />
+              <text class="value-label" id="gameVal3" x="342" y="18" text-anchor="middle" fill="#E65100">100</text>
+              <text class="x-label" x="342" y="282" text-anchor="middle">⭐ Super Bonus!</text>
+
+              <!-- Boss Fight -->
+              <circle class="dot-circle" id="gameDot4" cx="436" cy="189.6" r="11" fill="#F44336" stroke="white" stroke-width="3" />
+              <text class="value-label" id="gameVal4" x="436" y="180" text-anchor="middle" fill="#C62828">30</text>
+              <text class="x-label" x="436" y="282" text-anchor="middle">💥 Boss Fight!</text>
+
+              <!-- Game Over -->
+              <circle class="dot-circle" id="gameDot5" cx="530" cy="235.2" r="9" fill="#9E9E9E" stroke="white" stroke-width="3" />
+              <text class="value-label" id="gameVal5" x="530" y="227" text-anchor="middle" fill="#9E9E9E">10</text>
+              <text class="x-label" x="530" y="282" text-anchor="middle">⏰ Game Over</text>
+
+              <!-- Annotations: Dramatic Rise & Drop -->
+              <text class="annotation annotation-rise" x="248" y="100" text-anchor="middle" opacity="0" id="riseAnnot">
+                🚀 Dramatic Rise!
+              </text>
+              <text class="annotation annotation-drop" x="436" y="150" text-anchor="middle" opacity="0" id="dropAnnot">
+                💥 Dramatic Drop!
+              </text>
+
+              <!-- Arrow indicators -->
+              <text class="annotation annotation-rise" x="295" y="55" text-anchor="middle" font-size="22" opacity="0" id="riseArrow">⬆️⬆️⬆️</text>
+              <text class="annotation annotation-drop" x="480" y="150" text-anchor="middle" font-size="22" opacity="0" id="dropArrow">⬇️⬇️⬇️</text>
+            </svg>
+          </div>
+
+          <!-- Legend for rise/drop -->
+          <div style="display:flex; gap:0.75rem; justify-content:center; margin-top:0.5rem; flex-wrap:wrap;">
+            <span class="rise-tag">🚀 Rise: Score goes UP fast!</span>
+            <span class="drop-tag">💥 Drop: Score goes DOWN fast!</span>
+          </div>
+
+          <div class="action-buttons">
+            <button id="gameRevealBtn" class="btn btn-reveal">🎮 Show the Game Score Story!</button>
+          </div>
+
+          <div class="graph-stats" id="gameStats" style="display:none;">
+            <div class="graph-stat">
+              <div class="stat-value">📈 0 → 100</div>
+              <div class="stat-label">🚀 Rose by 100 points! (Super Bonus!)</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value">📉 100 → 10</div>
+              <div class="stat-label">💥 Dropped by 90 points! (Boss Fight!)</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value">🧠 Big Change!</div>
+              <div class="stat-label">Steep line up = fast rise! Steep line down = fast drop!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How to Read a Line Graph -->
+      <div class="thinking-steps" style="background:#E8F5E9;border-left-color:#2E7D32;">
+        <h4 style="color:#2E7D32;">🧠 How to Read a Line Graph</h4>
+        <div class="step">
+          <span class="step-number" style="background:#2E7D32;">1</span>
+          <span class="step-text">Read the <strong>title</strong> — what story is this graph telling?</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#2E7D32;">2</span>
+          <span class="step-text">Look at the <strong>bottom (x-axis)</strong> — is it showing time, levels, or categories?</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#2E7D32;">3</span>
+          <span class="step-text">Look at the <strong>side (y-axis)</strong> — what numbers are we measuring?</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#2E7D32;">4</span>
+          <span class="step-text">Follow the <strong>line</strong> — does it go up 📈 (increase) or down 📉 (decrease)?</span>
+        </div>
+        <div class="step">
+          <span class="step-number" style="background:#2E7D32;">5</span>
+          <span class="step-text"><strong>Steep line</strong> = fast change! <strong>Flat line</strong> = little change!</span>
+        </div>
+      </div>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section" style="border-color:#2E7D32;">
+        <h3>🧠 Line Graph Quiz!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Use the graphs above to answer these questions!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🐶 In the animal line graph, which animal has the <strong>highest</strong> value (the top dot)?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Cat</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">Dog</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Rabbit</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Hamster</button>
+          </div>
+          <div class="graph-result" id="gq1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 📈 In the animal line graph, does the line go <strong>up or down</strong> from Cat to Rabbit?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">⬆️ Up (Cat 5 → Rabbit 6)</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">⬇️ Down (Cat 5 → Rabbit 6)</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">➡️ Stays the same</button>
+          </div>
+          <div class="graph-result" id="gq2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🎮 In the video game graph, what was the <strong>highest score</strong> reached?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">50</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">80</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">100</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">120</button>
+          </div>
+          <div class="graph-result" id="gq3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 💥 After the Super Bonus (100 points), what caused the <strong>dramatic drop</strong> to 30 points?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Went to sleep</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Found more coins</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">Boss Fight!</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Started a new game</button>
+          </div>
+          <div class="graph-result" id="gq4"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 📏 A <strong>steep line</strong> going up means something is changing...</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Very slowly</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">Very quickly!</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Not at all</button>
+          </div>
+          <div class="graph-result" id="gq5"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ 📊 What's the main difference between a bar graph and a line graph?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">Bar graphs use colors, line graphs don't</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">Line graphs show change over time; bar graphs compare groups</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">There's no difference</button>
+          </div>
+          <div class="graph-result" id="gq6"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Utility: Get SVG polyline length ============
+    function getLineLength(polylineId) {
+      var el = document.getElementById(polylineId);
+      return el.getTotalLength ? el.getTotalLength() : 600;
+    }
+
+    // ============ Animal Line Graph ============
+    var animalData = [
+      { name: '🐶 Dog', value: 8, dotId: 'animalDot0', valId: 'animalVal0' },
+      { name: '🐱 Cat', value: 5, dotId: 'animalDot1', valId: 'animalVal1' },
+      { name: '🐰 Rabbit', value: 6, dotId: 'animalDot2', valId: 'animalVal2' },
+      { name: '🐹 Hamster', value: 4, dotId: 'animalDot3', valId: 'animalVal3' },
+      { name: '🐟 Fish', value: 4, dotId: 'animalDot4', valId: 'animalVal4' }
+    ];
+    var animalRevealed = false;
+    var animalTimeline = null;
+
+    function revealAnimalData() {
+      if (animalRevealed) {
+        // Reset
+        if (animalTimeline) animalTimeline.kill();
+        animalRevealed = false;
+        document.getElementById('animalRevealBtn').textContent = '👀 Show Animal Line Data!';
+        document.getElementById('animalRevealBtn').disabled = false;
+
+        var polyline = document.getElementById('animalPolyline');
+        var length = polyline.getTotalLength ? polyline.getTotalLength() : 600;
+        polyline.style.strokeDasharray = length;
+        polyline.style.strokeDashoffset = length;
+
+        animalData.forEach(function(d) {
+          document.getElementById(d.dotId).style.opacity = '0';
+          document.getElementById(d.valId).style.opacity = '0';
+        });
+        document.getElementById('animalStats').style.display = 'none';
+        return;
+      }
+
+      animalRevealed = true;
+      document.getElementById('animalRevealBtn').textContent = '🔄 Reset';
+      document.getElementById('animalRevealBtn').disabled = true;
+
+      var polyline = document.getElementById('animalPolyline');
+      var length = polyline.getTotalLength ? polyline.getTotalLength() : 600;
+      polyline.style.strokeDasharray = length;
+      polyline.style.strokeDashoffset = length;
+
+      animalTimeline = gsap.timeline({ onComplete: function() {
+        document.getElementById('animalRevealBtn').disabled = false;
+        document.getElementById('animalStats').style.display = 'flex';
+        gsap.from('#animalStats', { opacity: 0, y: 10, duration: 0.3, ease: 'power2.out' });
+      }});
+
+      // Animate line drawing
+      animalTimeline.to(polyline, {
+        strokeDashoffset: 0,
+        duration: 1.2,
+        ease: 'power2.inOut'
+      }, 0);
+
+      // Pop in dots and values one by one
+      animalData.forEach(function(d, i) {
+        animalTimeline.to('#' + d.dotId, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.4,
+          ease: 'back.out(2)',
+          transformOrigin: 'center'
+        }, 0.3 + i * 0.2);
+        animalTimeline.to('#' + d.valId, {
+          opacity: 1,
+          duration: 0.3,
+          ease: 'power2.out'
+        }, 0.35 + i * 0.2);
+      });
+    }
+
+    document.getElementById('animalRevealBtn').addEventListener('click', revealAnimalData);
+
+    // ============ Game Score Line Graph ============
+    var gameData = [
+      { name: '🏁 Start', value: 0, dotId: 'gameDot0', valId: 'gameVal0' },
+      { name: '🌟 Level 1', value: 10, dotId: 'gameDot1', valId: 'gameVal1' },
+      { name: '💰 Bonus!', value: 50, dotId: 'gameDot2', valId: 'gameVal2' },
+      { name: '⭐ Super Bonus!', value: 100, dotId: 'gameDot3', valId: 'gameVal3' },
+      { name: '💥 Boss Fight!', value: 30, dotId: 'gameDot4', valId: 'gameVal4' },
+      { name: '⏰ Game Over', value: 10, dotId: 'gameDot5', valId: 'gameVal5' }
+    ];
+    var gameRevealed = false;
+    var gameTimeline = null;
+
+    function revealGameData() {
+      if (gameRevealed) {
+        if (gameTimeline) gameTimeline.kill();
+        gameRevealed = false;
+        document.getElementById('gameRevealBtn').textContent = '🎮 Show the Game Score Story!';
+        document.getElementById('gameRevealBtn').disabled = false;
+
+        var polyline = document.getElementById('gamePolyline');
+        var length = polyline.getTotalLength ? polyline.getTotalLength() : 700;
+        polyline.style.strokeDasharray = length;
+        polyline.style.strokeDashoffset = length;
+
+        gameData.forEach(function(d) {
+          document.getElementById(d.dotId).style.opacity = '0';
+          document.getElementById(d.valId).style.opacity = '0';
+        });
+        document.getElementById('riseAnnot').style.opacity = '0';
+        document.getElementById('dropAnnot').style.opacity = '0';
+        document.getElementById('riseArrow').style.opacity = '0';
+        document.getElementById('dropArrow').style.opacity = '0';
+        document.getElementById('gameStats').style.display = 'none';
+        return;
+      }
+
+      gameRevealed = true;
+      document.getElementById('gameRevealBtn').textContent = '🔄 Reset';
+      document.getElementById('gameRevealBtn').disabled = true;
+
+      var polyline = document.getElementById('gamePolyline');
+      var length = polyline.getTotalLength ? polyline.getTotalLength() : 700;
+      polyline.style.strokeDasharray = length;
+      polyline.style.strokeDashoffset = length;
+
+      gameTimeline = gsap.timeline({ onComplete: function() {
+        document.getElementById('gameRevealBtn').disabled = false;
+        document.getElementById('gameStats').style.display = 'flex';
+        gsap.from('#gameStats', { opacity: 0, y: 10, duration: 0.3, ease: 'power2.out' });
+      }});
+
+      // Draw the line
+      gameTimeline.to(polyline, {
+        strokeDashoffset: 0,
+        duration: 1.5,
+        ease: 'power2.inOut'
+      }, 0);
+
+      // Pop in dots and values
+      gameData.forEach(function(d, i) {
+        gameTimeline.to('#' + d.dotId, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.45,
+          ease: 'back.out(2.5)',
+          transformOrigin: 'center'
+        }, 0.4 + i * 0.25);
+        gameTimeline.to('#' + d.valId, {
+          opacity: 1,
+          duration: 0.3,
+          ease: 'power2.out'
+        }, 0.45 + i * 0.25);
+      });
+
+      // Show annotations with a bounce
+      gameTimeline.to('#riseAnnot', {
+        opacity: 1,
+        y: -5,
+        duration: 0.5,
+        ease: 'back.out(2)'
+      }, 1.6);
+      gameTimeline.to('#riseArrow', {
+        opacity: 1,
+        y: -3,
+        duration: 0.5,
+        ease: 'back.out(2)'
+      }, 1.65);
+
+      gameTimeline.to('#dropAnnot', {
+        opacity: 1,
+        y: -5,
+        duration: 0.5,
+        ease: 'back.out(2)'
+      }, 2.2);
+      gameTimeline.to('#dropArrow', {
+        opacity: 1,
+        y: -3,
+        duration: 0.5,
+        ease: 'back.out(2)'
+      }, 2.25);
+    }
+
+    document.getElementById('gameRevealBtn').addEventListener('click', revealGameData);
+
+    // ============ Quiz ============
+    function checkGraphAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.graph-option');
+      var resultDiv = parentCard.querySelector('.graph-result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = "✅ Correct! You're reading line graphs like a pro! 🌟";
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! Look at the line and dots carefully. The correct answer is highlighted above! 💪';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize polylines as hidden
+      var animalLine = document.getElementById('animalPolyline');
+      var lenA = animalLine.getTotalLength ? animalLine.getTotalLength() : 600;
+      animalLine.style.strokeDasharray = lenA;
+      animalLine.style.strokeDashoffset = lenA;
+
+      var gameLine = document.getElementById('gamePolyline');
+      var lenG = gameLine.getTotalLength ? gameLine.getTotalLength() : 700;
+      gameLine.style.strokeDasharray = lenG;
+      gameLine.style.strokeDashoffset = lenG;
+
+      gsap.from('.graph-tip', {
+        y: 20,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.15,
+        ease: 'power2.out'
+      });
+
+      // Initially hide dots and values
+      animalData.forEach(function(d) {
+        document.getElementById(d.dotId).style.opacity = '0';
+        document.getElementById(d.valId).style.opacity = '0';
+      });
+      gameData.forEach(function(d) {
+        document.getElementById(d.dotId).style.opacity = '0';
+        document.getElementById(d.valId).style.opacity = '0';
+      });
+    });
+  </script>
+</body>
+</html>
