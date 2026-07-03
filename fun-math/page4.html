@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Fuel Cost Adventure!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Fuel Cost Specific Styles ============ */
+    .fuel-intro {
+      background: linear-gradient(135deg, #FFF3E0 0%, #E3F2FD 100%);
+      border-left: 6px solid #E65100;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .fuel-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .fuel-intro p:last-child { margin-bottom: 0; }
+    .fuel-intro .big-question {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #BF360C;
+      text-align: center;
+      margin-top: 1rem;
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      border: 3px solid #FFE0B2;
+    }
+
+    /* Problem Display */
+    .problem-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    .info-card {
+      flex: 1;
+      min-width: 160px;
+      max-width: 220px;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .info-card:hover { transform: translateY(-6px); }
+    .info-card .info-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .info-card h4 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .info-card .info-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      padding: 0.5rem;
+      border-radius: 12px;
+    }
+    .info-card.fuel-card { border-color: #FFA726; }
+    .info-card.fuel-card h4 { color: #E65100; }
+    .info-card.fuel-card .info-value { background: #FFF3E0; color: #E65100; }
+    .info-card.dist-card { border-color: #42A5F5; }
+    .info-card.dist-card h4 { color: #1565C0; }
+    .info-card.dist-card .info-value { background: #E3F2FD; color: #1565C0; }
+    .info-card.cost-card { border-color: #66BB6A; }
+    .info-card.cost-card h4 { color: #2E7D32; }
+    .info-card.cost-card .info-value { background: #E8F5E9; color: #2E7D32; }
+
+    /* Base Setup Visual - The Key Concept */
+    .base-setup {
+      background: linear-gradient(135deg, #FFF8E1 0%, #E3F2FD 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 3px solid #FF8F00;
+      position: relative;
+    }
+    .base-setup .base-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #E65100;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .base-setup .base-title .highlight {
+      background: #FFE0B2;
+      padding: 0.2rem 0.8rem;
+      border-radius: 8px;
+    }
+    .base-visual {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .base-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      min-width: 140px;
+      border: 3px dashed #B0BEC5;
+      transition: all 0.3s ease;
+    }
+    .base-item .base-emoji { font-size: 2.5rem; }
+    .base-item .base-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .base-item .base-number {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    .base-item.fuel-base { border-color: #FFA726; }
+    .base-item.fuel-base .base-number { color: #E65100; }
+    .base-item.dist-base { border-color: #42A5F5; }
+    .base-item.dist-base .base-number { color: #1565C0; }
+    .base-item .base-arrow {
+      font-size: 2rem;
+      color: var(--color-orange);
+    }
+
+    /* Road Visual */
+    .road-visual {
+      position: relative;
+      width: 100%;
+      height: 100px;
+      background: #546E7A;
+      border-radius: var(--radius-md);
+      margin: 1.5rem 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .road-visual .road-line {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: repeating-linear-gradient(
+        90deg,
+        #FFD54F 0px,
+        #FFD54F 30px,
+        transparent 30px,
+        transparent 60px
+      );
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .road-visual .truck {
+      position: absolute;
+      font-size: 2.5rem;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: left 1s ease;
+      filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+    }
+    .road-visual .road-marker {
+      position: absolute;
+      top: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: white;
+      background: rgba(0,0,0,0.5);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+    }
+    .road-visual .road-marker.start { left: 10px; }
+    .road-visual .road-marker.end { right: 10px; }
+
+    /* Fuel Pump Visual */
+    .fuel-pump-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      align-items: center;
+      margin: 2rem 0;
+    }
+    .pump-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 3px solid #B0BEC5;
+      min-width: 180px;
+      flex: 1;
+      max-width: 240px;
+    }
+    .pump-card h4 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--color-text);
+    }
+    .pump-visual {
+      width: 80px;
+      height: 160px;
+      position: relative;
+      border: 4px solid #78909C;
+      border-radius: 0 0 20px 20px;
+      border-top: none;
+      overflow: hidden;
+      background: #F5F5F5;
+    }
+    .pump-visual::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: -4px;
+      right: -4px;
+      height: 18px;
+      background: #78909C;
+      border-radius: 10px 10px 0 0;
+    }
+    .pump-visual .pump-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      transition: height 0.8s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: white;
+    }
+    .pump-visual .pump-fill.fuel-fill {
+      background: linear-gradient(180deg, #FFB74D, #E65100);
+    }
+    .pump-visual .pump-fill.money-fill {
+      background: linear-gradient(180deg, #81C784, #2E7D32);
+    }
+    .pump-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+      text-align: center;
+    }
+
+    /* Step reveal cards */
+    .step-reveal {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .step-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border-left: 6px solid #FF8F00;
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    .step-card .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: #FF8F00;
+      color: white;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .step-card .step-content {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      font-weight: 600;
+    }
+    .step-card .step-content strong {
+      color: #E65100;
+    }
+    .step-card .step-content .highlight-blue {
+      color: #1565C0;
+    }
+    .step-card .step-content .highlight-green {
+      color: #2E7D32;
+    }
+    .step-card .step-content .highlight-orange {
+      color: #E65100;
+    }
+
+    /* Answer Box */
+    .answer-reveal {
+      background: #FFF3E0;
+      border: 3px solid #E65100;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+      display: none;
+    }
+    .answer-reveal .big-answer {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #BF360C;
+    }
+    .answer-reveal .ans-detail {
+      font-size: 1.1rem;
+      color: var(--color-text-light);
+      margin-top: 0.75rem;
+    }
+
+    /* Interactive Calculator */
+    .interactive-fuel {
+      background: linear-gradient(135deg, #FFF3E0 0%, #E3F2FD 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      margin: 2.5rem 0;
+      border: 3px solid #FF8F00;
+    }
+    .interactive-fuel h3 {
+      color: #E65100;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .interactive-fuel .fuel-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .interactive-fuel .fuel-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .interactive-fuel .fuel-group label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .interactive-fuel .fuel-group input {
+      width: 100px;
+      padding: 0.6rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--cds-font-sans);
+      color: var(--color-text);
+      transition: all 0.2s ease;
+    }
+    .interactive-fuel .fuel-group input:focus {
+      outline: none;
+      border-color: #FF8F00;
+      box-shadow: 0 0 0 4px rgba(255, 143, 0, 0.15);
+    }
+    .interactive-fuel .fuel-result-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .interactive-fuel .fuel-result-card {
+      padding: 1rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 3px solid #FFE0B2;
+      min-width: 120px;
+      text-align: center;
+    }
+    .interactive-fuel .fuel-result-card .result-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .interactive-fuel .fuel-result-card .result-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+    .interactive-fuel .fuel-result-card.fuel-card {
+      border-color: #FFA726;
+    }
+    .interactive-fuel .fuel-result-card.fuel-card .result-value {
+      color: #E65100;
+    }
+    .interactive-fuel .fuel-result-card.cost-card {
+      border-color: #66BB6A;
+    }
+    .interactive-fuel .fuel-result-card.cost-card .result-value {
+      color: #2E7D32;
+    }
+
+    /* Thinking Steps */
+    .thinking-steps.fuel-think {
+      background: #FFF3E0;
+      border-left-color: #E65100;
+    }
+    .thinking-steps.fuel-think h4 {
+      color: #E65100;
+    }
+    .thinking-steps.fuel-think .step-number {
+      background: #E65100;
+    }
+
+    /* Quiz */
+    .quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .quiz-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .quiz-option:hover {
+      border-color: #E65100;
+      background: #FFF3E0;
+      transform: scale(1.05);
+    }
+    .quiz-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .quiz-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .quiz-option:disabled { cursor: default; opacity: 0.7; }
+    .quiz-option.correct:disabled { opacity: 1; }
+
+    .quiz-result-msg {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .quiz-result-msg.show { display: block; animation: fadeIn 0.3s ease; }
+    .quiz-result-msg.correct-msg { background: #E8F5E9; color: #2E7D32; }
+    .quiz-result-msg.wrong-msg { background: #FFEBEE; color: #C62828; }
+
+    /* Fuel Canister animation items */
+    .fuel-can {
+      display: inline-block;
+      font-size: 1.5rem;
+      animation: popIn 0.3s ease;
+    }
+
+    /* Dollar sign animation */
+    .dollar-float {
+      display: inline-block;
+      animation: floatUp 1.5s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    /* Ratio Bridge Visual */
+    .ratio-bridge {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin: 1.5rem 0;
+      border: 3px solid #FFE0B2;
+    }
+    .ratio-bridge .rb-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .ratio-bridge .rb-item .rb-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .ratio-bridge .rb-item .rb-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      padding: 0.3rem 0.8rem;
+      border-radius: 8px;
+    }
+    .ratio-bridge .rb-item .rb-value.fuel-v {
+      background: #FFF3E0;
+      color: #E65100;
+    }
+    .ratio-bridge .rb-item .rb-value.dist-v {
+      background: #E3F2FD;
+      color: #1565C0;
+    }
+    .ratio-bridge .rb-item .rb-value.cost-v {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .ratio-bridge .rb-arrow {
+      font-size: 2rem;
+      color: var(--color-orange);
+      font-weight: 800;
+    }
+    .ratio-bridge .rb-op {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-text-light);
+    }
+
+    @media (max-width: 768px) {
+      .pump-visual { width: 60px; height: 120px; }
+      .road-visual { height: 70px; }
+      .road-visual .truck { font-size: 1.8rem; }
+      .answer-reveal .big-answer { font-size: 1.6rem; }
+      .ratio-bridge .rb-item .rb-value { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page3.html">Adventure 3</a></li>
+        <li><a href="page4.html" class="active">Adventure 4</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>⛽ Fuel Cost Adventure! 🚚</h2>
+
+      <!-- Intro -->
+      <div class="fuel-intro">
+        <p><strong>Let's solve a real-world trucking problem!</strong></p>
+        <p>A truck uses <strong>35 litres (L)</strong> of fuel for every <strong>100 kilometres (km)</strong> it travels.</p>
+        <p>Fuel costs <strong>191.0 cents per litre</strong>. We need to find the total fuel cost for a <strong>420 km trip</strong>!</p>
+        <div class="big-question">🚚 35 L → 100 km &nbsp;|&nbsp; ⛽ 191.0¢/L &nbsp;|&nbsp; 🛣️ 420 km trip = <strong>How much does the fuel cost?</strong> 💰</div>
+      </div>
+
+      <!-- Problem Info Cards -->
+      <section>
+        <h3>📝 What We Know</h3>
+        <div class="problem-display" id="problemCards">
+          <div class="info-card fuel-card">
+            <div class="info-icon">⛽</div>
+            <h4>Fuel Usage</h4>
+            <div class="info-value">35 L</div>
+            <div style="font-size:0.9rem;color:var(--color-text-light);font-weight:600;">per 100 km</div>
+          </div>
+          <div class="info-card dist-card">
+            <div class="info-icon">🛣️</div>
+            <h4>Trip Distance</h4>
+            <div class="info-value">420 km</div>
+            <div style="font-size:0.9rem;color:var(--color-text-light);font-weight:600;">total journey</div>
+          </div>
+          <div class="info-card cost-card">
+            <div class="info-icon">💰</div>
+            <h4>Fuel Price</h4>
+            <div class="info-value">191.0¢</div>
+            <div style="font-size:0.9rem;color:var(--color-text-light);font-weight:600;">per litre</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ⭐ KEY CONCEPT: Setting up the BASE -->
+      <section>
+        <h3>⭐ The Secret: Setting Up the Base!</h3>
+        <div class="base-setup" id="baseSetup">
+          <div class="base-title">🎯 The most important step: <span class="highlight">Know your BASE ratio!</span></div>
+          <p style="text-align:center;font-size:1.1rem;color:var(--color-text-light);margin-bottom:1.5rem;">
+            The truck uses <strong>35 litres</strong> for every <strong>100 kilometres</strong>.<br>
+            This is our <strong style="color:#E65100;">BASE</strong> — we use it to find the answer!
+          </p>
+          <div class="base-visual" id="baseVisual">
+            <div class="base-item fuel-base">
+              <div class="base-emoji">⛽</div>
+              <div class="base-label">Fuel Used</div>
+              <div class="base-number" id="baseFuel">35</div>
+              <div class="base-label">Litres (L)</div>
+            </div>
+            <div class="base-arrow">⟶</div>
+            <div class="base-item dist-base">
+              <div class="base-emoji">🛣️</div>
+              <div class="base-label">Distance</div>
+              <div class="base-number" id="baseDist">100</div>
+              <div class="base-label">Kilometres (km)</div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:1rem;padding:0.75rem;background:#FFF8E1;border-radius:var(--radius-md);font-size:1.1rem;font-weight:700;color:#E65100;">
+            🧠 <strong>35 L ⟶ 100 km</strong> &nbsp;→&nbsp; This is our <u>BASE</u> to solve everything!
+          </div>
+        </div>
+      </section>
+
+      <!-- Road Visual -->
+      <section>
+        <h3>🚚 The Journey: 420 km Trip</h3>
+        <div class="road-visual" id="roadVisual">
+          <div class="road-line"></div>
+          <div class="truck" id="truck">🚚</div>
+          <div class="road-marker start">0 km</div>
+          <div class="road-marker end">420 km</div>
+        </div>
+        <div style="text-align:center;font-size:1.1rem;font-weight:600;color:var(--color-text-light);margin-top:0.5rem;">
+          The truck needs to travel <strong style="color:#1565C0;">420 km</strong>. How much fuel will it use?
+        </div>
+      </section>
+
+      <!-- Ratio Bridge: Show the proportion -->
+      <section>
+        <h3>🧮 Setting Up the Proportion</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          We know <strong>35 L → 100 km</strong>. We need to find <strong>? L → 420 km</strong>.<br>
+          Watch how we scale up from the <strong style="color:#E65100;">BASE</strong>!
+        </p>
+        <div class="ratio-bridge" id="ratioBridge">
+          <div class="rb-item">
+            <div class="rb-label">Base Fuel</div>
+            <div class="rb-value fuel-v" id="rbBaseFuel">35 L</div>
+          </div>
+          <div class="rb-op">⟶</div>
+          <div class="rb-item">
+            <div class="rb-label">Base Distance</div>
+            <div class="rb-value dist-v" id="rbBaseDist">100 km</div>
+          </div>
+          <div class="rb-arrow">=</div>
+          <div class="rb-item">
+            <div class="rb-label">Target Fuel</div>
+            <div class="rb-value fuel-v" id="rbTargetFuel" style="background:#FFF3E0;border:3px dashed #FFA726;">? L</div>
+          </div>
+          <div class="rb-op">⟶</div>
+          <div class="rb-item">
+            <div class="rb-label">Target Distance</div>
+            <div class="rb-value dist-v" id="rbTargetDist">420 km</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Action Button -->
+      <div class="action-buttons">
+        <button id="solveBtn" class="btn btn-primary" style="background:#E65100;box-shadow:0 8px 20px rgba(230,81,0,0.3);font-size:1.3rem;padding:1rem 2.5rem;">🚀 Let's Solve It!</button>
+      </div>
+
+      <!-- Step-by-Step Reveal -->
+      <div class="step-reveal" id="stepReveal">
+        <div class="step-card" id="step1" style="border-left-color:#FF8F00;">
+          <div class="step-num" style="background:#FF8F00;">1</div>
+          <div class="step-content">Start with the <strong>BASE</strong>: <strong>35 L</strong> of fuel for <strong class="highlight-blue">100 km</strong> of travel.</div>
+        </div>
+        <div class="step-card" id="step2" style="border-left-color:#42A5F5;">
+          <div class="step-num" style="background:#42A5F5;">2</div>
+          <div class="step-content">How many <strong class="highlight-blue">100 km</strong> segments are in <strong class="highlight-blue">420 km</strong>?<br>
+            <strong>420 ÷ 100 = <strong style="color:#1565C0;font-size:1.3rem;">4.2</strong></strong> segments</div>
+        </div>
+        <div class="step-card" id="step3" style="border-left-color:#FFA726;">
+          <div class="step-num" style="background:#FFA726;">3</div>
+          <div class="step-content">Multiply the <strong>base fuel</strong> by the number of segments:<br>
+            <strong>35 L × 4.2 = <strong style="color:#E65100;font-size:1.3rem;">147 L</strong></strong> of fuel needed!</div>
+        </div>
+        <div class="step-card" id="step4" style="border-left-color:#66BB6A;">
+          <div class="step-num" style="background:#66BB6A;">4</div>
+          <div class="step-content">Now find the <strong>cost</strong>: <strong>147 L</strong> × <strong>191.0¢/L</strong><br>
+            = <strong style="color:#2E7D32;font-size:1.3rem;">28,077¢</strong></div>
+        </div>
+        <div class="step-card" id="step5" style="border-left-color:#2E7D32;">
+          <div class="step-num" style="background:#2E7D32;">5</div>
+          <div class="step-content">Convert cents to dollars: <strong>28,077¢ ÷ 100</strong><br>
+            = <strong style="color:#2E7D32;font-size:1.5rem;">$280.77</strong> 🎉</div>
+        </div>
+      </div>
+
+      <!-- Fuel Pump Visuals -->
+      <div class="fuel-pump-area" id="pumpArea" style="display:none;">
+        <div class="pump-card">
+          <h4 style="color:#E65100;">⛽ Fuel Needed</h4>
+          <div class="pump-visual">
+            <div class="pump-fill fuel-fill" id="fuelFill" style="height: 0%;">0 L</div>
+          </div>
+          <div class="pump-label" id="fuelLabel">0 Litres</div>
+        </div>
+        <div class="pump-card">
+          <h4 style="color:#2E7D32;">💰 Total Cost</h4>
+          <div class="pump-visual">
+            <div class="pump-fill money-fill" id="moneyFill" style="height: 0%;">$0</div>
+          </div>
+          <div class="pump-label" id="moneyLabel">$0.00</div>
+        </div>
+      </div>
+
+      <!-- Final Answer -->
+      <div class="answer-reveal" id="answerReveal">
+        <div class="big-answer">⛽ $280.77 for the 420 km trip! 🎉</div>
+        <div class="ans-detail">
+          <strong>Step 1 (Base):</strong> 35 L → 100 km<br>
+          <strong>Step 2 (Scale):</strong> 420 ÷ 100 = 4.2 segments<br>
+          <strong>Step 3 (Fuel):</strong> 35 L × 4.2 = <strong>147 L</strong> needed<br>
+          <strong>Step 4 (Cost):</strong> 147 L × 191.0¢ = 28,077¢ = <strong>$280.77</strong> ✅
+        </div>
+      </div>
+
+      <!-- Thinking Steps -->
+      <div class="thinking-steps fuel-think">
+        <h4>🧠 The Secret: Set Up the BASE First!</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text">Identify the <strong>BASE ratio</strong>: 35 L → 100 km</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text">Find the <strong>scale factor</strong>: Target distance ÷ Base distance = 420 ÷ 100 = <strong>4.2</strong></span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text">Multiply base fuel by scale factor: 35 × 4.2 = <strong>147 L</strong></span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-text">Multiply fuel by cost per litre: 147 × 191.0¢ = <strong>$280.77</strong></span>
+        </div>
+        <div class="step">
+          <span class="step-number">💡</span>
+          <span class="step-text"><strong>Key insight:</strong> Always find the <u>BASE</u> first, then scale up! 🎯</span>
+        </div>
+      </div>
+
+      <!-- Interactive Calculator -->
+      <section class="interactive-fuel">
+        <h3>🧮 Try Your Own Trip!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:0.75rem;">
+          Change the numbers and see how the fuel and cost change!
+        </p>
+        <div class="fuel-controls">
+          <div class="fuel-group">
+            <label for="baseFuelInput">⛽ Base Fuel (L per 100 km)</label>
+            <input type="number" id="baseFuelInput" min="1" max="100" value="35">
+          </div>
+          <div class="fuel-group">
+            <label for="tripDistInput">🛣️ Trip Distance (km)</label>
+            <input type="number" id="tripDistInput" min="1" max="2000" value="420">
+          </div>
+          <div class="fuel-group">
+            <label for="fuelPriceInput">💰 Fuel Price (¢ per L)</label>
+            <input type="number" id="fuelPriceInput" min="1" max="500" value="191" step="0.1">
+          </div>
+        </div>
+        <button id="calculateBtn" class="btn btn-primary" style="background:#E65100;box-shadow:0 8px 20px rgba(230,81,0,0.3);">🧮 Calculate!</button>
+        <div class="fuel-result-display" id="fuelResults">
+          <div class="fuel-result-card fuel-card">
+            <div class="result-label">⛽ Fuel Needed</div>
+            <div class="result-value" id="resultFuel">147 L</div>
+          </div>
+          <div class="fuel-result-card cost-card">
+            <div class="result-label">💰 Total Cost</div>
+            <div class="result-value" id="resultCost">$280.77</div>
+          </div>
+        </div>
+        <div style="font-size:1.1rem;color:var(--color-text-light);margin-top:1rem;font-weight:600;">
+          <span id="interactiveBreakdown">35 L × (420 ÷ 100) = 147 L &nbsp;|&nbsp; 147 × 191.0¢ = $280.77</span>
+        </div>
+      </section>
+
+      <!-- Quiz -->
+      <section class="quiz-section" style="border-color:#E65100;">
+        <h3>🧠 Can You Do It Too?</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Use the BASE method to solve these fuel problems!</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 🚚 A truck uses 25 L per 100 km. How much fuel for 300 km?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">50 L</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">100 L</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">75 L</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">25 L</button>
+          </div>
+          <div class="quiz-result-msg" id="qr1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ ⛽ Fuel costs 200¢/L. A truck uses 40 L per 100 km. Cost for 200 km trip?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">40 L, $80.00</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">80 L, $160.00</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">100 L, $200.00</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">60 L, $120.00</button>
+          </div>
+          <div class="quiz-result-msg" id="qr2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🧮 What is the FIRST thing we need to find?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">The total cost</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">The fuel price</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">The BASE ratio (L per 100 km)</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">The trip distance</button>
+          </div>
+          <div class="quiz-result-msg" id="qr3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 💡 35 L → 100 km. For 420 km, what's the scale factor?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">35</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">100</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">4.2</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">420</button>
+          </div>
+          <div class="quiz-result-msg" id="qr4"></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Main Solve Animation ============
+    var solved = false;
+    var solveBtn = document.getElementById('solveBtn');
+    var stepReveal = document.getElementById('stepReveal');
+    var answerReveal = document.getElementById('answerReveal');
+    var pumpArea = document.getElementById('pumpArea');
+
+    function revealStep(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      gsap.to(el, { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' });
+    }
+
+    function solveProblem() {
+      if (solved) {
+        // Reset
+        solved = false;
+        solveBtn.textContent = '🚀 Let\'s Solve It!';
+        document.querySelectorAll('.step-card').forEach(function(s) {
+          s.style.opacity = '0';
+          s.style.transform = 'translateX(-20px)';
+        });
+        answerReveal.style.display = 'none';
+        pumpArea.style.display = 'none';
+        document.getElementById('fuelFill').style.height = '0%';
+        document.getElementById('fuelFill').textContent = '0 L';
+        document.getElementById('moneyFill').style.height = '0%';
+        document.getElementById('moneyFill').textContent = '$0';
+        document.getElementById('fuelLabel').textContent = '0 Litres';
+        document.getElementById('moneyLabel').textContent = '$0.00';
+        document.getElementById('rbTargetFuel').textContent = '? L';
+        document.getElementById('rbTargetFuel').style.background = '#FFF3E0';
+        document.getElementById('rbTargetFuel').style.border = '3px dashed #FFA726';
+        // Reset truck
+        gsap.to('#truck', { left: '0%', duration: 0.5, ease: 'power2.out' });
+        return;
+      }
+
+      solved = true;
+      solveBtn.textContent = '🔄 Reset';
+      solveBtn.disabled = true;
+
+      var baseFuel = 35;
+      var baseDist = 100;
+      var targetDist = 420;
+      var fuelPrice = 191.0;
+
+      var scaleFactor = targetDist / baseDist;
+      var totalFuel = baseFuel * scaleFactor;
+      var totalCents = totalFuel * fuelPrice;
+      var totalDollars = totalCents / 100;
+
+      // Update ratio bridge
+      document.getElementById('rbTargetFuel').textContent = totalFuel.toFixed(1) + ' L';
+      document.getElementById('rbTargetFuel').style.background = '#E8F5E9';
+      document.getElementById('rbTargetFuel').style.border = '3px solid #66BB6A';
+
+      var tl = gsap.timeline({ onComplete: function() { solveBtn.disabled = false; } });
+
+      // Step 1: Animate truck moving
+      tl.to('#truck', { left: '100%', duration: 1.5, ease: 'power2.inOut' }, '+=0.2');
+
+      // Reveal steps
+      tl.add(function() { revealStep('step1'); }, '+=0.3');
+      tl.add(function() { revealStep('step2'); }, '+=0.5');
+      tl.add(function() { revealStep('step3'); }, '+=0.5');
+
+      // Show pump area
+      tl.add(function() {
+        pumpArea.style.display = 'flex';
+        gsap.from('.pump-card', { scale: 0, duration: 0.4, stagger: 0.15, ease: 'back.out(2)' });
+      }, '+=0.3');
+
+      // Fill fuel pump
+      var fuelPct = Math.min(100, (totalFuel / 200) * 100);
+      tl.to('#fuelFill', { height: fuelPct + '%', duration: 0.8, ease: 'power2.out' });
+      tl.add(function() {
+        document.getElementById('fuelFill').textContent = totalFuel.toFixed(1) + ' L';
+        document.getElementById('fuelLabel').textContent = totalFuel.toFixed(1) + ' Litres needed';
+      });
+
+      // Reveal step 4
+      tl.add(function() { revealStep('step4'); }, '+=0.3');
+
+      // Fill money pump
+      var moneyPct = Math.min(100, (totalDollars / 500) * 100);
+      tl.to('#moneyFill', { height: moneyPct + '%', duration: 0.8, ease: 'power2.out' }, '+=0.2');
+      tl.add(function() {
+        document.getElementById('moneyFill').textContent = '$' + totalDollars.toFixed(2);
+        document.getElementById('moneyLabel').textContent = '$' + totalDollars.toFixed(2) + ' total cost';
+      });
+
+      // Reveal step 5
+      tl.add(function() { revealStep('step5'); }, '+=0.3');
+
+      // Show final answer
+      tl.add(function() {
+        answerReveal.style.display = 'block';
+        gsap.from(answerReveal, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(2)' });
+      }, '+=0.3');
+    }
+
+    solveBtn.addEventListener('click', solveProblem);
+
+    // ============ Interactive Calculator ============
+    var baseFuelInput = document.getElementById('baseFuelInput');
+    var tripDistInput = document.getElementById('tripDistInput');
+    var fuelPriceInput = document.getElementById('fuelPriceInput');
+    var calculateBtn = document.getElementById('calculateBtn');
+    var resultFuel = document.getElementById('resultFuel');
+    var resultCost = document.getElementById('resultCost');
+    var interactiveBreakdown = document.getElementById('interactiveBreakdown');
+
+    function calculateFuel() {
+      var bf = Math.max(1, Math.min(100, parseFloat(baseFuelInput.value) || 1));
+      var td = Math.max(1, Math.min(2000, parseFloat(tripDistInput.value) || 1));
+      var fp = Math.max(1, Math.min(500, parseFloat(fuelPriceInput.value) || 1));
+
+      baseFuelInput.value = bf;
+      tripDistInput.value = td;
+      fuelPriceInput.value = fp;
+
+      var scale = td / 100;
+      var fuelNeeded = bf * scale;
+      var costCents = fuelNeeded * fp;
+      var costDollars = costCents / 100;
+
+      resultFuel.textContent = fuelNeeded.toFixed(1) + ' L';
+      resultCost.textContent = '$' + costDollars.toFixed(2);
+      interactiveBreakdown.innerHTML = bf + ' L × (' + td + ' ÷ 100) = <strong>' + fuelNeeded.toFixed(1) + ' L</strong> &nbsp;|&nbsp; ' + fuelNeeded.toFixed(1) + ' × ' + fp + '¢ = <strong>$' + costDollars.toFixed(2) + '</strong>';
+
+      gsap.from('.fuel-result-card', { scale: 0.8, opacity: 0, duration: 0.3, stagger: 0.1, ease: 'back.out(2)' });
+    }
+
+    calculateBtn.addEventListener('click', calculateFuel);
+
+    // ============ Quiz ============
+    function checkQuizAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.quiz-option');
+      var resultDiv = parentCard.querySelector('.quiz-result-msg');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-msg');
+        resultDiv.classList.remove('wrong-msg');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-msg');
+        resultDiv.classList.remove('correct-msg');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      calculateFuel();
+
+      gsap.from('.info-card', {
+        y: 30,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.info-card',
+          start: 'top 85%'
+        }
+      });
+
+      gsap.from('.base-item', {
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.2,
+        ease: 'back.out(2)',
+        scrollTrigger: {
+          trigger: '.base-item',
+          start: 'top 85%'
+        }
+      });
+
+      gsap.from('.ratio-bridge .rb-item', {
+        y: 20,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.15,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.ratio-bridge',
+          start: 'top 85%'
+        }
+      });
+    });
+  </script>
+</body>
+</html>

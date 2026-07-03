@@ -333,6 +333,52 @@
     .pop-result-msg.correct-msg { background: #E8F5E9; color: #2E7D32; }
     .pop-result-msg.wrong-msg { background: #FFEBEE; color: #C62828; }
 
+    /* Quiz option styles (for the simpler practice quizzes) */
+    .quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .quiz-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .quiz-option:hover {
+      border-color: #283593;
+      background: #E8EAF6;
+      transform: scale(1.05);
+    }
+    .quiz-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .quiz-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .quiz-option:disabled { cursor: default; opacity: 0.7; }
+    .quiz-option.correct:disabled { opacity: 1; }
+
+    .quiz-result-msg {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .quiz-result-msg.show { display: block; animation: fadeIn 0.3s ease; }
+    .quiz-result-msg.correct-msg { background: #E8F5E9; color: #2E7D32; }
+    .quiz-result-msg.wrong-msg { background: #FFEBEE; color: #C62828; }
+
     @media (max-width: 768px) {
       .timeline-card .pop-number { font-size: 2rem; }
       .timeline-arrow { font-size: 2rem; min-width: 40px; }
@@ -503,6 +549,76 @@
         </div>
       </section>
 
+      <!-- 🆕 Simpler Quiz 1: 2000 to 2005 -->
+      <section class="quiz-section" style="border-color:#E65100;margin-top:2rem;">
+        <h3>🧠 Practice 1: Town Growth</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">
+          A town had <strong>3,000 people</strong> in the year 2000. By 2005, it had <strong>6,000 people</strong>.<br>
+          How much did the population <strong>grow</strong>? (Find the <strong>difference</strong> first!)
+        </p>
+
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 📐 What is the <strong>difference</strong> in population?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">6,000 − 3,000 = 2,000</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">6,000 − 3,000 = 1,000</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">6,000 − 3,000 = 3,000</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">6,000 − 3,000 = 4,000</button>
+          </div>
+          <div class="quiz-result-msg" id="pq1"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 📈 What is the <strong>percentage increase</strong>?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">50%</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">100%</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">200%</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">300%</button>
+          </div>
+          <div class="quiz-result-msg" id="pq2"></div>
+        </div>
+
+        <div style="margin-top:1rem;padding:0.75rem 1rem;background:#FFF8E1;border-radius:var(--radius-md);font-size:1rem;font-weight:600;color:#E65100;display:none;" id="pqHint">
+          💡 Hint: (6,000 − 3,000) ÷ 3,000 × 100 = ?%
+        </div>
+      </section>
+
+      <!-- 🆕 Simpler Quiz 2: School Population -->
+      <section class="quiz-section" style="border-color:#1565C0;margin-top:2rem;">
+        <h3>🧠 Practice 2: School Growth</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">
+          A school had <strong>400 students</strong> in 2018. By 2023, it had <strong>500 students</strong>.<br>
+          Calculate the <strong>percentage increase</strong> in students!
+        </p>
+
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 📐 What is the <strong>increase</strong> in students?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">50 students</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">150 students</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">100 students</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">200 students</button>
+          </div>
+          <div class="quiz-result-msg" id="pq3"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 📈 What is the <strong>percentage increase</strong>?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">10%</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">15%</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, false)">20%</button>
+            <button class="quiz-option" onclick="checkQuizAnswer(this, true)">25%</button>
+          </div>
+          <div class="quiz-result-msg" id="pq4"></div>
+        </div>
+
+        <div style="margin-top:1rem;padding:0.75rem 1rem;background:#E3F2FD;border-radius:var(--radius-md);font-size:1rem;font-weight:600;color:#1565C0;">
+          💡 <strong>Formula:</strong> (New − Old) ÷ Old × 100 = Percentage Increase
+        </div>
+      </section>
+
       <!-- Interactive Calculator -->
       <section class="interactive-pop">
         <h3>🧮 Try Your Own Percentage Increase!</h3>
@@ -612,7 +728,37 @@
 
     solveBtn.addEventListener('click', solveProblem);
 
-    // ============ Multiple Choice Quiz ============
+    // ============ Practice Quiz: checkQuizAnswer (for the simpler practice quizzes) ============
+    function checkQuizAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.quiz-option');
+      var resultDiv = parentCard.querySelector('.quiz-result-msg');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-msg');
+        resultDiv.classList.remove('wrong-msg');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-msg');
+        resultDiv.classList.remove('correct-msg');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ Multiple Choice Quiz (Australia 605%) ============
     var quizAnswered = false;
 
     function checkChoice(btn, isCorrect) {
