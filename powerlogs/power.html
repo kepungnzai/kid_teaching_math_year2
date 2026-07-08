@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power of Numbers! - KidRead</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    [data-theme="power"] {
+      --adventure-accent: #9C27B0;
+      --adventure-accent-light: #E1BEE7;
+      --adventure-accent-dark: #6A1B9A;
+      --adventure-bg-soft: #F3E5F5;
+      --adventure-bg-gradient-start: #F3E5F5;
+      --adventure-bg-gradient-end: #E3F2FD;
+      --adventure-border-light: #CE93D8;
+      --adventure-focus-rgb: 156, 39, 176;
+      --adventure-counter-bg: #F3E5F5;
+      --adventure-counter-color: #6A1B9A;
+      --adventure-animation-bg-start: #F3E5F5;
+      --adventure-animation-bg-end: #FFF8E1;
+      --adventure-pile-glow: rgba(156, 39, 176, 0.12);
+      --adventure-btn-box-shadow-rgb: 156, 39, 176;
+    }
+
+    .power-table {
+      width: 100%;
+      max-width: 500px;
+      margin: 1.5rem auto;
+      border-collapse: collapse;
+      font-size: 1.15rem;
+    }
+    .power-table th {
+      background-color: var(--adventure-accent-light);
+      color: var(--adventure-accent-dark);
+      padding: 0.75rem 1rem;
+      font-weight: 800;
+    }
+    .power-table td {
+      padding: 0.75rem 1rem;
+      text-align: center;
+      border-bottom: 2px solid var(--color-border);
+    }
+    .power-table tr:last-child td {
+      border-bottom: none;
+    }
+    .power-table tr:hover td {
+      background-color: #FAFAFA;
+    }
+
+    .big-power {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--adventure-accent-dark);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .number-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+    .number-line .nl-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: white;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--adventure-accent-light);
+      font-weight: 700;
+      min-width: 60px;
+    }
+    .number-line .nl-item .nl-power {
+      font-size: 1.3rem;
+      color: var(--adventure-accent);
+    }
+    .number-line .nl-item .nl-value {
+      font-size: 1.1rem;
+      color: var(--color-text-light);
+    }
+    .number-line .nl-arrow {
+      font-size: 1.5rem;
+      color: var(--color-orange);
+    }
+
+    /* Apple Power Visualisation */
+    .apple-power-block {
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+      border: 3px solid #FFB74D;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .apple-power-block:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    .apple-power-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px dashed #FFB74D;
+    }
+    .apple-power-label {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #E65100;
+    }
+    .apple-power-eq {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #BF360C;
+      background: #FFF3E0;
+      padding: 0.3rem 0.8rem;
+      border-radius: var(--radius-sm);
+    }
+    .apple-power-result {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #4E342E;
+    }
+    .apple-power-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: center;
+      padding: 0.5rem;
+    }
+    .apple-power-grid--small .apple-item {
+      font-size: 1.3rem;
+    }
+    .apple-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      animation: popIn 0.3s ease;
+      transition: transform 0.15s ease;
+      cursor: default;
+    }
+    .apple-item:hover {
+      transform: scale(1.3);
+    }
+    .apple-power-comparison {
+      margin: 2rem 0 1rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .comparison-bar-wrapper {
+      margin-bottom: 0.75rem;
+    }
+    .comparison-bar-wrapper:last-child {
+      margin-bottom: 0;
+    }
+    .comparison-bar {
+      height: 40px;
+      background: linear-gradient(90deg, #FF8A65, #FF5722);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 1rem;
+      min-width: 60px;
+      transition: width 0.5s ease;
+    }
+    .comparison-label {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      white-space: nowrap;
+    }
+    @media (max-width: 768px) {
+      .apple-power-header {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .apple-power-label {
+        font-size: 1.6rem;
+      }
+      .apple-power-grid--small .apple-item {
+        font-size: 1.1rem;
+      }
+      .apple-item {
+        font-size: 1.3rem;
+      }
+      .comparison-bar {
+        height: 34px;
+      }
+      .comparison-label {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main data-theme="power">
+    <div class="content-wrapper">
+      <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+      <!-- Hero / Title -->
+      <section class="hero" style="padding: 2rem 0 1rem;">
+        <h1>The <span>Power</span> of Numbers!</h1>
+        <p>Learn how numbers can grow super fast when we use exponents!</p>
+      </section>
+
+      <!-- What is a Power? -->
+      <article class="article">
+        <h2>What is a Power? 🤔</h2>
+        <p>
+          A <strong>power</strong> (or <strong>exponent</strong>) tells us how many times to multiply a number by itself.
+          It's like a shortcut for writing repeated multiplication!
+        </p>
+
+        <div class="highlight-box">
+          <p>
+            <strong>2³</strong> means: 2 &times; 2 &times; 2 = 8<br>
+            <span style="font-size:0.95rem; color:var(--color-text-light);">
+              The big number (2) is the <strong>base</strong>. The small number (3) is the <strong>exponent</strong>.
+            </span>
+          </p>
+        </div>
+
+        <h3>The Language of Powers 🗣️</h3>
+        <p>
+          We say <span class="vocab-word">"2 to the power of 3"</span> or <span class="vocab-word">"2 cubed"</span>.
+          <span class="vocab-word">"2 squared"</span> means 2&sup2; = 2 &times; 2 = 4.
+        </p>
+
+        <div class="story-box">
+          <p><span class="story-icon">🧊</span> <strong>Cool Fact!</strong> In the ancient world, a mathematician named Euclid first wrote about powers over 2,300 years ago! People use them for everything from measuring earthquakes to counting stars in the sky.</p>
+        </div>
+      </article>
+
+      <!-- Powers of 2 -->
+      <article class="article">
+        <h2>Powers of 2: Double Trouble! 🎲</h2>
+        <p>Watch what happens when we keep multiplying by 2:</p>
+
+        <div class="number-line">
+          <div class="nl-item"><span class="nl-power">2&sup1;</span><span class="nl-value">= 2</span></div>
+          <span class="nl-arrow">→</span>
+          <div class="nl-item"><span class="nl-power">2&sup2;</span><span class="nl-value">= 4</span></div>
+          <span class="nl-arrow">→</span>
+          <div class="nl-item"><span class="nl-power">2&sup3;</span><span class="nl-value">= 8</span></div>
+          <span class="nl-arrow">→</span>
+          <div class="nl-item"><span class="nl-power">2<sup>4</sup></span><span class="nl-value">= 16</span></div>
+          <span class="nl-arrow">→</span>
+          <div class="nl-item"><span class="nl-power">2<sup>5</sup></span><span class="nl-value">= 32</span></div>
+        </div>
+
+        <p style="text-align:center; margin-top:1rem;">
+          <strong>See the pattern?</strong> Each time we add 1 to the exponent, the answer doubles!<br>
+          It grows fast: 2, 4, 8, 16, 32, 64, 128, 256... 🌱➡️🌳
+        </p>
+      </article>
+
+      <!-- Apple Power Visualisation -->
+      <article class="article">
+        <h2>🍎 Apple Power — See It Grow!</h2>
+        <p>Let's use <strong>apples</strong> to see how fast powers grow. Watch what happens to the pile of apples as the exponent goes up!</p>
+
+        <!-- 2³ = 8 apples -->
+        <div class="apple-power-block">
+          <div class="apple-power-header">
+            <span class="apple-power-label">2<sup>3</sup></span>
+            <span class="apple-power-eq">= 2 × 2 × 2</span>
+            <span class="apple-power-result">= <strong>8 apples</strong> 🍎</span>
+          </div>
+          <div class="apple-power-grid" data-size="8">
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+          </div>
+        </div>
+
+        <!-- 2⁴ = 16 apples -->
+        <div class="apple-power-block">
+          <div class="apple-power-header">
+            <span class="apple-power-label">2<sup>4</sup></span>
+            <span class="apple-power-eq">= 2 × 2 × 2 × 2</span>
+            <span class="apple-power-result">= <strong>16 apples</strong> 🍎🍎</span>
+          </div>
+          <div class="apple-power-grid" data-size="16">
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+          </div>
+        </div>
+
+        <!-- 2⁵ = 32 apples -->
+        <div class="apple-power-block">
+          <div class="apple-power-header">
+            <span class="apple-power-label">2<sup>5</sup></span>
+            <span class="apple-power-eq">= 2 × 2 × 2 × 2 × 2</span>
+            <span class="apple-power-result">= <strong>32 apples</strong> 🍎🍎🍎🍎</span>
+          </div>
+          <div class="apple-power-grid apple-power-grid--small" data-size="32">
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+          </div>
+        </div>
+
+        <!-- Comparison -->
+        <div class="apple-power-comparison">
+          <div class="comparison-bar-wrapper">
+            <div class="comparison-bar" style="width: 8%;">
+              <span class="comparison-label">2³ = 8</span>
+            </div>
+          </div>
+          <div class="comparison-bar-wrapper">
+            <div class="comparison-bar" style="width: 16%;">
+              <span class="comparison-label">2⁴ = 16</span>
+            </div>
+          </div>
+          <div class="comparison-bar-wrapper">
+            <div class="comparison-bar" style="width: 32%;">
+              <span class="comparison-label">2⁵ = 32</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 2rem;">
+          <p>
+            🍎 <strong>See how fast it grows?</strong> From 8 apples → 16 apples → 32 apples!<br>
+            Every time we add <strong>1</strong> to the exponent, the number of apples <strong>doubles</strong>!<br>
+            That's the power of powers! 🚀
+          </p>
+        </div>
+      </article>
+
+      <!-- Powers of 10 -->
+      <article class="article">
+        <h2>Powers of 10: Making Big Numbers! 🔟</h2>
+        <p>Powers of 10 are super special — they make the number of zeros you see!</p>
+
+        <table class="power-table">
+          <tr><th>Power</th><th>Meaning</th><th>Value</th></tr>
+          <tr><td>10<sup>0</sup></td><td>1 (no 10s multiplied)</td><td><strong>1</strong></td></tr>
+          <tr><td>10<sup>1</sup></td><td>10</td><td><strong>10</strong></td></tr>
+          <tr><td>10<sup>2</sup></td><td>10 &times; 10</td><td><strong>100</strong></td></tr>
+          <tr><td>10<sup>3</sup></td><td>10 &times; 10 &times; 10</td><td><strong>1,000</strong></td></tr>
+          <tr><td>10<sup>4</sup></td><td>10 &times; 10 &times; 10 &times; 10</td><td><strong>10,000</strong></td></tr>
+          <tr><td>10<sup>5</sup></td><td>10 &times; 10 &times; 10 &times; 10 &times; 10</td><td><strong>100,000</strong></td></tr>
+          <tr><td>10<sup>6</sup></td><td>10 &times; 10 &times; 10 &times; 10 &times; 10 &times; 10</td><td><strong>1,000,000</strong></td></tr>
+        </table>
+
+        <div class="highlight-box">
+          <p>💡 <strong>Key Idea:</strong> The exponent tells you how many zeros to put after 1!<br>
+          10&sup3; = 1 followed by <strong>3 zeros</strong> = 1,000 &nbsp;|&nbsp; 10&sup6; = 1 followed by <strong>6 zeros</strong> = 1,000,000</p>
+        </div>
+
+        <div class="story-box">
+          <p><span class="story-icon">🌍</span> The distance from Earth to the Sun is about 10<sup>8</sup> kilometers! (That's 100,000,000 km!)</p>
+          <p><span class="story-icon">🧬</span> Your body has about 10<sup>14</sup> cells — that's a 1 with 14 zeros! 100 trillion cells!</p>
+        </div>
+      </article>
+
+      <!-- Special Powers -->
+      <article class="article">
+        <h2>Super Special Powers! ⚡</h2>
+
+        <h3>Any Number to the Power of 0 = 1</h3>
+        <p>
+          It might seem strange, but <strong>any number to the power of 0 is 1</strong>!<br>
+          <span style="font-size:1.3rem; font-weight:800; color:var(--adventure-accent);">
+            5<sup>0</sup> = 1 &nbsp;&nbsp; 100<sup>0</sup> = 1 &nbsp;&nbsp; 1,000,000<sup>0</sup> = 1
+          </span>
+        </p>
+
+        <h3>Any Number to the Power of 1 = Itself</h3>
+        <p>
+          When the exponent is 1, you're not multiplying anything extra.<br>
+          <span style="font-size:1.3rem; font-weight:800; color:var(--adventure-accent);">
+            7<sup>1</sup> = 7 &nbsp;&nbsp; 20<sup>1</sup> = 20 &nbsp;&nbsp; 500<sup>1</sup> = 500
+          </span>
+        </p>
+
+        <h3>Negative Exponents = Fractions!</h3>
+        <p>
+          A negative exponent means <strong>1 divided by</strong> the power:<br>
+          <span style="font-size:1.3rem; font-weight:800; color:var(--adventure-accent);">
+            2<sup>-1</sup> = &frac12; &nbsp;&nbsp; 10<sup>-2</sup> = <sup>1</sup>/<sub>100</sub> = 0.01
+          </span>
+        </p>
+
+        <div class="thinking-steps">
+          <h4>📝 Quick Summary</h4>
+          <div class="step"><span class="step-number">1</span><span class="step-text"><strong>Base</strong> = the big number (what we multiply)</span></div>
+          <div class="step"><span class="step-number">2</span><span class="step-text"><strong>Exponent</strong> = the small number (how many times we multiply)</span></div>
+          <div class="step"><span class="step-number">3</span><span class="step-text"><strong>Power</strong> = base<sup>exponent</sup> = the result</span></div>
+        </div>
+      </article>
+
+      <!-- Quiz Section -->
+      <section class="quiz-section">
+        <h3>🧠 Power Quiz — Test Yourself!</h3>
+
+        <div class="quiz-card">
+          <div class="quiz-question">1. What is 2<sup>4</sup>?</div>
+          <button class="btn-answer" onclick="revealAnswer('q1')">Show Answer</button>
+          <div class="quiz-answer" id="q1">2<sup>4</sup> = 2 &times; 2 &times; 2 &times; 2 = <strong>16</strong> 🎉</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">2. What is 10<sup>3</sup>?</div>
+          <button class="btn-answer" onclick="revealAnswer('q2')">Show Answer</button>
+          <div class="quiz-answer" id="q2">10<sup>3</sup> = 10 &times; 10 &times; 10 = <strong>1,000</strong> (one thousand) 🎉</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">3. What is 5<sup>0</sup>? (Tricky!)</div>
+          <button class="btn-answer" onclick="revealAnswer('q3')">Show Answer</button>
+          <div class="quiz-answer" id="q3"><strong>1</strong>! Any number to the power of 0 equals 1. So 5<sup>0</sup> = 1. 🧙‍♂️</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">4. 3<sup>2</sup> is also called "3 _____"?</div>
+          <button class="btn-answer" onclick="revealAnswer('q4')">Show Answer</button>
+          <div class="quiz-answer" id="q4">3 <strong>squared</strong>! 3<sup>2</sup> = 3 &times; 3 = 9. 📏</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">5. Which is bigger: 2<sup>5</sup> or 5<sup>2</sup>?</div>
+          <button class="btn-answer" onclick="revealAnswer('q5')">Show Answer</button>
+          <div class="quiz-answer" id="q5">2<sup>5</sup> = 32. 5<sup>2</sup> = 25. So <strong>2<sup>5</sup></strong> is bigger! 🏆</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">6. What is 7<sup>1</sup>?</div>
+          <button class="btn-answer" onclick="revealAnswer('q6')">Show Answer</button>
+          <div class="quiz-answer" id="q6"><strong>7</strong>! Any number to the power of 1 is just itself. ✅</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">7. What is 10<sup>6</sup>?</div>
+          <button class="btn-answer" onclick="revealAnswer('q7')">Show Answer</button>
+          <div class="quiz-answer" id="q7">10<sup>6</sup> = 1,000,000 = <strong>one million</strong>! That's a 1 with 6 zeros. 💰</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">8. What is 4<sup>3</sup>?</div>
+          <button class="btn-answer" onclick="revealAnswer('q8')">Show Answer</button>
+          <div class="quiz-answer" id="q8">4<sup>3</sup> = 4 &times; 4 &times; 4 = <strong>64</strong> 🌟</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    function revealAnswer(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

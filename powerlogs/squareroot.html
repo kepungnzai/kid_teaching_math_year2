@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Square Roots! - KidRead</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    [data-theme="sqrt"] {
+      --adventure-accent: #43A047;
+      --adventure-accent-light: #C8E6C9;
+      --adventure-accent-dark: #2E7D32;
+      --adventure-bg-soft: #E8F5E9;
+      --adventure-bg-gradient-start: #E8F5E9;
+      --adventure-bg-gradient-end: #E3F2FD;
+      --adventure-border-light: #A5D6A7;
+      --adventure-focus-rgb: 67, 160, 71;
+      --adventure-counter-bg: #E8F5E9;
+      --adventure-counter-color: #2E7D32;
+      --adventure-animation-bg-start: #E8F5E9;
+      --adventure-animation-bg-end: #FFF8E1;
+      --adventure-pile-glow: rgba(67, 160, 71, 0.12);
+      --adventure-btn-box-shadow-rgb: 67, 160, 71;
+    }
+
+    .sqrt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .sqrt-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      text-align: center;
+      border: 3px solid var(--adventure-accent-light);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease;
+    }
+    .sqrt-card:hover {
+      transform: translateY(-4px);
+    }
+    .sqrt-card .sqrt-expr {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--adventure-accent-dark);
+    }
+    .sqrt-card .sqrt-eq {
+      font-size: 1.1rem;
+      color: var(--color-text-light);
+      margin-top: 0.5rem;
+    }
+
+    .perfect-squares {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    .perfect-squares .ps-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: white;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--adventure-accent-light);
+      font-weight: 700;
+      min-width: 80px;
+    }
+    .perfect-squares .ps-item .ps-square {
+      font-size: 1.3rem;
+      color: var(--adventure-accent);
+    }
+    .perfect-squares .ps-item .ps-root {
+      font-size: 1.1rem;
+      color: var(--color-text-light);
+    }
+
+    .sqrt-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+    .sqrt-visual .sv-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .sqrt-visual .sv-grid {
+      display: grid;
+      gap: 4px;
+      background: var(--adventure-accent-light);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+    }
+    .sqrt-visual .sv-cell {
+      width: 30px;
+      height: 30px;
+      background: var(--adventure-accent);
+      border-radius: 4px;
+    }
+    .sqrt-visual .sv-label {
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    /* Apple Shrink Visualisation (Square Root) */
+    .apple-shrink-block {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      border: 3px solid #81C784;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .apple-shrink-block:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    .apple-shrink-block--small {
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+      border-color: #FFB74D;
+    }
+    .apple-shrink-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px dashed #81C784;
+    }
+    .apple-shrink-block--small .apple-shrink-header {
+      border-bottom-color: #FFB74D;
+    }
+    .apple-shrink-big {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1B5E20;
+    }
+    .apple-shrink-arrow {
+      font-size: 1.8rem;
+      color: var(--color-orange);
+      font-weight: 800;
+    }
+    .apple-shrink-small {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #4E342E;
+    }
+    .apple-shrink-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.5);
+      border-radius: var(--radius-md);
+    }
+    .apple-shrink-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      justify-content: center;
+    }
+    .apple-shrink-row .apple-item {
+      font-size: 1rem;
+    }
+    .apple-shrink-result {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .apple-shrink-big-label {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #E65100;
+    }
+    .apple-shrink-arrow2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--adventure-accent);
+    }
+    .apple-shrink-small-label {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1B5E20;
+    }
+    .apple-shrink-small-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      justify-content: center;
+      padding: 0.5rem;
+      background: #E8F5E9;
+      border-radius: var(--radius-sm);
+    }
+    .apple-shrink-small-grid .apple-item {
+      font-size: 1.1rem;
+    }
+    .apple-shrink-half {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      padding: 1rem;
+    }
+    .apple-shrink-from {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      justify-content: center;
+      max-width: 120px;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.6);
+      border-radius: var(--radius-md);
+    }
+    .apple-shrink-from .apple-item {
+      font-size: 2rem;
+    }
+    .apple-shrink-from-label {
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+      margin-top: 0.4rem;
+    }
+    .apple-shrink-bigarrow {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--adventure-accent);
+    }
+    .apple-shrink-to {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      justify-content: center;
+      max-width: 140px;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.6);
+      border-radius: var(--radius-md);
+    }
+    .apple-shrink-to .apple-item {
+      font-size: 1.5rem;
+    }
+    .apple-item-half {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      opacity: 0.6;
+    }
+    .apple-shrink-comparison {
+      margin: 2rem 0 1rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .apple-shrink-comparison h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--adventure-accent-dark);
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+    .shrink-bar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .shrink-bar-label {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--color-text);
+      min-width: 32px;
+      text-align: right;
+    }
+    .shrink-bar {
+      height: 32px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 0.75rem;
+      min-width: 50px;
+      transition: width 0.5s ease;
+    }
+    .shrink-bar--big { background: linear-gradient(90deg, #66BB6A, #43A047); }
+    .shrink-bar--medium { background: linear-gradient(90deg, #81C784, #66BB6A); }
+    .shrink-bar--small { background: linear-gradient(90deg, #A5D6A7, #81C784); }
+    .shrink-bar--smaller { background: linear-gradient(90deg, #FFB74D, #FFA726); }
+    .shrink-bar--tiny { background: linear-gradient(90deg, #FFCC80, #FFB74D); }
+    .shrink-bar-text {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      white-space: nowrap;
+    }
+
+    /* Reuse popIn keyframe from shared styles */
+    @media (max-width: 768px) {
+      .apple-shrink-header {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .apple-shrink-big {
+        font-size: 1.2rem;
+      }
+      .apple-shrink-small {
+        font-size: 1.1rem;
+      }
+      .apple-shrink-rows .apple-item {
+        font-size: 0.85rem;
+      }
+      .apple-shrink-result {
+        flex-direction: column;
+      }
+      .apple-shrink-half {
+        flex-direction: column;
+      }
+      .apple-shrink-bigarrow {
+        transform: rotate(90deg);
+      }
+      .shrink-bar {
+        height: 28px;
+      }
+      .shrink-bar-text {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main data-theme="sqrt">
+    <div class="content-wrapper">
+      <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+      <!-- Hero / Title -->
+      <section class="hero" style="padding: 2rem 0 1rem;">
+        <h1>Discover <span>Square Roots</span>! 🌱</h1>
+        <p>Find the number that, when multiplied by itself, gives you the original number!</p>
+      </section>
+
+      <!-- What is a Square Root? -->
+      <article class="article">
+        <h2>What is a Square Root? 🤔</h2>
+        <p>
+          A <strong>square root</strong> is the opposite of squaring a number. If you square a number (multiply it by itself),
+          the square root brings you back to where you started!
+        </p>
+
+        <div class="highlight-box">
+          <p>
+            <strong>√25 = 5</strong> &nbsp; because &nbsp; <strong>5 × 5 = 25</strong><br>
+            <span style="font-size:0.95rem; color:var(--color-text-light);">
+              The √ symbol is called the <strong>radical</strong> sign. It asks: "What number times itself equals this?"
+            </span>
+          </p>
+        </div>
+
+       
+        <div class="story-box">
+          <p><span class="story-icon">📐</span> The square root symbol (√) has been used since the 1500s! It comes from the Latin word "radix" meaning "root" — like the root of a plant that gives it life!</p>
+        </div>
+      </article>
+
+
+      <!-- Apple Square Root - The Shrinking Concept -->
+      <article class="article">
+        <h2>🍎 Apple Square Root — Watch It Shrink!</h2>
+        <p>Powers made apples <strong>grow</strong> super fast. Square roots do the <strong>opposite</strong> — they shrink the pile! Watch what happens when we take the square root of a big group of apples.</p>
+
+        <!-- Start big: √256 = 16 apples (a 4×4 grid of 4-apple groups) -->
+        <div class="apple-shrink-block">
+          <div class="apple-shrink-header">
+            <span class="apple-shrink-big">256 apples 🍎🍎🍎🍎</span>
+            <span class="apple-shrink-arrow">→</span>
+            <span class="apple-shrink-small">√256 = <strong>16 apples</strong></span>
+          </div>
+          <div class="apple-shrink-rows">
+            <div class="apple-shrink-row">
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            </div>
+            <div class="apple-shrink-row">
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            </div>
+            <div class="apple-shrink-row">
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            </div>
+            <div class="apple-shrink-row">
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            </div>
+          </div>
+          <div class="apple-shrink-result">
+            <span class="apple-shrink-big-label">256 apples</span>
+            <span class="apple-shrink-arrow2">➡️ √ ➡️</span>
+            <span class="apple-shrink-small-label">16 apples</span>
+            <div class="apple-shrink-small-grid">
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Then show √2 shrinking 2 down to ~1.4 -->
+        <div class="apple-shrink-block apple-shrink-block--small">
+          <div class="apple-shrink-header">
+            <span class="apple-shrink-big">2 apples</span>
+            <span class="apple-shrink-arrow">→ √ →</span>
+            <span class="apple-shrink-small">√2 ≈ <strong>1.414</strong>... apples</span>
+          </div>
+          <div class="apple-shrink-half">
+            <div class="apple-shrink-from">
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <div class="apple-shrink-from-label">2 apples</div>
+            </div>
+            <span class="apple-shrink-bigarrow">⬇️ √ ⬇️</span>
+            <div class="apple-shrink-to">
+              <span class="apple-item" style="font-size:1.8rem;">🍎</span>
+              <span class="apple-item-half">½🍎</span>
+              <div class="apple-shrink-from-label">≈ 1.4 apples</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Then show √3 shrinking 3 down to ~1.7 (even smaller than original 3, but bigger than √2) -->
+        <div class="apple-shrink-block apple-shrink-block--small">
+          <div class="apple-shrink-header">
+            <span class="apple-shrink-big">3 apples</span>
+            <span class="apple-shrink-arrow">→ √ →</span>
+            <span class="apple-shrink-small">√3 ≈ <strong>1.732</strong>... apples</span>
+          </div>
+          <div class="apple-shrink-half">
+            <div class="apple-shrink-from">
+              <span class="apple-item">🍎</span><span class="apple-item">🍎</span><span class="apple-item">🍎</span>
+              <div class="apple-shrink-from-label">3 apples</div>
+            </div>
+            <span class="apple-shrink-bigarrow">⬇️ √ ⬇️</span>
+            <div class="apple-shrink-to">
+              <span class="apple-item" style="font-size:1.8rem;">🍎</span>
+              <span class="apple-item" style="font-size:1.3rem;">🍎</span>
+              <span class="apple-item-half">¾🍎</span>
+              <div class="apple-shrink-from-label">≈ 1.7 apples</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison: showing the shrinking effect from big to small -->
+        <div class="apple-shrink-comparison">
+          <h3>📉 See How Square Roots Shrink!</h3>
+          <div class="shrink-bar-wrapper">
+            <span class="shrink-bar-label">256</span>
+            <div class="shrink-bar shrink-bar--big" style="width: 100%;">
+              <span class="shrink-bar-text">√256 = 16</span>
+            </div>
+          </div>
+          <div class="shrink-bar-wrapper">
+            <span class="shrink-bar-label">16</span>
+            <div class="shrink-bar shrink-bar--medium" style="width: 40%;">
+              <span class="shrink-bar-text">√16 = 4</span>
+            </div>
+          </div>
+          <div class="shrink-bar-wrapper">
+            <span class="shrink-bar-label">4</span>
+            <div class="shrink-bar shrink-bar--small" style="width: 25%;">
+              <span class="shrink-bar-text">√4 = 2</span>
+            </div>
+          </div>
+          <div class="shrink-bar-wrapper">
+            <span class="shrink-bar-label">3</span>
+            <div class="shrink-bar shrink-bar--smaller" style="width: 22%;">
+              <span class="shrink-bar-text">√3 ≈ 1.73</span>
+            </div>
+          </div>
+          <div class="shrink-bar-wrapper">
+            <span class="shrink-bar-label">2</span>
+            <div class="shrink-bar shrink-bar--tiny" style="width: 18%;">
+              <span class="shrink-bar-text">√2 ≈ 1.41</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 2rem;">
+          <p>
+            🍎 <strong>See how it shrinks?</strong> Starting from a big pile of 256 apples, taking the square root gives just 16!<br>
+            Even small numbers like 2 and 3 get squished down to about 1.4 and 1.7.<br>
+            That's the <strong>opposite</strong> of powers — square roots <strong>shrink</strong> the quantity! 🌱
+          </p>
+        </div>
+      </article>
+
+            <!-- Perfect Squares -->
+      <article class="article">
+        <h2>Perfect Squares 🌟</h2>
+        <p>
+          Numbers like 1, 4, 9, 16, 25 are called <strong>perfect squares</strong> because their square roots are whole numbers!
+        </p>
+
+        <div class="perfect-squares">
+          <div class="ps-item"><span class="ps-square">1</span><span class="ps-root">√1 = 1</span></div>
+          <div class="ps-item"><span class="ps-square">4</span><span class="ps-root">√4 = 2</span></div>
+          <div class="ps-item"><span class="ps-square">9</span><span class="ps-root">√9 = 3</span></div>
+          <div class="ps-item"><span class="ps-square">16</span><span class="ps-root">√16 = 4</span></div>
+          <div class="ps-item"><span class="ps-square">25</span><span class="ps-root">√25 = 5</span></div>
+          <div class="ps-item"><span class="ps-square">36</span><span class="ps-root">√36 = 6</span></div>
+          <div class="ps-item"><span class="ps-square">49</span><span class="ps-root">√49 = 7</span></div>
+          <div class="ps-item"><span class="ps-square">64</span><span class="ps-root">√64 = 8</span></div>
+          <div class="ps-item"><span class="ps-square">81</span><span class="ps-root">√81 = 9</span></div>
+          <div class="ps-item"><span class="ps-square">100</span><span class="ps-root">√100 = 10</span></div>
+        </div>
+
+        <div class="highlight-box">
+          <p>💡 <strong>Pattern:</strong> Perfect squares are 1, 4, 9, 16, 25, 36... The difference between each one grows by 2 each time!<br>
+          1 → +3 → 4 → +5 → 9 → +7 → 16 → +9 → 25 → +11 → 36 ...</p>
+        </div>
+      </article>
+
+
+      <!-- Square Roots of Non-Perfect Squares -->
+      <article class="article">
+        <h2>What About Numbers Like √20? 🤷</h2>
+        <p>
+          Not every number is a perfect square. For example, √20 is between √16 = 4 and √25 = 5.<br>
+          It's approximately <strong>4.47</strong>. These are called <strong>irrational numbers</strong> — they go on forever without repeating!
+        </p>
+
+        <div class="sqrt-grid">
+          <div class="sqrt-card">
+            <div class="sqrt-expr">√2</div>
+            <div class="sqrt-eq">≈ 1.414...</div>
+          </div>
+          <div class="sqrt-card">
+            <div class="sqrt-expr">√3</div>
+            <div class="sqrt-eq">≈ 1.732...</div>
+          </div>
+          <div class="sqrt-card">
+            <div class="sqrt-expr">√5</div>
+            <div class="sqrt-eq">≈ 2.236...</div>
+          </div>
+          <div class="sqrt-card">
+            <div class="sqrt-expr">√6</div>
+            <div class="sqrt-eq">≈ 2.449...</div>
+          </div>
+          <div class="sqrt-card">
+            <div class="sqrt-expr">√7</div>
+            <div class="sqrt-eq">≈ 2.645...</div>
+          </div>
+          <div class="sqrt-card">
+            <div class="sqrt-expr">√8</div>
+            <div class="sqrt-eq">≈ 2.828...</div>
+          </div>
+          <div class="sqrt-card">
+            <div class="sqrt-expr">√10</div>
+            <div class="sqrt-eq">≈ 3.162...</div>
+          </div>
+        </div>
+
+        <div class="story-box">
+          <p><span class="story-icon">🥧</span> <strong>Fun Fact:</strong> The ancient Greeks discovered that √2 is irrational. They were so surprised that numbers could go on forever without repeating! Today we use square roots in architecture, video games, and space travel! 🚀</p>
+        </div>
+      </article>
+
+      <!-- Square Root Rules -->
+      <article class="article">
+        <h2>Handy Square Root Rules 📏</h2>
+
+        <div class="thinking-steps">
+          <h4>🔑 Key Rules</h4>
+          <div class="step"><span class="step-number">1</span><span class="step-text"><strong>√(a × b) = √a × √b</strong> — You can split the square root of a product!<br>Example: √(4 × 9) = √4 × √9 = 2 × 3 = 6</span></div>
+          <div class="step"><span class="step-number">2</span><span class="step-text"><strong>√(a ÷ b) = √a ÷ √b</strong> — You can split the square root of a division!<br>Example: √(100 ÷ 4) = √100 ÷ √4 = 10 ÷ 2 = 5</span></div>
+          <div class="step"><span class="step-number">3</span><span class="step-text"><strong>√a × √a = a</strong> — A square root times itself gives the original number!<br>Example: √7 × √7 = 7</span></div>
+          <div class="step"><span class="step-number">4</span><span class="step-text"><strong>Every positive number has TWO square roots</strong> — a positive and a negative one!<br>Example: √25 = 5 <em>or</em> -5, because (-5) × (-5) = 25 too!</span></div>
+        </div>
+      </article>
+
+      <!-- Quiz Section -->
+      <section class="quiz-section">
+        <h3>🧠 Square Root Quiz — Test Yourself!</h3>
+
+        <div class="quiz-card">
+          <div class="quiz-question">1. What is √49?</div>
+          <button class="btn-answer" onclick="revealAnswer('q1')">Show Answer</button>
+          <div class="quiz-answer" id="q1">√49 = <strong>7</strong> because 7 × 7 = 49! 🎉</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">2. What is √81?</div>
+          <button class="btn-answer" onclick="revealAnswer('q2')">Show Answer</button>
+          <div class="quiz-answer" id="q2">√81 = <strong>9</strong> because 9 × 9 = 81! 🎉</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">3. What is √144?</div>
+          <button class="btn-answer" onclick="revealAnswer('q3')">Show Answer</button>
+          <div class="quiz-answer" id="q3">√144 = <strong>12</strong> because 12 × 12 = 144! 🎉</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">4. What is √1?</div>
+          <button class="btn-answer" onclick="revealAnswer('q4')">Show Answer</button>
+          <div class="quiz-answer" id="q4">√1 = <strong>1</strong> because 1 × 1 = 1! ✅</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">5. What is √(9 × 4)? (Use the rule!)</div>
+          <button class="btn-answer" onclick="revealAnswer('q5')">Show Answer</button>
+          <div class="quiz-answer" id="q5">√(9 × 4) = √9 × √4 = 3 × 2 = <strong>6</strong> 🧠</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">6. Which is bigger: √64 or √100?</div>
+          <button class="btn-answer" onclick="revealAnswer('q6')">Show Answer</button>
+          <div class="quiz-answer" id="q6"><strong>√100</strong> = 10 is bigger than √64 = 8. The bigger the number, the bigger the square root! 📈</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">7. What is √0?</div>
+          <button class="btn-answer" onclick="revealAnswer('q7')">Show Answer</button>
+          <div class="quiz-answer" id="q7">√0 = <strong>0</strong> because 0 × 0 = 0! ✅</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">8. Is 50 a perfect square?</div>
+          <button class="btn-answer" onclick="revealAnswer('q8')">Show Answer</button>
+          <div class="quiz-answer" id="q8"><strong>No!</strong> 7 × 7 = 49 and 8 × 8 = 64, so 50 is between perfect squares. √50 ≈ 7.07 ❌</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    function revealAnswer(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

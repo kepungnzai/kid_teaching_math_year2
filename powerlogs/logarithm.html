@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logarithms Base 10! - KidRead</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    [data-theme="log"] {
+      --adventure-accent: #FF7043;
+      --adventure-accent-light: #FFCCBC;
+      --adventure-accent-dark: #D84315;
+      --adventure-bg-soft: #FBE9E7;
+      --adventure-bg-gradient-start: #FBE9E7;
+      --adventure-bg-gradient-end: #FFF8E1;
+      --adventure-border-light: #FFAB91;
+      --adventure-focus-rgb: 255, 112, 67;
+      --adventure-counter-bg: #FBE9E7;
+      --adventure-counter-color: #D84315;
+      --adventure-animation-bg-start: #FBE9E7;
+      --adventure-animation-bg-end: #E3F2FD;
+      --adventure-pile-glow: rgba(255, 112, 67, 0.12);
+      --adventure-btn-box-shadow-rgb: 255, 112, 67;
+    }
+
+    .log-table {
+      width: 100%;
+      max-width: 550px;
+      margin: 1.5rem auto;
+      border-collapse: collapse;
+      font-size: 1.15rem;
+    }
+    .log-table th {
+      background-color: var(--adventure-accent-light);
+      color: var(--adventure-accent-dark);
+      padding: 0.75rem 1rem;
+      font-weight: 800;
+    }
+    .log-table td {
+      padding: 0.75rem 1rem;
+      text-align: center;
+      border-bottom: 2px solid var(--color-border);
+    }
+    .log-table tr:last-child td {
+      border-bottom: none;
+    }
+    .log-table tr:hover td {
+      background-color: #FAFAFA;
+    }
+
+    .log-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+    .log-line .ll-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: white;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--adventure-accent-light);
+      font-weight: 700;
+      min-width: 80px;
+    }
+    .log-line .ll-item .ll-log {
+      font-size: 1.2rem;
+      color: var(--adventure-accent);
+    }
+    .log-line .ll-item .ll-result {
+      font-size: 1rem;
+      color: var(--color-text-light);
+    }
+    .log-line .ll-arrow {
+      font-size: 1.5rem;
+      color: var(--color-orange);
+    }
+
+    .real-world-card {
+      background: white;
+      border-radius: var(--radius-md);
+      border: 3px solid var(--adventure-accent-light);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .real-world-card .rw-icon {
+      font-size: 3rem;
+      flex-shrink: 0;
+    }
+    .real-world-card .rw-text {
+      flex: 1;
+    }
+    .real-world-card .rw-text h4 {
+      font-size: 1.3rem;
+      color: var(--adventure-accent-dark);
+      margin-bottom: 0.5rem;
+    }
+    .real-world-card .rw-text p {
+      margin-bottom: 0;
+      font-size: 1.05rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main data-theme="log">
+    <div class="content-wrapper">
+      <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+      <!-- Hero / Title -->
+      <section class="hero" style="padding: 2rem 0 1rem;">
+        <h1>Discover <span>Logarithms</span> (Base 10)! 🔢</h1>
+        <p>Learn how logarithms are the secret reverse of powers — they tell you what exponent you need!</p>
+      </section>
+
+      <!-- What is a Logarithm? -->
+      <article class="article">
+        <h2>What is a Logarithm? 🤔</h2>
+        <p>
+          A <strong>logarithm</strong> (or "log") asks the question: <em>"What exponent do I need to get this number?"</em><br>
+          It's the opposite (inverse) of a power!
+        </p>
+
+        <div class="highlight-box">
+          <p>
+            <strong>log₁₀(100) = 2</strong> &nbsp; because &nbsp; <strong>10² = 100</strong><br>
+            <span style="font-size:0.95rem; color:var(--color-text-light);">
+              We read it as: <strong>"log base 10 of 100 equals 2"</strong>
+            </span>
+          </p>
+          <p style="margin-top:0.75rem;">
+            In other words: <strong>10 to WHAT POWER gives me 100?</strong> Answer: 2!
+          </p>
+        </div>
+
+        <h3>Logarithms = Power Reversers! 🔄</h3>
+        <div class="thinking-steps">
+          <h4>📝 Think of it this way:</h4>
+          <div class="step"><span class="step-number">1</span><span class="step-text"><strong>Power:</strong> 10<sup>3</sup> = 1,000 &nbsp; (What is 10 to the power of 3?)</span></div>
+          <div class="step"><span class="step-number">2</span><span class="step-text"><strong>Logarithm:</strong> log₁₀(1,000) = 3 &nbsp; (10 to WHAT power gives 1,000?)</span></div>
+          <div class="step"><span class="step-number">3</span><span class="step-text">They're <strong>opposites</strong> — like addition and subtraction! 🎯</span></div>
+        </div>
+
+        <div class="story-box">
+          <p><span class="story-icon">📜</span> The word "logarithm" comes from Greek words "logos" (ratio) and "arithmos" (number). John Napier invented them in the 1600s to make multiplication easier for astronomers! Before calculators, logarithms were the best way to do big calculations!</p>
+        </div>
+      </article>
+
+      <!-- The Pattern of Logs Base 10 -->
+      <article class="article">
+        <h2>The Pattern of Log₁₀ 🌊</h2>
+        <p>Watch the beautiful pattern as numbers grow by powers of 10:</p>
+
+        <table class="log-table">
+          <tr><th>Number</th><th>Written as a Power of 10</th><th>log₁₀(Number)</th></tr>
+          <tr><td>1</td><td>10<sup>0</sup></td><td><strong>0</strong></td></tr>
+          <tr><td>10</td><td>10<sup>1</sup></td><td><strong>1</strong></td></tr>
+          <tr><td>100</td><td>10<sup>2</sup></td><td><strong>2</strong></td></tr>
+          <tr><td>1,000</td><td>10<sup>3</sup></td><td><strong>3</strong></td></tr>
+          <tr><td>10,000</td><td>10<sup>4</sup></td><td><strong>4</strong></td></tr>
+          <tr><td>100,000</td><td>10<sup>5</sup></td><td><strong>5</strong></td></tr>
+          <tr><td>1,000,000</td><td>10<sup>6</sup></td><td><strong>6</strong></td></tr>
+        </table>
+
+        <div class="highlight-box">
+          <p>💡 <strong>Key Insight:</strong> log₁₀ of a number tells you <strong>how many zeros</strong> it has!<br>
+          log₁₀(1,000) = 3 &nbsp;→&nbsp; 1,000 has <strong>3 zeros</strong>!<br>
+          log₁₀(1,000,000) = 6 &nbsp;→&nbsp; 1,000,000 has <strong>6 zeros</strong>!</p>
+        </div>
+      </article>
+
+      <!-- Logarithms Make Numbers Easy to Compare -->
+      <article class="article">
+        <h2>Logs Make Big Numbers Easy! 🐳</h2>
+        <p>
+          Logarithms are amazing because they turn <strong>multiplication into addition</strong> and <strong>huge numbers into small ones</strong>!
+        </p>
+
+        <div class="log-line">
+          <div class="ll-item"><span class="ll-log">100</span><span class="ll-result">log₁₀ = 2</span></div>
+          <span class="ll-arrow">→</span>
+          <div class="ll-item"><span class="ll-log">1,000</span><span class="ll-result">log₁₀ = 3</span></div>
+          <span class="ll-arrow">→</span>
+          <div class="ll-item"><span class="ll-log">10,000</span><span class="ll-result">log₁₀ = 4</span></div>
+          <span class="ll-arrow">→</span>
+          <div class="ll-item"><span class="ll-log">100,000</span><span class="ll-result">log₁₀ = 5</span></div>
+        </div>
+
+        <p>
+          See how the numbers get 10 times bigger, but the log only goes up by 1 each time?<br>
+          That's the magic: <strong>logarithms squash huge ranges into tiny ones!</strong>
+        </p>
+
+        <h3>The Magic Rule: log(a × b) = log(a) + log(b)</h3>
+        <p>
+          This is the most important rule! Logarithms turn multiplication into addition:<br>
+          <span style="font-size:1.3rem; font-weight:800; color:var(--adventure-accent);">
+            log₁₀(100 × 1,000) = log₁₀(100) + log₁₀(1,000) = 2 + 3 = 5
+          </span>
+        </p>
+        <p>And since log₁₀(100,000) = 5, it works! 100 × 1,000 = 100,000. ✅</p>
+      </article>
+
+      <!-- Real World Uses -->
+      <article class="article">
+        <h2>Where Do We Use Logarithms in Real Life? 🌍</h2>
+
+        <div class="real-world-card">
+          <div class="rw-icon">🌋</div>
+          <div class="rw-text">
+            <h4>Earthquake Magnitudes (Richter Scale)</h4>
+            <p>Each step up on the Richter scale is 10 times stronger! A magnitude 6 earthquake is 10× stronger than magnitude 5. That's a logarithmic scale!</p>
+          </div>
+        </div>
+
+        <div class="real-world-card">
+          <div class="rw-icon">🔊</div>
+          <div class="rw-text">
+            <h4>Sound Loudness (Decibels)</h4>
+            <p>A whisper is about 30 dB, normal talking is 60 dB, and a rock concert is 120 dB. Because decibels are logarithmic, 120 dB is NOT 4× louder than 30 dB — it's <strong>1 billion times</strong> more intense!</p>
+          </div>
+        </div>
+
+        <div class="real-world-card">
+          <div class="rw-icon">⭐</div>
+          <div class="rw-text">
+            <h4>Star Brightness</h4>
+            <p>Astronomers use logarithmic scales to measure how bright stars are. A star of magnitude 1 is 100× brighter than a star of magnitude 6!</p>
+          </div>
+        </div>
+
+        <div class="real-world-card">
+          <div class="rw-icon">🧪</div>
+          <div class="rw-text">
+            <h4>Acidity (pH Scale)</h4>
+            <p>pH is a logarithmic scale! A pH of 3 is 10× more acidic than pH 4, and 100× more acidic than pH 5.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Quiz Section -->
+      <section class="quiz-section">
+        <h3>🧠 Logarithm Quiz — Test Yourself!</h3>
+
+        <div class="quiz-card">
+          <div class="quiz-question">1. What is log₁₀(1,000)?</div>
+          <button class="btn-answer" onclick="revealAnswer('q1')">Show Answer</button>
+          <div class="quiz-answer" id="q1">log₁₀(1,000) = <strong>3</strong> because 10³ = 1,000! 🎉</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">2. What is log₁₀(10,000)?</div>
+          <button class="btn-answer" onclick="revealAnswer('q2')">Show Answer</button>
+          <div class="quiz-answer" id="q2">log₁₀(10,000) = <strong>4</strong> because 10⁴ = 10,000! 🎉</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">3. What is log₁₀(1)?</div>
+          <button class="btn-answer" onclick="revealAnswer('q3')">Show Answer</button>
+          <div class="quiz-answer" id="q3">log₁₀(1) = <strong>0</strong> because 10⁰ = 1! ✅</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">4. What is log₁₀(10)?</div>
+          <button class="btn-answer" onclick="revealAnswer('q4')">Show Answer</button>
+          <div class="quiz-answer" id="q4">log₁₀(10) = <strong>1</strong> because 10¹ = 10! ✅</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">5. What is log₁₀(100) + log₁₀(100)?</div>
+          <button class="btn-answer" onclick="revealAnswer('q5')">Show Answer</button>
+          <div class="quiz-answer" id="q5">log₁₀(100) = 2, so 2 + 2 = <strong>4</strong>.<br>And log₁₀(100 × 100) = log₁₀(10,000) = 4! The rule works! 🧠</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">6. If an earthquake is magnitude 5, how much stronger is a magnitude 7 earthquake?</div>
+          <button class="btn-answer" onclick="revealAnswer('q6')">Show Answer</button>
+          <div class="quiz-answer" id="q6"><strong>100× stronger!</strong> Each step is 10×, so 7 − 5 = 2 steps = 10 × 10 = 100. 🌋</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">7. What is log₁₀(1,000,000)?</div>
+          <button class="btn-answer" onclick="revealAnswer('q7')">Show Answer</button>
+          <div class="quiz-answer" id="q7">log₁₀(1,000,000) = <strong>6</strong> because 10⁶ = 1,000,000 (1 million)! 💰</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">8. What exponent goes in the blank: log₁₀(100,000) = ___ ?</div>
+          <button class="btn-answer" onclick="revealAnswer('q8')">Show Answer</button>
+          <div class="quiz-answer" id="q8"><strong>5</strong>! Because 10⁵ = 100,000 (1 followed by 5 zeros)! ⭐</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    function revealAnswer(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('show');
+    }
+  </script>
+</body>
+</html>
