@@ -183,6 +183,103 @@
       text-shadow: 0 1px 2px rgba(0,0,0,0.3);
       white-space: nowrap;
     }
+    /* Chart Styles */
+    .chart-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--adventure-border-light);
+      margin: 1.5rem 0;
+    }
+    .chart-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-chart {
+      background-color: var(--adventure-accent);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      font-family: var(--cds-font-sans);
+      transition: all 0.2s ease;
+    }
+    .btn-chart:hover {
+      background-color: var(--adventure-accent-dark);
+      transform: scale(1.05);
+    }
+    .btn-chart:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .chart-speed-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .chart-speed {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 2px solid var(--adventure-border-light);
+      border-radius: var(--radius-sm);
+      font-family: var(--cds-font-sans);
+      cursor: pointer;
+    }
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .chart-wrapper canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 2px solid var(--adventure-border-light);
+      border-radius: var(--radius-md);
+      background: #FAFBFC;
+    }
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .legend-color {
+      width: 24px;
+      height: 4px;
+      border-radius: 2px;
+    }
+    .legend-poly { background-color: #2196F3; }
+    .legend-expo { background-color: #FF5722; }
+    .chart-stats {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+      min-height: 2rem;
+    }
+
     @media (max-width: 768px) {
       .apple-power-header {
         flex-direction: column;
@@ -239,7 +336,7 @@
 
         <div class="highlight-box">
           <p>
-            <strong>2³</strong> means: 2 &times; 2 &times; 2 = 8<br>
+            <strong>2<sup>3</sup></strong> means: 2 &times; 2 &times; 2 = 8<br>
             <span style="font-size:0.95rem; color:var(--color-text-light);">
               The big number (2) is the <strong>base</strong>. The small number (3) is the <strong>exponent</strong>.
             </span>
@@ -336,17 +433,17 @@
         <div class="apple-power-comparison">
           <div class="comparison-bar-wrapper">
             <div class="comparison-bar" style="width: 8%;">
-              <span class="comparison-label">2³ = 8</span>
+              <span class="comparison-label">2<sup>3</sup> = 8</span>
             </div>
           </div>
           <div class="comparison-bar-wrapper">
             <div class="comparison-bar" style="width: 16%;">
-              <span class="comparison-label">2⁴ = 16</span>
+              <span class="comparison-label">2<sup>4</sup> = 16</span>
             </div>
           </div>
           <div class="comparison-bar-wrapper">
             <div class="comparison-bar" style="width: 32%;">
-              <span class="comparison-label">2⁵ = 32</span>
+              <span class="comparison-label">2<sup>5</sup> = 32</span>
             </div>
           </div>
         </div>
@@ -359,7 +456,7 @@
           </p>
         </div>
       </article>
-
+    
       <!-- Powers of 10 -->
       <article class="article">
         <h2>Powers of 10: Making Big Numbers! 🔟</h2>
@@ -487,6 +584,266 @@
       const el = document.getElementById(id);
       el.classList.toggle('show');
     }
+
+    // ===== Growth Chart Animation =====
+    const canvas = document.getElementById('growthChart');
+    const ctx = canvas.getContext('2d');
+    const statsEl = document.getElementById('chartStats');
+
+    // Chart dimensions (logical)
+    const W = 700, H = 400;
+    const PAD = { top: 30, right: 30, bottom: 50, left: 60 };
+    const CHART_W = W - PAD.left - PAD.right;
+    const CHART_H = H - PAD.top - PAD.bottom;
+
+    // Data range
+    const MAX_X = 12;
+    const MAX_Y = 1100; // cap display at 1100 so 2^10=1024 fits
+
+    let currentX = 0;
+    let animId = null;
+    let speed = 25; // ms per step
+
+    // Precompute data
+    const polyData = [];
+    const expoData = [];
+    for (let x = 0; x <= MAX_X; x++) {
+      polyData.push({ x, y: x * x });
+      expoData.push({ x, y: Math.pow(2, x) });
+    }
+
+    function drawGrid() {
+      ctx.save();
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 1;
+
+      // Vertical grid lines (every 1 unit)
+      for (let x = 0; x <= MAX_X; x++) {
+        const px = PAD.left + (x / MAX_X) * CHART_W;
+        ctx.beginPath();
+        ctx.moveTo(px, PAD.top);
+        ctx.lineTo(px, PAD.top + CHART_H);
+        ctx.stroke();
+      }
+
+      // Horizontal grid lines
+      const ySteps = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
+      for (const y of ySteps) {
+        const py = PAD.top + CHART_H - (y / MAX_Y) * CHART_H;
+        ctx.beginPath();
+        ctx.moveTo(PAD.left, py);
+        ctx.lineTo(PAD.left + CHART_W, py);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawAxes() {
+      ctx.save();
+
+      // Axis lines
+      ctx.strokeStyle = '#4A5568';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, PAD.top);
+      ctx.lineTo(PAD.left, PAD.top + CHART_H);
+      ctx.lineTo(PAD.left + CHART_W, PAD.top + CHART_H);
+      ctx.stroke();
+
+      // X-axis labels
+      ctx.fillStyle = '#4A5568';
+      ctx.font = '12px Fredoka, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      for (let x = 0; x <= MAX_X; x++) {
+        const px = PAD.left + (x / MAX_X) * CHART_W;
+        ctx.fillText(x, px, PAD.top + CHART_H + 8);
+      }
+
+      // X-axis title
+      ctx.fillStyle = '#1A202C';
+      ctx.font = 'bold 13px Fredoka, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('x (exponent)', PAD.left + CHART_W / 2, PAD.top + CHART_H + 30);
+
+      // Y-axis labels
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.font = '11px Fredoka, sans-serif';
+      for (const y of ySteps) {
+        if (y === 0) continue;
+        const py = PAD.top + CHART_H - (y / MAX_Y) * CHART_H;
+        ctx.fillStyle = '#4A5568';
+        ctx.fillText(y, PAD.left - 8, py);
+      }
+
+      // Y-axis title
+      ctx.save();
+      ctx.translate(14, PAD.top + CHART_H / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillStyle = '#1A202C';
+      ctx.font = 'bold 13px Fredoka, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('value (y)', 0, 0);
+      ctx.restore();
+
+      ctx.restore();
+    }
+
+    function drawLine(data, color, label, maxDrawX) {
+      if (maxDrawX < 0) return;
+      ctx.save();
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+      let started = false;
+      for (const pt of data) {
+        if (pt.x > maxDrawX) break;
+        const px = PAD.left + (pt.x / MAX_X) * CHART_W;
+        const py = PAD.top + CHART_H - Math.min(pt.y, MAX_Y) / MAX_Y * CHART_H;
+        if (!started) {
+          ctx.moveTo(px, py);
+          started = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+
+      // Draw dots at each data point
+      for (const pt of data) {
+        if (pt.x > maxDrawX) break;
+        const px = PAD.left + (pt.x / MAX_X) * CHART_W;
+        const py = PAD.top + CHART_H - Math.min(pt.y, MAX_Y) / MAX_Y * CHART_H;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(px, py, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawValueLabels(maxDrawX) {
+      ctx.save();
+
+      // Show current values at the tip of each line
+      if (maxDrawX >= 0) {
+        const polyPt = polyData[Math.min(maxDrawX, polyData.length - 1)];
+        const expoPt = expoData[Math.min(maxDrawX, expoData.length - 1)];
+
+        if (polyPt) {
+          const px = PAD.left + (polyPt.x / MAX_X) * CHART_W;
+          const py = PAD.top + CHART_H - Math.min(polyPt.y, MAX_Y) / MAX_Y * CHART_H;
+          ctx.fillStyle = '#2196F3';
+          ctx.font = 'bold 12px Fredoka, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(`x² = ${polyPt.y}`, px + 8, py - 4);
+        }
+
+        if (expoPt) {
+          const px = PAD.left + (expoPt.x / MAX_X) * CHART_W;
+          const py = PAD.top + CHART_H - Math.min(expoPt.y, MAX_Y) / MAX_Y * CHART_H;
+          ctx.fillStyle = '#FF5722';
+          ctx.font = 'bold 12px Fredoka, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(`2ˣ = ${expoPt.y}`, px + 8, py - 4);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function drawChart(maxDrawX) {
+      ctx.clearRect(0, 0, W, H);
+
+      // Background
+      ctx.fillStyle = '#FAFBFC';
+      ctx.fillRect(0, 0, W, H);
+
+      drawGrid();
+      drawAxes();
+      drawLine(polyData, '#2196F3', 'x²', maxDrawX);
+      drawLine(expoData, '#FF5722', '2ˣ', maxDrawX);
+      drawValueLabels(maxDrawX);
+
+      // Update stats
+      if (maxDrawX >= 0) {
+        const polyV = polyData[Math.min(maxDrawX, polyData.length - 1)].y;
+        const expoV = expoData[Math.min(maxDrawX, expoData.length - 1)].y;
+        statsEl.innerHTML = `x = <strong>${maxDrawX}</strong> &nbsp;|&nbsp; 
+          <span style="color:#2196F3;">x² = <strong>${polyV}</strong></span> &nbsp;|&nbsp; 
+          <span style="color:#FF5722;">2<sup>x</sup> = <strong>${expoV}</strong></span>`;
+      } else {
+        statsEl.innerHTML = '<span>Press ▶ Play to start the animation!</span>';
+      }
+    }
+
+    function stepAnimation() {
+      if (currentX > MAX_X) {
+        // Animation complete
+        document.getElementById('btnPlay').disabled = false;
+        document.getElementById('btnPlay').textContent = '▶ Play';
+        statsEl.innerHTML += ' &nbsp; 🎉 <strong>Complete!</strong>';
+        animId = null;
+        return;
+      }
+
+      drawChart(currentX);
+      currentX++;
+      animId = setTimeout(stepAnimation, speed);
+    }
+
+    function playChart() {
+      if (animId) {
+        // Already playing, stop
+        clearTimeout(animId);
+        animId = null;
+        document.getElementById('btnPlay').textContent = '▶ Play';
+        return;
+      }
+
+      if (currentX > MAX_X) {
+        // Already complete, reset first
+        resetChart();
+      }
+
+      document.getElementById('btnPlay').textContent = '⏸ Pause';
+      document.getElementById('btnPlay').disabled = false;
+      stepAnimation();
+    }
+
+    function resetChart() {
+      if (animId) {
+        clearTimeout(animId);
+        animId = null;
+      }
+      currentX = 0;
+      document.getElementById('btnPlay').textContent = '▶ Play';
+      document.getElementById('btnPlay').disabled = false;
+      drawChart(-1);
+    }
+
+    function changeSpeed() {
+      const sel = document.getElementById('speedSelect');
+      speed = parseInt(sel.value);
+    }
+
+    // Initial draw
+    drawChart(-1);
   </script>
 </body>
 </html>

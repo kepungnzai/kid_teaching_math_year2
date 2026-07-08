@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Exponents & Exponential Growth!</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== Exponential Page Specific Styles ===== */
+
+    /* ---- Hero ---- */
+    .exp-hero {
+      text-align: center;
+      padding: 3rem 2rem 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 0 0 40px 40px;
+      margin-bottom: 2rem;
+    }
+    .exp-hero h1 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .exp-hero h1 span {
+      color: #ffd54f;
+    }
+    .exp-hero p {
+      font-size: 1.15rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ---- Concept Cards ---- */
+    .concept-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 2rem 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+    .concept-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .concept-card h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .concept-card h2 .badge {
+      font-size: 0.8rem;
+      background: var(--primary);
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 50px;
+      font-weight: 700;
+    }
+    .concept-card p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+    }
+
+    /* Power card */
+    .card-power {
+      border-color: #42a5f5;
+      background: linear-gradient(135deg, #fff 0%, #e3f2fd 100%);
+    }
+    .card-power h2 { color: #1565c0; }
+    .card-power .badge { background: #1565c0; }
+
+    /* Exponential card */
+    .card-exponential {
+      border-color: #ef5350;
+      background: linear-gradient(135deg, #fff 0%, #fce4ec 100%);
+    }
+    .card-exponential h2 { color: #c62828; }
+    .card-exponential .badge { background: #c62828; }
+
+    /* ---- Formula Display ---- */
+    .formula-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 1.5rem;
+      margin: 1.2rem 0;
+      background: rgba(255,255,255,0.8);
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .formula-box {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 1.8rem;
+      border-radius: 14px;
+      min-width: 100px;
+    }
+    .formula-box .formula {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .formula-box .formula-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 0.3rem;
+      opacity: 0.7;
+    }
+    .formula-box.power-box {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border: 3px solid #42a5f5;
+    }
+    .formula-box.power-box .formula { color: #1565c0; }
+    .formula-box.exp-box {
+      background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+      border: 3px solid #ef5350;
+    }
+    .formula-box.exp-box .formula { color: #c62828; }
+    .formula-arrow {
+      font-size: 2rem;
+      color: var(--text-muted);
+      font-weight: 800;
+    }
+
+    /* ---- Variable Highlight ---- */
+    .var-highlight {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+    .var-base { color: #1565c0; background: rgba(21,101,192,0.1); }
+    .var-exponent { color: #c62828; background: rgba(198,40,40,0.1); }
+
+    /* ---- Comparison Table ---- */
+    .comparison-section {
+      background: linear-gradient(135deg, #f5f7ff 0%, #fff5f5 100%);
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 3px dashed var(--primary);
+    }
+    .comparison-section h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .comparison-col {
+      padding: 1.5rem;
+      border-radius: 16px;
+    }
+    .comparison-col h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .comparison-col.power-col {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border: 3px solid #42a5f5;
+    }
+    .comparison-col.power-col h3 { color: #1565c0; }
+    .comparison-col.exp-col {
+      background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+      border: 3px solid #ef5350;
+    }
+    .comparison-col.exp-col h3 { color: #c62828; }
+    .comparison-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 1rem;
+    }
+    .comparison-row:last-child { border-bottom: none; }
+    .comparison-row .label { font-weight: 600; color: var(--text-muted); }
+    .comparison-row .value { font-weight: 800; font-size: 1.1rem; }
+
+    /* ---- Animation Area ---- */
+    .animation-area {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 2rem 0;
+      color: white;
+      overflow: hidden;
+    }
+    .animation-area h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .animation-area h2 span { color: #ffd54f; }
+    .animation-area > p {
+      text-align: center;
+      opacity: 0.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .anim-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .anim-controls label {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .anim-controls select {
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+    }
+    .anim-controls select option { color: #333; background: white; }
+    .anim-controls select:focus { border-color: #ffd54f; }
+
+    .anim-btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 50px;
+      border: none;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .anim-btn:hover { transform: translateY(-2px); }
+    .anim-btn-play {
+      background: #ffd54f;
+      color: #1a1a2e;
+    }
+    .anim-btn-play:hover { box-shadow: 0 4px 15px rgba(255,213,79,0.4); }
+    .anim-btn-reset {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
+    .anim-btn-reset:hover { background: rgba(255,255,255,0.25); }
+
+    .anim-mode-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .anim-mode-toggle .mode-btn {
+      padding: 0.5rem 1.2rem;
+      border-radius: 50px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .anim-mode-toggle .mode-btn:hover { border-color: rgba(255,255,255,0.6); color: white; }
+    .anim-mode-toggle .mode-btn.active {
+      border-color: #ffd54f;
+      background: rgba(255,213,79,0.2);
+      color: #ffd54f;
+    }
+
+    /* ---- Animation Canvas ---- */
+    .anim-canvas {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      border: 2px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      overflow: hidden;
+    }
+
+    /* Bar chart */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 1rem;
+      height: 220px;
+      padding: 0 1rem;
+      width: 100%;
+      max-width: 600px;
+    }
+    .bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.5s ease;
+    }
+    .bar {
+      width: 50px;
+      border-radius: 8px 8px 0 0;
+      transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease;
+      min-height: 4px;
+      position: relative;
+    }
+    .bar-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.8);
+    }
+    .bar-value {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+    }
+    .bar.power-bar { background: linear-gradient(180deg, #42a5f5, #1565c0); }
+    .bar.exp-bar { background: linear-gradient(180deg, #ef5350, #c62828); }
+
+    /* Formula display inside animation */
+    .anim-formula {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin: 1rem 0 0.5rem;
+      text-align: center;
+      min-height: 3.5rem;
+      transition: all 0.3s ease;
+    }
+    .anim-formula .highlight-base { color: #42a5f5; }
+    .anim-formula .highlight-exp { color: #ef5350; }
+    .anim-formula .highlight-result { color: #ffd54f; }
+
+    .anim-description {
+      text-align: center;
+      font-size: 1rem;
+      opacity: 0.8;
+      min-height: 1.5rem;
+    }
+
+    /* ---- Step-by-step explanation ---- */
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 1.2rem 0;
+    }
+    .step-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.5rem;
+      background: rgba(255,255,255,0.7);
+      border-radius: 12px;
+      font-size: 1rem;
+      line-height: 1.6;
+      border-left: 4px solid var(--primary);
+    }
+    .step-list li .step-num {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    /* ---- Real World Examples ---- */
+    .real-world-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+    .real-world-card {
+      background: white;
+      border-radius: 14px;
+      padding: 1.2rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border: 2px solid #e8e8e8;
+      transition: all 0.3s ease;
+    }
+    .real-world-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    .real-world-card .rw-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .real-world-card h4 { font-size: 1rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .real-world-card p { font-size: 0.9rem; color: var(--text-muted); margin: 0; }
+
+    /* ---- Quiz ---- */
+    .exp-quiz {
+      background: linear-gradient(135deg, #f5f7ff 0%, #fff8e1 100%);
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 3px solid var(--primary);
+    }
+    .exp-quiz h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    .exp-quiz h2 span { color: var(--primary); }
+
+    .quiz-item {
+      background: white;
+      border-radius: 14px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+    .quiz-item:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+    .quiz-item .q-text {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.8rem;
+    }
+    .quiz-item .q-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .quiz-item .q-option {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.8rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid #e8e8e8;
+      font-size: 0.95rem;
+    }
+    .quiz-item .q-option:hover {
+      background: rgba(108,99,255,0.05);
+      border-color: var(--primary);
+    }
+    .quiz-item .q-option input[type="radio"] {
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .quiz-item .q-option.correct {
+      background: #e8f5e9;
+      border-color: #43a047;
+    }
+    .quiz-item .q-option.wrong {
+      background: #ffebee;
+      border-color: #ef5350;
+    }
+    .quiz-item .q-feedback {
+      display: none;
+      margin-top: 0.6rem;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .quiz-item .q-feedback.show { display: block; }
+    .quiz-item .q-feedback.correct { background: #e8f5e9; color: #2e7d32; }
+    .quiz-item .q-feedback.wrong { background: #ffebee; color: #c62828; }
+
+    .quiz-score {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .quiz-score span { color: var(--primary); }
+
+    /* ===== Line Graph Animation Styles ===== */
+
+    /* ---- Line Graph Container ---- */
+    .linegraph-section {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 2rem 0;
+      color: white;
+      overflow: hidden;
+    }
+    .linegraph-section h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .linegraph-section h2 .lg-power { color: #42a5f5; }
+    .linegraph-section h2 .lg-exp { color: #ef5350; }
+    .linegraph-section > p {
+      text-align: center;
+      opacity: 0.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .lg-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+    .lg-controls label {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .lg-controls input[type="range"] {
+      width: 180px;
+      accent-color: #ffd54f;
+    }
+
+    .lg-btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 50px;
+      border: none;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .lg-btn:hover { transform: translateY(-2px); }
+    .lg-btn-play {
+      background: #ffd54f;
+      color: #1a1a2e;
+    }
+    .lg-btn-play:hover { box-shadow: 0 4px 15px rgba(255,213,79,0.4); }
+    .lg-btn-reset {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
+    .lg-btn-reset:hover { background: rgba(255,255,255,0.25); }
+
+    /* ---- SVG Graph ---- */
+    .lg-graph-wrapper {
+      position: relative;
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      border: 2px solid rgba(255,255,255,0.1);
+      padding: 0.5rem;
+    }
+    .lg-graph-wrapper svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 420px;
+    }
+
+    /* Grid lines */
+    .lg-grid-line {
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 1;
+    }
+
+    /* Axis labels */
+    .lg-axis-label {
+      fill: rgba(255,255,255,0.5);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .lg-axis-title {
+      fill: rgba(255,255,255,0.5);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* Data lines */
+    .lg-line {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .lg-line-power {
+      stroke: #42a5f5;
+    }
+    .lg-line-exp {
+      stroke: #ef5350;
+    }
+
+    /* Animated drawing */
+    .lg-line-anim {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: drawLine 2s ease forwards;
+    }
+    /* ---- Animated drawing - must be at top level ---- */
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Data points */
+    .lg-dot {
+      r: 5;
+      stroke: white;
+      stroke-width: 2;
+      transition: r 0.2s ease;
+    }
+    .lg-dot:hover { r: 8; }
+    .lg-dot-power { fill: #42a5f5; }
+    .lg-dot-exp { fill: #ef5350; }
+
+    /* Value labels on dots */
+    .lg-value-label {
+      font-size: 11px;
+      font-weight: 700;
+      fill: rgba(255,255,255,0.85);
+      text-anchor: middle;
+      dominant-baseline: text-after-edge;
+    }
+    .lg-value-label.power-val { fill: #90caf9; }
+    .lg-value-label.exp-val { fill: #ef9a9a; }
+
+    /* Highlight dot (current x position) */
+    .lg-highlight-dot {
+      r: 8;
+      stroke: #ffd54f;
+      stroke-width: 3;
+    }
+    .lg-highlight-dot-power { fill: #42a5f5; }
+    .lg-highlight-dot-exp { fill: #ef5350; }
+
+    /* ---- Legend ---- */
+    .lg-legend {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .lg-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .lg-legend-item .lg-swatch {
+      width: 24px;
+      height: 4px;
+      border-radius: 2px;
+    }
+    .lg-legend-item .lg-swatch.power { background: #42a5f5; }
+    .lg-legend-item .lg-swatch.exp { background: #ef5350; }
+
+    /* ---- Key insight callout ---- */
+    .lg-insight {
+      text-align: center;
+      padding: 1.2rem;
+      margin-top: 1rem;
+      background: rgba(255,255,255,0.06);
+      border-radius: 14px;
+      border: 2px solid rgba(255,255,255,0.1);
+      min-height: 3.5rem;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+    .lg-insight .insight-base { color: #42a5f5; font-weight: 800; }
+    .lg-insight .insight-exp { color: #ef5350; font-weight: 800; }
+    .lg-insight .insight-highlight { color: #ffd54f; font-weight: 800; }
+
+    /* ---- Formula display ---- */
+    .lg-formula-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      padding: 0.8rem 1rem;
+      margin: 0.5rem 0;
+      background: rgba(255,255,255,0.06);
+      border-radius: 12px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      min-height: 3rem;
+    }
+    .lg-formula-bar .lg-formula-power { color: #42a5f5; }
+    .lg-formula-bar .lg-formula-exp { color: #ef5350; }
+    .lg-formula-bar .lg-formula-eq { color: rgba(255,255,255,0.4); }
+    .lg-formula-bar .lg-formula-result { color: #ffd54f; }
+
+    /* ---- Responsive for line graph ---- */
+    @media (max-width: 768px) {
+      .lg-graph-wrapper svg { max-height: 300px; }
+      .lg-legend { gap: 1rem; }
+      .lg-legend-item { font-size: 0.8rem; }
+      .lg-formula-bar { font-size: 1rem; }
+      .lg-axis-label { font-size: 10px; }
+      .lg-value-label { font-size: 9px; }
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .exp-hero h1 { font-size: 2rem; }
+      .comparison-grid { grid-template-columns: 1fr; }
+      .formula-display { flex-direction: column; }
+      .formula-arrow { transform: rotate(90deg); }
+      .anim-formula { font-size: 1.8rem; }
+      .bar { width: 35px; }
+      .bar-chart { gap: 0.6rem; }
+    }
+
+    /* ---- Floating particles background ---- */
+    @keyframes particleFloat {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-400px) rotate(720deg); opacity: 0; }
+    }
+    .particle {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 0;
+      pointer-events: none;
+      animation: particleFloat 4s ease-out forwards;
+    }
+
+    /* ---- Grow pulse for bars ---- */
+    @keyframes growPulse {
+      0% { transform: scaleY(0); }
+      60% { transform: scaleY(1.05); }
+      100% { transform: scaleY(1); }
+    }
+    .bar.grow {
+      animation: growPulse 0.6s ease-out forwards;
+      transform-origin: bottom;
+    }
+
+    /* ---- Sparkle ---- */
+    @keyframes sparkle {
+      0% { transform: scale(0) rotate(0deg); opacity: 1; }
+      100% { transform: scale(1.5) rotate(180deg); opacity: 0; }
+    }
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 1.5rem;
+      animation: sparkle 0.8s ease-out forwards;
+    }
+
+    /* ---- Highlight pulse for formula ---- */
+    @keyframes formulaPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .formula-pulse {
+      animation: formulaPulse 0.5s ease-in-out 3;
+    }
+
+    /* ---- Key insight box ---- */
+    .key-insight {
+      background: linear-gradient(135deg, #fff8e1, #ffecb3);
+      border: 3px solid #ffa726;
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .key-insight h3 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #e65100;
+      margin-bottom: 0.5rem;
+    }
+    .key-insight p {
+      font-size: 1.1rem;
+      color: var(--text-dark);
+      margin: 0;
+    }
+    .key-insight .big-formula {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin: 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="exponential.html" class="active">Exponents</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="content-wrapper">
+
+      <!-- Hero -->
+      <div class="exp-hero fade-in-up">
+        <h1>🚀 <span>Exponents</span> & <span>Exponential</span> Growth!</h1>
+        <p>Discover the amazing world of powers and exponentials! See how numbers can grow super fast!</p>
+      </div>
+
+      <!-- ===== SECTION 1: What is an Exponent? ===== -->
+      <div class="article fade-in-up" style="animation-delay:0.1s;">
+        <h2>🔢 What is an Exponent?</h2>
+        <p>
+          An <strong>exponent</strong> tells you how many times to multiply a number by itself.
+          It's like a shortcut for repeated multiplication!
+        </p>
+
+        <div class="formula-display">
+          <div class="formula-box power-box">
+            <div class="formula">x<sup>n</sup></div>
+            <div class="formula-label">x = <strong>base</strong>, n = <strong>exponent</strong></div>
+          </div>
+          <div class="formula-arrow">=</div>
+          <div class="formula-box" style="background:linear-gradient(135deg,#f3e5f5,#e1bee7);border:3px solid #ab47bc;">
+            <div class="formula" style="font-size:1.6rem;color:#6a1b9a;">
+              x × x × x × ... × x
+            </div>
+            <div class="formula-label">n times!</div>
+          </div>
+        </div>
+
+        <p>
+          For example, <strong>2³</strong> means 2 × 2 × 2 = <strong>8</strong>.
+          The <span class="var-highlight var-base">base (2)</span> is multiplied by itself
+          <span class="var-highlight var-exponent">3 times (the exponent)</span>.
+        </p>
+      </div>
+
+      <!-- ===== SECTION 2: Power (Base is the Variable) ===== -->
+      <div class="concept-card card-power fade-in-up" style="animation-delay:0.2s;">
+        <h2>📈 <span class="var-highlight var-base">POWER</span> <span class="badge">Base is the Variable!</span></h2>
+        <p>
+          In a <strong>power</strong>, the <span class="var-highlight var-base">base is the variable</span>
+          and the <span class="var-highlight var-exponent">exponent is fixed</span>.
+          This means the base <em>changes</em> but the exponent stays the <em>same</em>.
+        </p>
+
+        <div class="formula-display">
+          <div class="formula-box power-box">
+            <div class="formula"><span class="var-highlight var-base" style="font-size:inherit;">x</span><sup>2</sup></div>
+            <div class="formula-label">x squared — base changes, exponent = 2</div>
+          </div>
+          <div class="formula-arrow">→</div>
+          <div class="formula-box" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:3px solid #42a5f5;">
+            <div class="formula" style="font-size:1.4rem;color:#1565c0;">
+              1²=1 &nbsp; 2²=4 &nbsp; 3²=9 &nbsp; 4²=16 &nbsp; 5²=25
+            </div>
+            <div class="formula-label">Same exponent (2), different bases!</div>
+          </div>
+        </div>
+
+        <p><strong>Think of it like this:</strong> The exponent is the <em>machine</em> that does the same thing to whatever number you put in!</p>
+
+        <ul class="step-list">
+          <li>
+            <span class="step-num">1</span>
+            <span><strong>If x = 3</strong> and the power is <strong>x²</strong>, then 3² = 3 × 3 = <strong>9</strong></span>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <span><strong>If x = 5</strong> and the power is <strong>x²</strong>, then 5² = 5 × 5 = <strong>25</strong></span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <span><strong>If x = 10</strong> and the power is <strong>x²</strong>, then 10² = 10 × 10 = <strong>100</strong></span>
+          </li>
+        </ul>
+
+        <p>
+          🎯 <strong>Key idea:</strong> In a <strong>power</strong>, the
+          <span class="var-highlight var-base">base (variable)</span> changes,
+          but the <span class="var-highlight var-exponent">exponent (fixed number)</span> stays the same!
+        </p>
+      </div>
+
+      <!-- ===== SECTION 3: Exponential (Exponent is the Variable) ===== -->
+      <div class="concept-card card-exponential fade-in-up" style="animation-delay:0.3s;">
+        <h2>📈 <span class="var-highlight var-exponent">EXPONENTIAL</span> <span class="badge" style="background:#c62828;">Exponent is the Variable!</span></h2>
+        <p>
+          In an <strong>exponential</strong>, the <span class="var-highlight var-base">base is fixed</span>
+          and the <span class="var-highlight var-exponent">exponent is the variable</span>.
+          This means the base stays the <em>same</em> but the exponent <em>changes</em>.
+        </p>
+
+        <div class="formula-display">
+          <div class="formula-box exp-box">
+            <div class="formula">2<sup><span class="var-highlight var-exponent" style="font-size:inherit;">x</span></sup></div>
+            <div class="formula-label">2 to the power of x — base = 2, exponent changes</div>
+          </div>
+          <div class="formula-arrow">→</div>
+          <div class="formula-box" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);border:3px solid #ef5350;">
+            <div class="formula" style="font-size:1.4rem;color:#c62828;">
+              2¹=2 &nbsp; 2²=4 &nbsp; 2³=8 &nbsp; 2⁴=16 &nbsp; 2⁵=32
+            </div>
+            <div class="formula-label">Same base (2), different exponents!</div>
+          </div>
+        </div>
+
+        <p><strong>Think of it like this:</strong> The base is the <em>engine</em> that keeps multiplying, and the exponent tells you how many times!</p>
+
+        <ul class="step-list">
+          <li>
+            <span class="step-num">1</span>
+            <span><strong>If x = 1</strong> and the exponential is <strong>2ˣ</strong>, then 2¹ = <strong>2</strong></span>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <span><strong>If x = 3</strong> and the exponential is <strong>2ˣ</strong>, then 2³ = 2×2×2 = <strong>8</strong></span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <span><strong>If x = 5</strong> and the exponential is <strong>2ˣ</strong>, then 2⁵ = 2×2×2×2×2 = <strong>32</strong></span>
+          </li>
+        </ul>
+
+        <p>
+          🎯 <strong>Key idea:</strong> In an <strong>exponential</strong>, the
+          <span class="var-highlight var-base">base (fixed number)</span> stays the same,
+          but the <span class="var-highlight var-exponent">exponent (variable)</span> changes!
+        </p>
+      </div>
+
+      <!-- ===== KEY INSIGHT: The Big Difference ===== -->
+      <div class="key-insight fade-in-up" style="animation-delay:0.35s;">
+        <h3>⭐ The BIG Difference!</h3>
+        <div class="big-formula">
+          <span style="color:#1565c0;">x²</span>
+          <span style="color:var(--text-muted);font-size:1.5rem;"> vs </span>
+          <span style="color:#c62828;">2ˣ</span>
+        </div>
+        <p>
+          <span style="color:#1565c0;font-weight:800;">x² (Power)</span> — the
+          <span style="color:#1565c0;font-weight:800;">base</span> is the variable.
+          The exponent (2) is <strong>fixed</strong>.<br>
+          <span style="color:#c62828;font-weight:800;">2ˣ (Exponential)</span> — the
+          <span style="color:#c62828;font-weight:800;">exponent</span> is the variable.
+          The base (2) is <strong>fixed</strong>.
+        </p>
+      </div>
+
+      <!-- ===== SECTION 4: Comparison Table ===== -->
+      <div class="comparison-section fade-in-up" style="animation-delay:0.4s;">
+        <h2>⚖️ Power vs Exponential — Side by Side</h2>
+        <div class="comparison-grid">
+          <div class="comparison-col power-col">
+            <h3>🔵 POWER</h3>
+            <div class="comparison-row">
+              <span class="label">Form</span>
+              <span class="value" style="color:#1565c0;">x<sup>n</sup></span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Variable is the</span>
+              <span class="value" style="color:#1565c0;">BASE</span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Exponent is</span>
+              <span class="value" style="color:#1565c0;">Fixed</span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Example</span>
+              <span class="value" style="color:#1565c0;">x², x³, x⁴</span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Growth when x ↑</span>
+              <span class="value" style="color:#1565c0;">Polynomial</span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Think of it as</span>
+              <span class="value" style="color:#1565c0;">Same machine, different inputs</span>
+            </div>
+          </div>
+          <div class="comparison-col exp-col">
+            <h3>🔴 EXPONENTIAL</h3>
+            <div class="comparison-row">
+              <span class="label">Form</span>
+              <span class="value" style="color:#c62828;">n<sup>x</sup></span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Variable is the</span>
+              <span class="value" style="color:#c62828;">EXPONENT</span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Base is</span>
+              <span class="value" style="color:#c62828;">Fixed</span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Example</span>
+              <span class="value" style="color:#c62828;">2ˣ, 3ˣ, 10ˣ</span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Growth when x ↑</span>
+              <span class="value" style="color:#c62828;">Explosive!</span>
+            </div>
+            <div class="comparison-row">
+              <span class="label">Think of it as</span>
+              <span class="value" style="color:#c62828;">Same engine, more multiplications</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION 5: Interactive Animation ===== -->
+      <div class="animation-area fade-in-up" style="animation-delay:0.5s;">
+        <h2>🎬 See It <span>In Action!</span></h2>
+        <p>Watch how Power and Exponential grow differently. Move the slider and see the magic!</p>
+
+        <!-- Mode Toggle -->
+        <div class="anim-mode-toggle">
+          <button class="mode-btn active" data-mode="power" id="modePower">🔵 Power (x²)</button>
+          <button class="mode-btn" data-mode="exponential" id="modeExp">🔴 Exponential (2ˣ)</button>
+        </div>
+
+        <!-- Controls -->
+        <div class="anim-controls">
+          <label for="animSlider">x = <span id="sliderValue">3</span></label>
+          <input type="range" id="animSlider" min="1" max="8" value="3" step="1"
+                 style="width:200px;accent-color:#ffd54f;">
+          <button class="anim-btn anim-btn-play" id="animPlayBtn">▶ Auto Play</button>
+          <button class="anim-btn anim-btn-reset" id="animResetBtn">↺ Reset</button>
+        </div>
+
+        <!-- Canvas -->
+        <div class="anim-canvas" id="animCanvas">
+          <div class="anim-formula" id="animFormula">
+            <span class="highlight-base">x</span><span class="highlight-exp">²</span>
+            <span style="color:rgba(255,255,255,0.4);margin:0 0.5rem;">=</span>
+            <span class="highlight-result" id="animResult">9</span>
+          </div>
+
+          <div class="bar-chart" id="barChart">
+            <div class="bar-wrapper">
+              <div class="bar power-bar" id="bar1" style="height:40px;"></div>
+              <span class="bar-label">x=1</span>
+              <span class="bar-value" id="val1">1</span>
+            </div>
+            <div class="bar-wrapper">
+              <div class="bar power-bar" id="bar2" style="height:80px;"></div>
+              <span class="bar-label">x=2</span>
+              <span class="bar-value" id="val2">4</span>
+            </div>
+            <div class="bar-wrapper">
+              <div class="bar power-bar" id="bar3" style="height:120px;"></div>
+              <span class="bar-label">x=3</span>
+              <span class="bar-value" id="val3">9</span>
+            </div>
+            <div class="bar-wrapper">
+              <div class="bar power-bar" id="bar4" style="height:160px;"></div>
+              <span class="bar-label">x=4</span>
+              <span class="bar-value" id="val4">16</span>
+            </div>
+            <div class="bar-wrapper">
+              <div class="bar power-bar" id="bar5" style="height:200px;"></div>
+              <span class="bar-label">x=5</span>
+              <span class="bar-value" id="val5">25</span>
+            </div>
+          </div>
+
+          <div class="anim-description" id="animDesc">
+            When x = 3, x² = 3 × 3 = <strong>9</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== LINE GRAPH: Power vs Exponential ===== -->
+      <div class="linegraph-section fade-in-up" style="animation-delay:0.55s;">
+        <h2>📊 <span class="lg-power">Power</span> vs <span class="lg-exp">Exponential</span> — Line Graph</h2>
+        <p>See how <span class="lg-power" style="font-weight:800;">x² (power)</span> and <span class="lg-exp" style="font-weight:800;">2ˣ (exponential)</span> grow differently on the same graph!</p>
+
+        <!-- Legend -->
+        <div class="lg-legend">
+          <div class="lg-legend-item">
+            <span class="lg-swatch power"></span>
+            <span class="lg-power">Power (x²) — base is the variable</span>
+          </div>
+          <div class="lg-legend-item">
+            <span class="lg-swatch exp"></span>
+            <span class="lg-exp">Exponential (2ˣ) — exponent is the variable</span>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="lg-controls">
+          <label for="lgSlider">x = <span id="lgSliderVal">3</span></label>
+          <input type="range" id="lgSlider" min="1" max="12" value="3" step="1">
+          <button class="lg-btn lg-btn-play" id="lgPlayBtn">▶ Animate</button>
+          <button class="lg-btn lg-btn-reset" id="lgResetBtn">↺ Reset</button>
+        </div>
+
+        <!-- Formula bar -->
+        <div class="lg-formula-bar" id="lgFormulaBar">
+          <span class="lg-formula-power">x²</span>
+          <span class="lg-formula-eq">vs</span>
+          <span class="lg-formula-exp">2ˣ</span>
+          <span class="lg-formula-eq">|</span>
+          <span class="lg-formula-power" id="lgPowerVal">x=3 → 9</span>
+          <span class="lg-formula-eq">vs</span>
+          <span class="lg-formula-exp" id="lgExpVal">x=3 → 8</span>
+        </div>
+
+        <!-- SVG Graph -->
+        <div class="lg-graph-wrapper">
+          <svg id="lgSvg" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid meet">
+            <!-- Y-axis grid lines and labels (will be updated dynamically) -->
+            <line x1="60" y1="30" x2="580" y2="30" class="lg-grid-line"/>
+            <text x="55" y="35" class="lg-axis-label" text-anchor="end" id="lgYLabel0">4096</text>
+
+            <line x1="60" y1="100" x2="580" y2="100" class="lg-grid-line"/>
+            <text x="55" y="105" class="lg-axis-label" text-anchor="end" id="lgYLabel1">3072</text>
+
+            <line x1="60" y1="170" x2="580" y2="170" class="lg-grid-line"/>
+            <text x="55" y="175" class="lg-axis-label" text-anchor="end" id="lgYLabel2">2048</text>
+
+            <line x1="60" y1="240" x2="580" y2="240" class="lg-grid-line"/>
+            <text x="55" y="245" class="lg-axis-label" text-anchor="end" id="lgYLabel3">1024</text>
+
+            <line x1="60" y1="310" x2="580" y2="310" class="lg-grid-line"/>
+            <text x="55" y="315" class="lg-axis-label" text-anchor="end" id="lgYLabel4">0</text>
+
+            <!-- X-axis labels -->
+            <text x="112" y="350" class="lg-axis-label" text-anchor="middle">1</text>
+            <text x="155" y="350" class="lg-axis-label" text-anchor="middle">2</text>
+            <text x="198" y="350" class="lg-axis-label" text-anchor="middle">3</text>
+            <text x="241" y="350" class="lg-axis-label" text-anchor="middle">4</text>
+            <text x="284" y="350" class="lg-axis-label" text-anchor="middle">5</text>
+            <text x="327" y="350" class="lg-axis-label" text-anchor="middle">6</text>
+            <text x="370" y="350" class="lg-axis-label" text-anchor="middle">7</text>
+            <text x="413" y="350" class="lg-axis-label" text-anchor="middle">8</text>
+            <text x="456" y="350" class="lg-axis-label" text-anchor="middle">9</text>
+            <text x="499" y="350" class="lg-axis-label" text-anchor="middle">10</text>
+            <text x="542" y="350" class="lg-axis-label" text-anchor="middle">11</text>
+            <text x="580" y="350" class="lg-axis-label" text-anchor="middle">12</text>
+
+            <!-- Axis titles -->
+            <text x="320" y="375" class="lg-axis-title" text-anchor="middle">x (input value)</text>
+            <text x="20" y="200" class="lg-axis-title" text-anchor="middle" transform="rotate(-90,20,200)">y (result)</text>
+
+            <!-- Power line (x²) — will be drawn dynamically -->
+            <polyline class="lg-line lg-line-power lg-line-anim" id="lgPowerLine" points=""/>
+
+            <!-- Exponential line (2ˣ) — will be drawn dynamically -->
+            <polyline class="lg-line lg-line-exp lg-line-anim" id="lgExpLine" points=""/>
+
+            <!-- Power dots -->
+            <g id="lgPowerDots"></g>
+            <!-- Exponential dots -->
+            <g id="lgExpDots"></g>
+
+            <!-- Highlight dots (current x) -->
+            <circle id="lgHighlightPower" class="lg-highlight-dot lg-highlight-dot-power" cx="0" cy="0" r="0" style="display:none;"/>
+            <circle id="lgHighlightExp" class="lg-highlight-dot lg-highlight-dot-exp" cx="0" cy="0" r="0" style="display:none;"/>
+
+            <!-- Value labels for highlight dots -->
+            <text id="lgHighlightPowerLabel" class="lg-value-label power-val" x="0" y="0" style="display:none;"></text>
+            <text id="lgHighlightExpLabel" class="lg-value-label exp-val" x="0" y="0" style="display:none;"></text>
+          </svg>
+        </div>
+
+        <!-- Insight callout -->
+        <div class="lg-insight" id="lgInsight">
+          <span class="insight-base">Power (x²):</span> The <strong>base</strong> is the variable.
+          The exponent (2) is <strong>fixed</strong>.
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          <span class="insight-exp">Exponential (2ˣ):</span> The <strong>exponent</strong> is the variable.
+          The base (2) is <strong>fixed</strong>.
+        </div>
+      </div>
+
+      <!-- ===== SECTION 6: Real World Examples ===== -->
+      <div class="article fade-in-up" style="animation-delay:0.6s;">
+        <h2>🌍 Where Do We See This?</h2>
+
+        <h3>🔵 Power (x²) in Real Life</h3>
+        <div class="real-world-grid">
+          <div class="real-world-card">
+            <div class="rw-icon">📐</div>
+            <h4>Area of a Square</h4>
+            <p>If a square has side length x, its area is x². Double the side → 4× the area!</p>
+          </div>
+          <div class="real-world-card">
+            <div class="rw-icon">💡</div>
+            <h4>Light Brightness</h4>
+            <p>If you're twice as close to a light, it looks 4× brighter (inverse square law)!</p>
+          </div>
+          <div class="real-world-card">
+            <div class="rw-icon">🌍</div>
+            <h4>Gravity</h4>
+            <p>Gravity gets weaker with distance². Twice as far → ¼ the gravity!</p>
+          </div>
+        </div>
+
+        <h3>🔴 Exponential (2ˣ) in Real Life</h3>
+        <div class="real-world-grid">
+          <div class="real-world-card">
+            <div class="rw-icon">🦠</div>
+            <h4>Bacteria Growth</h4>
+            <p>One bacterium splits into 2, then 4, then 8... That's 2ˣ growth!</p>
+          </div>
+          <div class="real-world-card">
+            <div class="rw-icon">💰</div>
+            <h4>Compound Interest</h4>
+            <p>Money in a bank grows exponentially! Your savings double over time.</p>
+          </div>
+          <div class="real-world-card">
+            <div class="rw-icon">📱</div>
+            <h4>Viral Videos</h4>
+            <p>One share → 2 shares → 4 shares → 8 shares! That's exponential spreading!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION 7: Quiz ===== -->
+      <div class="exp-quiz fade-in-up" style="animation-delay:0.7s;">
+        <h2>🧠 <span>Quick Quiz</span> — Test Your Knowledge!</h2>
+
+        <div class="quiz-item" id="quiz1">
+          <div class="q-text">1️⃣ In <strong>x³</strong>, which part is the variable?</div>
+          <div class="q-options">
+            <label class="q-option" data-correct="true">
+              <input type="radio" name="q1" value="base"> The <strong>base</strong> (x) is the variable
+            </label>
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q1" value="exp"> The <strong>exponent</strong> (3) is the variable
+            </label>
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q1" value="both"> Both are variables
+            </label>
+          </div>
+          <div class="q-feedback" id="fb1"></div>
+        </div>
+
+        <div class="quiz-item" id="quiz2">
+          <div class="q-text">2️⃣ In <strong>3ˣ</strong>, which part is the variable?</div>
+          <div class="q-options">
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q2" value="base"> The <strong>base</strong> (3) is the variable
+            </label>
+            <label class="q-option" data-correct="true">
+              <input type="radio" name="q2" value="exp"> The <strong>exponent</strong> (x) is the variable
+            </label>
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q2" value="none"> Neither is a variable
+            </label>
+          </div>
+          <div class="q-feedback" id="fb2"></div>
+        </div>
+
+        <div class="quiz-item" id="quiz3">
+          <div class="q-text">3️⃣ What is <strong>2⁴</strong>?</div>
+          <div class="q-options">
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q3" value="8"> 8
+            </label>
+            <label class="q-option" data-correct="true">
+              <input type="radio" name="q3" value="16"> 16
+            </label>
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q3" value="32"> 32
+            </label>
+          </div>
+          <div class="q-feedback" id="fb3"></div>
+        </div>
+
+        <div class="quiz-item" id="quiz4">
+          <div class="q-text">4️⃣ Which grows <strong>FASTER</strong> when x gets bigger?</div>
+          <div class="q-options">
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q4" value="power"> <strong>x²</strong> (Power — base is variable)
+            </label>
+            <label class="q-option" data-correct="true">
+              <input type="radio" name="q4" value="exp"> <strong>2ˣ</strong> (Exponential — exponent is variable)
+            </label>
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q4" value="same"> They grow at the same speed
+            </label>
+          </div>
+          <div class="q-feedback" id="fb4"></div>
+        </div>
+
+        <div class="quiz-item" id="quiz5">
+          <div class="q-text">5️⃣ If a bacteria doubles every hour, starting with 1, how many after <strong>5 hours</strong>?</div>
+          <div class="q-options">
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q5" value="10"> 10
+            </label>
+            <label class="q-option" data-correct="false">
+              <input type="radio" name="q5" value="25"> 25
+            </label>
+            <label class="q-option" data-correct="true">
+              <input type="radio" name="q5" value="32"> 32 (2⁵)
+            </label>
+          </div>
+          <div class="q-feedback" id="fb5"></div>
+        </div>
+
+        <div class="quiz-score" id="quizScore">
+          Score: <span id="scoreDisplay">0</span> / 5
+        </div>
+      </div>
+
+      <!-- Back to Home -->
+      <div style="text-align:center;margin:2rem 0;">
+        <a href="index.html" class="btn btn-primary">🏠 Back to Home</a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============================================================
+    // ANIMATION ENGINE
+    // ============================================================
+
+    let currentMode = 'power'; // 'power' or 'exponential'
+    let currentX = 3;
+    let isPlaying = false;
+    let playInterval = null;
+
+    const slider = document.getElementById('animSlider');
+    const sliderVal = document.getElementById('sliderValue');
+    const formulaEl = document.getElementById('animFormula');
+    const resultEl = document.getElementById('animResult');
+    const descEl = document.getElementById('animDesc');
+    const canvas = document.getElementById('animCanvas');
+
+    const barIds = ['bar1','bar2','bar3','bar4','bar5'];
+    const valIds = ['val1','val2','val3','val4','val5'];
+
+    function computePower(x) {
+      return x * x; // x²
+    }
+
+    function computeExp(x) {
+      return Math.pow(2, x); // 2ˣ
+    }
+
+    function getMaxValue(mode) {
+      if (mode === 'power') return computePower(8); // 64
+      return computeExp(8); // 256
+    }
+
+    function getBarHeight(val, maxVal) {
+      // max bar height = 200px, min = 4px
+      if (maxVal === 0) return 4;
+      const ratio = val / maxVal;
+      return Math.max(4, Math.min(200, ratio * 200));
+    }
+
+    function getBarColor(mode, idx) {
+      if (mode === 'power') {
+        const colors = ['#42a5f5','#1e88e5','#1565c0','#0d47a1','#0a3d91'];
+        return colors[idx % colors.length];
+      } else {
+        const colors = ['#ef5350','#e53935','#c62828','#b71c1c','#8e0000'];
+        return colors[idx % colors.length];
+      }
+    }
+
+    function updateAnimation() {
+      const x = currentX;
+      sliderVal.textContent = x;
+
+      const maxVal = getMaxValue(currentMode);
+
+      // Update formula
+      if (currentMode === 'power') {
+        const val = computePower(x);
+        formulaEl.innerHTML =
+          '<span class="highlight-base">' + x + '</span><span class="highlight-exp">²</span>' +
+          ' <span style="color:rgba(255,255,255,0.4);margin:0 0.5rem;">=</span> ' +
+          '<span class="highlight-result" id="animResult">' + val + '</span>';
+        resultEl.textContent = val;
+        descEl.innerHTML = 'When x = <strong>' + x + '</strong>, x² = ' + x + ' × ' + x + ' = <strong>' + val + '</strong>';
+      } else {
+        const val = computeExp(x);
+        formulaEl.innerHTML =
+          '<span class="highlight-base">2</span><span class="highlight-exp"><sup>' + x + '</sup></span>' +
+          ' <span style="color:rgba(255,255,255,0.4);margin:0 0.5rem;">=</span> ' +
+          '<span class="highlight-result" id="animResult">' + val + '</span>';
+        resultEl.textContent = val;
+        descEl.innerHTML = 'When x = <strong>' + x + '</strong>, 2ˣ = 2 × 2 × ... (' + x + ' times) = <strong>' + val + '</strong>';
+      }
+
+      // Update bars for x=1..5
+      for (let i = 0; i < 5; i++) {
+        const xi = i + 1;
+        let val;
+        if (currentMode === 'power') {
+          val = computePower(xi);
+        } else {
+          val = computeExp(xi);
+        }
+        const bar = document.getElementById(barIds[i]);
+        const valLabel = document.getElementById(valIds[i]);
+
+        bar.style.height = getBarHeight(val, maxVal) + 'px';
+        bar.style.background = getBarColor(currentMode, i);
+        valLabel.textContent = val;
+
+        // Highlight the bar matching current x
+        if (xi === x) {
+          bar.style.boxShadow = '0 0 15px rgba(255,213,79,0.6)';
+          bar.style.border = '2px solid #ffd54f';
+        } else {
+          bar.style.boxShadow = 'none';
+          bar.style.border = 'none';
+        }
+      }
+
+      // Add sparkle effect
+      createSparkles();
+    }
+
+    function createSparkles() {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.textContent = '✨';
+      sparkle.style.left = (30 + Math.random() * 60) + '%';
+      sparkle.style.top = (10 + Math.random() * 40) + '%';
+      canvas.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 800);
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+
+      // Update bar labels
+      for (let i = 0; i < 5; i++) {
+        const bar = document.getElementById(barIds[i]);
+        bar.className = 'bar ' + (mode === 'power' ? 'power-bar' : 'exp-bar');
+      }
+
+      updateAnimation();
+    }
+
+    // ---- Event Listeners ----
+
+    slider.addEventListener('input', function() {
+      currentX = parseInt(this.value);
+      if (isPlaying) {
+        stopPlay();
+      }
+      updateAnimation();
+    });
+
+    document.getElementById('modePower').addEventListener('click', function() {
+      if (isPlaying) stopPlay();
+      switchMode('power');
+    });
+
+    document.getElementById('modeExp').addEventListener('click', function() {
+      if (isPlaying) stopPlay();
+      switchMode('exponential');
+    });
+
+    document.getElementById('animResetBtn').addEventListener('click', function() {
+      if (isPlaying) stopPlay();
+      currentX = 3;
+      slider.value = 3;
+      switchMode(currentMode);
+    });
+
+    document.getElementById('animPlayBtn').addEventListener('click', function() {
+      if (isPlaying) {
+        stopPlay();
+      } else {
+        startPlay();
+      }
+    });
+
+    function startPlay() {
+      isPlaying = true;
+      document.getElementById('animPlayBtn').textContent = '⏸ Pause';
+      currentX = 1;
+      slider.value = 1;
+      updateAnimation();
+
+      playInterval = setInterval(() => {
+        currentX++;
+        if (currentX > 8) {
+          currentX = 1;
+        }
+        slider.value = currentX;
+        updateAnimation();
+      }, 1200);
+    }
+
+    function stopPlay() {
+      isPlaying = false;
+      if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+      }
+      document.getElementById('animPlayBtn').textContent = '▶ Auto Play';
+    }
+
+    // ---- Init ----
+    switchMode('power');
+
+    // ============================================================
+    // QUIZ ENGINE
+    // ============================================================
+
+    const quizItems = document.querySelectorAll('.quiz-item');
+    let quizAnswered = {};
+    let quizScore = 0;
+
+    quizItems.forEach(item => {
+      const options = item.querySelectorAll('.q-option');
+      options.forEach(opt => {
+        opt.addEventListener('click', function(e) {
+          // Don't toggle if clicking the radio directly (it will bubble)
+          const radio = this.querySelector('input[type="radio"]');
+          if (e.target.tagName === 'INPUT') {
+            // Let the click on radio handle it
+            return;
+          }
+          radio.checked = true;
+          // Trigger change event
+          const evt = new Event('change', { bubbles: true });
+          radio.dispatchEvent(evt);
+        });
+
+        const radio = opt.querySelector('input[type="radio"]');
+        radio.addEventListener('change', function() {
+          const parentItem = this.closest('.quiz-item');
+          const qId = parentItem.id;
+          if (quizAnswered[qId]) return; // Already answered
+
+          const isCorrect = this.closest('.q-option').dataset.correct === 'true';
+          const feedback = parentItem.querySelector('.q-feedback');
+
+          // Mark all options in this question
+          parentItem.querySelectorAll('.q-option').forEach(o => {
+            o.style.pointerEvents = 'none';
+            if (o.dataset.correct === 'true') {
+              o.classList.add('correct');
+            }
+          });
+
+          if (isCorrect) {
+            this.closest('.q-option').classList.add('correct');
+            feedback.textContent = '✅ Correct! Great job!';
+            feedback.className = 'q-feedback show correct';
+            quizScore++;
+          } else {
+            this.closest('.q-option').classList.add('wrong');
+            feedback.textContent = '❌ Not quite. Look at the lesson above and try again!';
+            feedback.className = 'q-feedback show wrong';
+          }
+
+          quizAnswered[qId] = true;
+          document.getElementById('scoreDisplay').textContent = quizScore;
+
+          // Check if all answered
+          if (Object.keys(quizAnswered).length === quizItems.length) {
+            setTimeout(() => {
+              let msg = '';
+              if (quizScore === 5) msg = '🎉 Perfect score! You\'re an exponent expert!';
+              else if (quizScore >= 3) msg = '👏 Good job! You understand exponents well!';
+              else msg = '💪 Keep practicing! You\'ll get it!';
+              document.getElementById('quizScore').innerHTML += '<br><span style="font-size:1rem;color:var(--text-muted);">' + msg + '</span>';
+            }, 500);
+          }
+        });
+      });
+    });
+
+    // ============================================================
+    // LINE GRAPH ENGINE (Power vs Exponential)
+    // ============================================================
+
+    const lgSvg = document.getElementById('lgSvg');
+    const lgSlider = document.getElementById('lgSlider');
+    const lgSliderVal = document.getElementById('lgSliderVal');
+    const lgPowerLine = document.getElementById('lgPowerLine');
+    const lgExpLine = document.getElementById('lgExpLine');
+    const lgPowerDots = document.getElementById('lgPowerDots');
+    const lgExpDots = document.getElementById('lgExpDots');
+    const lgHighlightPower = document.getElementById('lgHighlightPower');
+    const lgHighlightExp = document.getElementById('lgHighlightExp');
+    const lgHighlightPowerLabel = document.getElementById('lgHighlightPowerLabel');
+    const lgHighlightExpLabel = document.getElementById('lgHighlightExpLabel');
+    const lgPowerVal = document.getElementById('lgPowerVal');
+    const lgExpVal = document.getElementById('lgExpVal');
+
+    const LG_PAD_LEFT = 70;
+    const LG_PAD_RIGHT = 20;
+    const LG_PAD_TOP = 25;
+    const LG_PAD_BOTTOM = 45;
+    const LG_WIDTH = 600;
+    const LG_HEIGHT = 380;
+    const LG_PLOT_W = LG_WIDTH - LG_PAD_LEFT - LG_PAD_RIGHT;
+    const LG_PLOT_H = LG_HEIGHT - LG_PAD_TOP - LG_PAD_BOTTOM;
+
+    let lgX = 3;
+    let lgPlaying = false;
+    let lgInterval = null;
+
+    function lgPower(x) { return x * x; }
+    function lgExp(x) { return Math.pow(2, x); }
+    function lgMaxExp() { return lgExp(12); } // 4096
+    function lgMaxPower() { return lgPower(12); } // 144
+
+    function lgScaleY(val, maxVal) {
+      // SVG y goes down, so invert: top of plot = 0, bottom = max
+      if (maxVal === 0) return LG_PAD_TOP + LG_PLOT_H;
+      return LG_PAD_TOP + LG_PLOT_H - (val / maxVal) * LG_PLOT_H;
+    }
+
+    const LG_MAX_X = 25;
+
+    function lgScaleX(xVal) {
+      return LG_PAD_LEFT + ((xVal - 1) / (LG_MAX_X - 1)) * LG_PLOT_W;
+    }
+
+    function lgBuildPoints(fn, maxVal) {
+      let pts = [];
+      for (let i = 1; i <= LG_MAX_X; i++) {
+        const val = fn(i);
+        const x = lgScaleX(i);
+        const y = lgScaleY(val, maxVal);
+        pts.push(x + ',' + y);
+      }
+      return pts.join(' ');
+    }
+
+    function lgUpdateGraph() {
+      const x = lgX;
+      lgSliderVal.textContent = x;
+
+      const powerMax = lgMaxPower();
+      const expMax = lgMaxExp();
+
+      // Build lines
+      lgPowerLine.setAttribute('points', lgBuildPoints(lgPower, powerMax));
+      lgExpLine.setAttribute('points', lgBuildPoints(lgExp, expMax));
+
+      // Re-trigger draw animation
+      lgPowerLine.classList.remove('lg-line-anim');
+      lgExpLine.classList.remove('lg-line-anim');
+      void lgPowerLine.offsetWidth; // force reflow
+      void lgExpLine.offsetWidth;
+      lgPowerLine.classList.add('lg-line-anim');
+      lgExpLine.classList.add('lg-line-anim');
+
+      // Build dots for power
+      let powerDotHtml = '';
+      for (let i = 1; i <= LG_MAX_X; i++) {
+        const val = lgPower(i);
+        const cx = lgScaleX(i);
+        const cy = lgScaleY(val, powerMax);
+        const isHighlight = (i === x);
+        const r = isHighlight ? 0 : 5;
+        const cls = 'lg-dot lg-dot-power' + (isHighlight ? '' : '');
+        powerDotHtml += '<circle class="' + cls + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '"/>';
+        powerDotHtml += '<text class="lg-value-label power-val" x="' + cx + '" y="' + (cy - 8) + '">' + val + '</text>';
+      }
+      lgPowerDots.innerHTML = powerDotHtml;
+
+      // Build dots for exponential
+      let expDotHtml = '';
+      for (let i = 1; i <= LG_MAX_X; i++) {
+        const val = lgExp(i);
+        const cx = lgScaleX(i);
+        const cy = lgScaleY(val, expMax);
+        const isHighlight = (i === x);
+        const r = isHighlight ? 0 : 5;
+        const cls = 'lg-dot lg-dot-exp' + (isHighlight ? '' : '');
+        expDotHtml += '<circle class="' + cls + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '"/>';
+        expDotHtml += '<text class="lg-value-label exp-val" x="' + cx + '" y="' + (cy - 8) + '">' + val + '</text>';
+      }
+      lgExpDots.innerHTML = expDotHtml;
+
+      // Highlight dots for current x
+      const powerVal = lgPower(x);
+      const expVal = lgExp(x);
+      const hx = lgScaleX(x);
+      const hyPower = lgScaleY(powerVal, powerMax);
+      const hyExp = lgScaleY(expVal, expMax);
+
+      lgHighlightPower.setAttribute('cx', hx);
+      lgHighlightPower.setAttribute('cy', hyPower);
+      lgHighlightPower.setAttribute('r', 8);
+      lgHighlightPower.style.display = 'block';
+
+      lgHighlightExp.setAttribute('cx', hx);
+      lgHighlightExp.setAttribute('cy', hyExp);
+      lgHighlightExp.setAttribute('r', 8);
+      lgHighlightExp.style.display = 'block';
+
+      // Value labels for highlights
+      lgHighlightPowerLabel.setAttribute('x', hx);
+      lgHighlightPowerLabel.setAttribute('y', hyPower - 12);
+      lgHighlightPowerLabel.textContent = powerVal;
+      lgHighlightPowerLabel.style.display = 'block';
+
+      lgHighlightExpLabel.setAttribute('x', hx);
+      lgHighlightExpLabel.setAttribute('y', hyExp - 12);
+      lgHighlightExpLabel.textContent = expVal;
+      lgHighlightExpLabel.style.display = 'block';
+
+      // Update formula bar
+      lgPowerVal.textContent = 'x=' + x + ' → ' + powerVal;
+      lgExpVal.textContent = 'x=' + x + ' → ' + expVal;
+    }
+
+    function lgUpdateYLabels() {
+      const expMax = lgMaxExp();
+      document.getElementById('lgYLabel0').textContent = expMax;          // 256
+      document.getElementById('lgYLabel1').textContent = Math.round(expMax * 0.75); // 192
+      document.getElementById('lgYLabel2').textContent = Math.round(expMax * 0.5);  // 128
+      document.getElementById('lgYLabel3').textContent = Math.round(expMax * 0.25); // 64
+      document.getElementById('lgYLabel4').textContent = 0;
+    }
+
+    // Event listeners
+    lgSlider.addEventListener('input', function() {
+      lgX = parseInt(this.value);
+      if (lgPlaying) { lgStopPlay(); }
+      lgUpdateGraph();
+    });
+
+    document.getElementById('lgPlayBtn').addEventListener('click', function() {
+      if (lgPlaying) { lgStopPlay(); }
+      else { lgStartPlay(); }
+    });
+
+    document.getElementById('lgResetBtn').addEventListener('click', function() {
+      if (lgPlaying) { lgStopPlay(); }
+      lgX = 3;
+      lgSlider.value = 3;
+      lgUpdateGraph();
+    });
+
+    function lgStartPlay() {
+      lgPlaying = true;
+      document.getElementById('lgPlayBtn').textContent = '⏸ Pause';
+      lgX = 1;
+      lgSlider.value = 1;
+      lgUpdateGraph();
+
+      lgInterval = setInterval(() => {
+        lgX++;
+        if (lgX > LG_MAX_X) { lgX = 1; }
+        lgSlider.value = lgX;
+        lgUpdateGraph();
+      }, 1200);
+    }
+
+    function lgStopPlay() {
+      lgPlaying = false;
+      if (lgInterval) {
+        clearInterval(lgInterval);
+        lgInterval = null;
+      }
+      document.getElementById('lgPlayBtn').textContent = '▶ Animate';
+    }
+
+    // ---- Init ----
+    lgUpdateYLabels();
+    lgUpdateGraph();
+
+    // ============================================================
+    // PARTICLE EFFECT
+    // ============================================================
+
+    function createParticle() {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      const symbols = ['+', '×', '²', '³', '⁴', '⁵', '∞', '⚡', '✨'];
+      particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      particle.style.left = (5 + Math.random() * 90) + '%';
+      particle.style.bottom = '0px';
+      particle.style.fontSize = (0.8 + Math.random() * 0.8) + 'rem';
+      particle.style.color = ['rgba(255,213,79,0.4)', 'rgba(66,165,245,0.4)', 'rgba(239,83,80,0.4)'][Math.floor(Math.random() * 3)];
+      canvas.appendChild(particle);
+      setTimeout(() => particle.remove(), 4000);
+    }
+
+    setInterval(createParticle, 800);
+  </script>
+
+</body>
+</html>
