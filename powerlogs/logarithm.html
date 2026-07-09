@@ -107,6 +107,182 @@
       margin-bottom: 0;
       font-size: 1.05rem;
     }
+
+    /* ===== Inverse Relationship Comparison ===== */
+    .inverse-section {
+      background: linear-gradient(135deg, #FBE9E7 0%, #E3F2FD 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 3px solid var(--adventure-accent);
+    }
+    .inverse-section h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      color: var(--adventure-accent-dark);
+    }
+    .inverse-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .inverse-col {
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+    }
+    .inverse-col h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .inverse-col.exp-col {
+      background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+      border: 3px solid #42A5F5;
+    }
+    .inverse-col.exp-col h3 { color: #1565C0; }
+    .inverse-col.log-col {
+      background: linear-gradient(135deg, #FBE9E7, #FFCCBC);
+      border: 3px solid #FF7043;
+    }
+    .inverse-col.log-col h3 { color: #D84315; }
+    .inverse-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 1rem;
+    }
+    .inverse-row:last-child { border-bottom: none; }
+    .inverse-row .label { font-weight: 600; color: var(--color-text-light); }
+    .inverse-row .value { font-weight: 800; font-size: 1.1rem; }
+    .inverse-arrow {
+      text-align: center;
+      font-size: 2.5rem;
+      color: var(--color-orange);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== Convenience Cards ===== */
+    .convenience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin: 1.5rem 0;
+    }
+    .convenience-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--adventure-accent-light);
+      transition: all 0.3s ease;
+    }
+    .convenience-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    .convenience-card .cc-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .convenience-card h4 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--adventure-accent-dark);
+      margin-bottom: 0.5rem;
+    }
+    .convenience-card p {
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* ===== Inverse Flow Diagram ===== */
+    .inverse-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      border: 3px dashed var(--adventure-accent);
+    }
+    .inverse-flow .if-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 1.3rem;
+    }
+    .inverse-flow .if-box.exp-box {
+      background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+      border: 3px solid #42A5F5;
+      color: #1565C0;
+    }
+    .inverse-flow .if-box.log-box {
+      background: linear-gradient(135deg, #FBE9E7, #FFCCBC);
+      border: 3px solid #FF7043;
+      color: #D84315;
+    }
+    .inverse-flow .if-arrow {
+      font-size: 2rem;
+      color: var(--color-orange);
+      font-weight: 800;
+    }
+    .inverse-flow .if-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+      margin-top: 0.3rem;
+    }
+
+    /* ===== Convenience Highlight ===== */
+    .convenience-highlight {
+      background: linear-gradient(135deg, #FFF8E1, #FFECB3);
+      border: 3px solid #FFA726;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .convenience-highlight h3 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #E65100;
+      margin-bottom: 0.5rem;
+    }
+    .convenience-highlight p {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      margin: 0;
+    }
+    .convenience-highlight .big-formula {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin: 0.5rem 0;
+      color: var(--adventure-accent-dark);
+    }
+
+    @media (max-width: 768px) {
+      .inverse-grid { grid-template-columns: 1fr; }
+      .inverse-arrow { transform: rotate(90deg); padding: 0.5rem 0; }
+      .inverse-flow { flex-direction: column; }
+      .inverse-flow .if-arrow { transform: rotate(90deg); }
+    }
   </style>
 </head>
 <body>
@@ -129,39 +305,161 @@
       <!-- Hero / Title -->
       <section class="hero" style="padding: 2rem 0 1rem;">
         <h1>Discover <span>Logarithms</span> (Base 10)! 🔢</h1>
-        <p>Learn how logarithms are the secret reverse of powers — they tell you what exponent you need!</p>
+        <p>Learn how logarithms are the secret reverse of exponentials — they tell you what exponent you need!</p>
       </section>
 
-      <!-- What is a Logarithm? -->
+      <!-- ===== What is a Logarithm? (with the ×10 machine!) ===== -->
       <article class="article">
         <h2>What is a Logarithm? 🤔</h2>
         <p>
-          A <strong>logarithm</strong> (or "log") asks the question: <em>"What exponent do I need to get this number?"</em><br>
-          It's the opposite (inverse) of a power!
+          A <strong>logarithm</strong> (or "log") answers the question:<br>
+          <strong>"How many times do I ×10 to get this number?"</strong>
         </p>
+
+        <p>Imagine you have a magic <strong>"×10 Machine"</strong> 🎰. You put a number in, and it multiplies it by 10!</p>
+
+        <!-- The ×10 Machine visual -->
+        <div class="times-machine">
+          <div class="tm-item">1</div>
+          <span class="tm-arrow">→</span>
+          <div class="tm-item"><span class="tm-btn">×10</span>10</div>
+          <span class="tm-arrow">→</span>
+          <div class="tm-item"><span class="tm-btn">×10</span>100</div>
+          <span class="tm-arrow">→</span>
+          <div class="tm-item"><span class="tm-btn">×10</span>1,000</div>
+        </div>
+
+        <div class="story-card">
+          <div class="sc-emoji">🎰</div>
+          <div class="sc-text">
+            <h4>The ×10 Machine — Step by Step</h4>
+            <p>
+              <strong>Start with 1.</strong> Put it through the ×10 machine once → you get <strong>10</strong>.<br>
+              That's <strong>1 × 10 = 10</strong>. That took <strong>1</strong> step of ×10.<br><br>
+              Put 10 through the ×10 machine again → you get <strong>100</strong>.<br>
+              That's <strong>1 × 10 × 10 = 100</strong>. That took <strong>2</strong> steps of ×10.<br><br>
+              Put 100 through the ×10 machine again → you get <strong>1,000</strong>.<br>
+              That's <strong>1 × 10 × 10 × 10 = 1,000</strong>. That took <strong>3</strong> steps of ×10.
+            </p>
+          </div>
+        </div>
 
         <div class="highlight-box">
           <p>
-            <strong>log₁₀(100) = 2</strong> &nbsp; because &nbsp; <strong>10² = 100</strong><br>
-            <span style="font-size:0.95rem; color:var(--color-text-light);">
-              We read it as: <strong>"log base 10 of 100 equals 2"</strong>
-            </span>
+            🎯 <strong>The logarithm tells you how many times you used the ×10 machine!</strong><br>
+            log₁₀(10) = <strong>1</strong> &nbsp;→&nbsp; "1 step of ×10 gives you 10"<br>
+            log₁₀(100) = <strong>2</strong> &nbsp;→&nbsp; "2 steps of ×10 gives you 100"<br>
+            log₁₀(1,000) = <strong>3</strong> &nbsp;→&nbsp; "3 steps of ×10 gives you 1,000"
           </p>
-          <p style="margin-top:0.75rem;">
-            In other words: <strong>10 to WHAT POWER gives me 100?</strong> Answer: 2!
-          </p>
-        </div>
-
-        <h3>Logarithms = Power Reversers! 🔄</h3>
-        <div class="thinking-steps">
-          <h4>📝 Think of it this way:</h4>
-          <div class="step"><span class="step-number">1</span><span class="step-text"><strong>Power:</strong> 10<sup>3</sup> = 1,000 &nbsp; (What is 10 to the power of 3?)</span></div>
-          <div class="step"><span class="step-number">2</span><span class="step-text"><strong>Logarithm:</strong> log₁₀(1,000) = 3 &nbsp; (10 to WHAT power gives 1,000?)</span></div>
-          <div class="step"><span class="step-number">3</span><span class="step-text">They're <strong>opposites</strong> — like addition and subtraction! 🎯</span></div>
         </div>
 
         <div class="story-box">
           <p><span class="story-icon">📜</span> The word "logarithm" comes from Greek words "logos" (ratio) and "arithmos" (number). John Napier invented them in the 1600s to make multiplication easier for astronomers! Before calculators, logarithms were the best way to do big calculations!</p>
+        </div>
+      </article>
+
+      <!-- ===== Inverse: Exponential vs Logarithm (the ×10 machine backwards!) ===== -->
+      <article class="article">
+        <h2>🔄 Exponentials vs Logarithms — Opposite Directions! 🔄</h2>
+        <p>
+          An <strong>exponential</strong> says: <em>"I put a number through the ×10 machine 3 times — what do I get?"</em><br>
+          A <strong>logarithm</strong> says: <em>"I got 1,000 — how many times did I use the ×10 machine?"</em>
+        </p>
+
+        <p style="text-align:center;font-size:1.2rem;font-weight:800;color:var(--adventure-accent-dark);">
+          ⭐ They're the same machine, just going in opposite directions! ⭐
+        </p>
+
+        <!-- Flow diagram -->
+        <div class="inverse-flow">
+          <div class="if-box exp-box">
+            10³ = 1,000
+            <span class="if-label">🔵 "×10 machine 3 times → 1,000!"</span>
+          </div>
+          <div class="if-arrow">⟷</div>
+          <div class="if-box log-box">
+            log₁₀(1,000) = 3
+            <span class="if-label">🔴 "Got 1,000 → used ×10 machine 3 times!"</span>
+          </div>
+        </div>
+
+        <div class="inverse-section">
+          <h2>⚖️ Exponential vs Logarithm — Side by Side</h2>
+          <div class="inverse-grid">
+            <div class="inverse-col exp-col">
+              <h3>🔵 EXPONENTIAL (10ˣ)</h3>
+              <div class="inverse-row">
+                <span class="label">Question</span>
+                <span class="value" style="color:#1565C0;">"×10 machine x times = ?"</span>
+              </div>
+              <div class="inverse-row">
+                <span class="label">You know</span>
+                <span class="value" style="color:#1565C0;">How many ×10 steps</span>
+              </div>
+              <div class="inverse-row">
+                <span class="label">You find</span>
+                <span class="value" style="color:#1565C0;">The big number at the end</span>
+              </div>
+              <div class="inverse-row">
+                <span class="label">Example</span>
+                <span class="value" style="color:#1565C0;">10³ = 1,000</span>
+              </div>
+              <div class="inverse-row">
+                <span class="label">Think</span>
+                <span class="value" style="color:#1565C0;">"×10, ×10, ×10 = 1,000!"</span>
+              </div>
+            </div>
+
+            <div class="inverse-arrow">⟷</div>
+
+            <div class="inverse-col log-col">
+              <h3>🔴 LOGARITHM (log₁₀)</h3>
+              <div class="inverse-row">
+                <span class="label">Question</span>
+                <span class="value" style="color:#D84315;">"How many ×10 steps to get this?"</span>
+              </div>
+              <div class="inverse-row">
+                <span class="label">You know</span>
+                <span class="value" style="color:#D84315;">The big number</span>
+              </div>
+              <div class="inverse-row">
+                <span class="label">You find</span>
+                <span class="value" style="color:#D84315;">How many ×10 steps</span>
+              </div>
+              <div class="inverse-row">
+                <span class="label">Example</span>
+                <span class="value" style="color:#D84315;">log₁₀(1,000) = 3</span>
+              </div>
+              <div class="inverse-row">
+                <span class="label">Think</span>
+                <span class="value" style="color:#D84315;">"1,000 took 3 ×10 steps!"</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- More examples -->
+        <h3>More ×10 Machine Examples 🎰</h3>
+        <div class="log-line">
+          <div class="ll-item"><span class="ll-log">10² = 100</span><span class="ll-result">2 ×10 steps</span></div>
+          <span class="ll-arrow">⟷</span>
+          <div class="ll-item"><span class="ll-log">log₁₀(100) = 2</span><span class="ll-result">100 = 2 ×10 steps</span></div>
+        </div>
+        <div class="log-line">
+          <div class="ll-item"><span class="ll-log">10⁴ = 10,000</span><span class="ll-result">4 ×10 steps</span></div>
+          <span class="ll-arrow">⟷</span>
+          <div class="ll-item"><span class="ll-log">log₁₀(10,000) = 4</span><span class="ll-result">10,000 = 4 ×10 steps</span></div>
+        </div>
+        <div class="log-line">
+          <div class="ll-item"><span class="ll-log">10⁶ = 1,000,000</span><span class="ll-result">6 ×10 steps</span></div>
+          <span class="ll-arrow">⟷</span>
+          <div class="ll-item"><span class="ll-log">log₁₀(1,000,000) = 6</span><span class="ll-result">1,000,000 = 6 ×10 steps</span></div>
+        </div>
+
+        <div class="highlight-box">
+          <p>💡 <strong>Key Insight:</strong> Exponential and logarithm are <strong>opposites</strong> — they undo each other!<br>
+          <strong>log₁₀(10ˣ) = x</strong> &nbsp; and &nbsp; <strong>10<sup>log₁₀(x)</sup> = x</strong><br>
+          <span style="font-size:0.95rem;">Like walking forward 🚶 and walking backward 🚶‍➡️ — you end up where you started!</span></p>
         </div>
       </article>
 
@@ -171,14 +469,14 @@
         <p>Watch the beautiful pattern as numbers grow by powers of 10:</p>
 
         <table class="log-table">
-          <tr><th>Number</th><th>Written as a Power of 10</th><th>log₁₀(Number)</th></tr>
-          <tr><td>1</td><td>10<sup>0</sup></td><td><strong>0</strong></td></tr>
-          <tr><td>10</td><td>10<sup>1</sup></td><td><strong>1</strong></td></tr>
-          <tr><td>100</td><td>10<sup>2</sup></td><td><strong>2</strong></td></tr>
-          <tr><td>1,000</td><td>10<sup>3</sup></td><td><strong>3</strong></td></tr>
-          <tr><td>10,000</td><td>10<sup>4</sup></td><td><strong>4</strong></td></tr>
-          <tr><td>100,000</td><td>10<sup>5</sup></td><td><strong>5</strong></td></tr>
-          <tr><td>1,000,000</td><td>10<sup>6</sup></td><td><strong>6</strong></td></tr>
+          <tr><th>Number You Get</th><th>×10 Steps Taken</th><th>log₁₀(Number)</th></tr>
+          <tr><td>1</td><td>0 steps (start here)</td><td><strong>0</strong></td></tr>
+          <tr><td>10</td><td>1 step of ×10</td><td><strong>1</strong></td></tr>
+          <tr><td>100</td><td>2 steps of ×10</td><td><strong>2</strong></td></tr>
+          <tr><td>1,000</td><td>3 steps of ×10</td><td><strong>3</strong></td></tr>
+          <tr><td>10,000</td><td>4 steps of ×10</td><td><strong>4</strong></td></tr>
+          <tr><td>100,000</td><td>5 steps of ×10</td><td><strong>5</strong></td></tr>
+          <tr><td>1,000,000</td><td>6 steps of ×10</td><td><strong>6</strong></td></tr>
         </table>
 
         <div class="highlight-box">
@@ -188,7 +486,66 @@
         </div>
       </article>
 
-      <!-- Logarithms Make Numbers Easy to Compare -->
+      <!-- ===== Why Logarithms Are More Convenient ===== -->
+      <article class="article">
+        <h2>🌟 Why Are Logarithms So Handy?</h2>
+        <p>
+          Logarithms make <strong>hard problems easy</strong>! Here's why everyone loves them:
+        </p>
+
+        <div class="convenience-grid">
+          <div class="convenience-card">
+            <div class="cc-icon">🎰</div>
+            <h4>Count Steps, Not Zeros!</h4>
+            <p>Instead of writing "1,000,000" (6 zeros), just say "6 ×10 steps"! Logs turn big numbers into tiny counts.</p>
+          </div>
+          <div class="convenience-card">
+            <div class="cc-icon">➕</div>
+            <h4>Multiply by Adding Steps!</h4>
+            <p>100 × 1,000 = ? Count steps: 2 steps + 3 steps = 5 steps = 100,000! Logs turn × into +!</p>
+          </div>
+          <div class="convenience-card">
+            <div class="cc-icon">📏</div>
+            <h4>Easy to Compare</h4>
+            <p>Which is bigger: 3,162 or 10,000? Log says: 3.5 steps vs 4 steps. The 4-step number wins — easy!</p>
+          </div>
+          <div class="convenience-card">
+            <div class="cc-icon">📊</div>
+            <h4>Fits on One Page!</h4>
+            <p>Try writing 1,000,000 on one line — it's huge! But "6 steps of ×10" fits anywhere. Logs shrink big numbers!</p>
+          </div>
+        </div>
+
+        <div class="convenience-highlight">
+          <h3>🎯 The Best Part — Add the Steps!</h3>
+          <div class="big-formula">log(a × b) = log(a) + log(b)</div>
+          <p>
+            <strong>Hard way:</strong> 100 × 1,000 = 100,000. That's big multiplication! 😰<br>
+            <strong>Easy way with logs:</strong> 2 steps + 3 steps = <strong>5 steps</strong> = 100,000! 🎉<br>
+            <span style="font-size:0.95rem;color:var(--color-text-light);">
+              This is why old-fashioned <strong>slide rules</strong> (the calculators of the past) used logarithmic scales!
+            </span>
+          </p>
+        </div>
+
+        <h3>See It in Action! 👇</h3>
+        <p>
+          <strong>Without logs:</strong> 100 × 1,000 × 10,000 = ? That's hard! 😰<br>
+          <strong>With logs (add the steps):</strong> 2 steps + 3 steps + 4 steps = <strong>9 steps</strong> = 1,000,000,000! 🎉
+        </p>
+
+        <div class="log-line">
+          <div class="ll-item"><span class="ll-log">100</span><span class="ll-result">2 ×10 steps</span></div>
+          <span class="ll-arrow">×</span>
+          <div class="ll-item"><span class="ll-log">1,000</span><span class="ll-result">3 ×10 steps</span></div>
+          <span class="ll-arrow">×</span>
+          <div class="ll-item"><span class="ll-log">10,000</span><span class="ll-result">4 ×10 steps</span></div>
+          <span class="ll-arrow">=</span>
+          <div class="ll-item"><span class="ll-log">1,000,000,000</span><span class="ll-result">2+3+4 = 9 steps!</span></div>
+        </div>
+      </article>
+
+      <!-- Logarithms Make Big Numbers Easy to Compare -->
       <article class="article">
         <h2>Logs Make Big Numbers Easy! 🐳</h2>
         <p>
@@ -223,12 +580,16 @@
       <!-- Real World Uses -->
       <article class="article">
         <h2>Where Do We Use Logarithms in Real Life? 🌍</h2>
+        <p>
+          Because logs are so convenient for handling huge ranges, they show up everywhere in science!
+          <strong>Whenever you see a scale that goes 1, 10, 100, 1,000...</strong> that's a logarithmic scale!
+        </p>
 
         <div class="real-world-card">
           <div class="rw-icon">🌋</div>
           <div class="rw-text">
             <h4>Earthquake Magnitudes (Richter Scale)</h4>
-            <p>Each step up on the Richter scale is 10 times stronger! A magnitude 6 earthquake is 10× stronger than magnitude 5. That's a logarithmic scale!</p>
+            <p>Each step up on the Richter scale is 10 times stronger! A magnitude 6 earthquake is 10× stronger than magnitude 5. That's a logarithmic scale! Without logs, we'd need to say "10,000,000,000" instead of "magnitude 10"!</p>
           </div>
         </div>
 
@@ -236,7 +597,7 @@
           <div class="rw-icon">🔊</div>
           <div class="rw-text">
             <h4>Sound Loudness (Decibels)</h4>
-            <p>A whisper is about 30 dB, normal talking is 60 dB, and a rock concert is 120 dB. Because decibels are logarithmic, 120 dB is NOT 4× louder than 30 dB — it's <strong>1 billion times</strong> more intense!</p>
+            <p>A whisper is about 30 dB, normal talking is 60 dB, and a rock concert is 120 dB. Because decibels are logarithmic, 120 dB is NOT 4× louder than 30 dB — it's <strong>1 billion times</strong> more intense! Logs make these numbers manageable!</p>
           </div>
         </div>
 
@@ -244,7 +605,7 @@
           <div class="rw-icon">⭐</div>
           <div class="rw-text">
             <h4>Star Brightness</h4>
-            <p>Astronomers use logarithmic scales to measure how bright stars are. A star of magnitude 1 is 100× brighter than a star of magnitude 6!</p>
+            <p>Astronomers use logarithmic scales to measure how bright stars are. A star of magnitude 1 is 100× brighter than a star of magnitude 6! Without logs, the numbers would be impossibly large.</p>
           </div>
         </div>
 
@@ -252,7 +613,15 @@
           <div class="rw-icon">🧪</div>
           <div class="rw-text">
             <h4>Acidity (pH Scale)</h4>
-            <p>pH is a logarithmic scale! A pH of 3 is 10× more acidic than pH 4, and 100× more acidic than pH 5.</p>
+            <p>pH is a logarithmic scale! A pH of 3 is 10× more acidic than pH 4, and 100× more acidic than pH 5. A single number like "pH 3" replaces a huge decimal like "0.001"!</p>
+          </div>
+        </div>
+
+        <div class="real-world-card">
+          <div class="rw-icon">👂</div>
+          <div class="rw-text">
+            <h4>Human Perception is Logarithmic!</h4>
+            <p>Our ears, eyes, and skin all perceive the world logarithmically! That's why a logarithmic scale feels <strong>natural</strong> to us. We notice the <em>ratio</em> of change, not the absolute amount. This is why logs are so convenient — they match how our brains work! 🧠</p>
           </div>
         </div>
       </article>
@@ -262,51 +631,63 @@
         <h3>🧠 Logarithm Quiz — Test Yourself!</h3>
 
         <div class="quiz-card">
-          <div class="quiz-question">1. What is log₁₀(1,000)?</div>
+          <div class="quiz-question">1. 🍎 You have 1,000 apples. Each basket holds 10. How many baskets?</div>
           <button class="btn-answer" onclick="revealAnswer('q1')">Show Answer</button>
-          <div class="quiz-answer" id="q1">log₁₀(1,000) = <strong>3</strong> because 10³ = 1,000! 🎉</div>
+          <div class="quiz-answer" id="q1"><strong>3 baskets!</strong> Because 10 × 10 × 10 = 1,000. log₁₀(1,000) = 3! 🎉</div>
         </div>
 
         <div class="quiz-card">
-          <div class="quiz-question">2. What is log₁₀(10,000)?</div>
+          <div class="quiz-question">2. 🍎 You have 10,000 apples. Each basket holds 10. How many baskets?</div>
           <button class="btn-answer" onclick="revealAnswer('q2')">Show Answer</button>
-          <div class="quiz-answer" id="q2">log₁₀(10,000) = <strong>4</strong> because 10⁴ = 10,000! 🎉</div>
+          <div class="quiz-answer" id="q2"><strong>4 baskets!</strong> Because 10⁴ = 10,000. log₁₀(10,000) = 4! 🎉</div>
         </div>
 
         <div class="quiz-card">
-          <div class="quiz-question">3. What is log₁₀(1)?</div>
+          <div class="quiz-question">3. 🍎 You have 1 apple. How many baskets of 10 do you need?</div>
           <button class="btn-answer" onclick="revealAnswer('q3')">Show Answer</button>
-          <div class="quiz-answer" id="q3">log₁₀(1) = <strong>0</strong> because 10⁰ = 1! ✅</div>
+          <div class="quiz-answer" id="q3"><strong>0 baskets!</strong> Because 10⁰ = 1. log₁₀(1) = 0! ✅</div>
         </div>
 
         <div class="quiz-card">
-          <div class="quiz-question">4. What is log₁₀(10)?</div>
+          <div class="quiz-question">4. 🍎 You have 10 apples. How many baskets?</div>
           <button class="btn-answer" onclick="revealAnswer('q4')">Show Answer</button>
-          <div class="quiz-answer" id="q4">log₁₀(10) = <strong>1</strong> because 10¹ = 10! ✅</div>
+          <div class="quiz-answer" id="q4"><strong>1 basket!</strong> Because 10¹ = 10. log₁₀(10) = 1! ✅</div>
         </div>
 
         <div class="quiz-card">
-          <div class="quiz-question">5. What is log₁₀(100) + log₁₀(100)?</div>
+          <div class="quiz-question">5. 🧁 If 10³ = 1,000, what is log₁₀(1,000)?</div>
           <button class="btn-answer" onclick="revealAnswer('q5')">Show Answer</button>
-          <div class="quiz-answer" id="q5">log₁₀(100) = 2, so 2 + 2 = <strong>4</strong>.<br>And log₁₀(100 × 100) = log₁₀(10,000) = 4! The rule works! 🧠</div>
+          <div class="quiz-answer" id="q5">log₁₀(1,000) = <strong>3</strong>! The logarithm is the <strong>opposite</strong> of the exponential — it undoes it! 🔄</div>
         </div>
 
         <div class="quiz-card">
-          <div class="quiz-question">6. If an earthquake is magnitude 5, how much stronger is a magnitude 7 earthquake?</div>
+          <div class="quiz-question">6. 🌋 If an earthquake is magnitude 5, how much stronger is magnitude 7?</div>
           <button class="btn-answer" onclick="revealAnswer('q6')">Show Answer</button>
           <div class="quiz-answer" id="q6"><strong>100× stronger!</strong> Each step is 10×, so 7 − 5 = 2 steps = 10 × 10 = 100. 🌋</div>
         </div>
 
         <div class="quiz-card">
-          <div class="quiz-question">7. What is log₁₀(1,000,000)?</div>
+          <div class="quiz-question">7. 🍎 What is log₁₀(1,000,000)? (Hint: 1 million apples = ? baskets)</div>
           <button class="btn-answer" onclick="revealAnswer('q7')">Show Answer</button>
-          <div class="quiz-answer" id="q7">log₁₀(1,000,000) = <strong>6</strong> because 10⁶ = 1,000,000 (1 million)! 💰</div>
+          <div class="quiz-answer" id="q7"><strong>6 baskets!</strong> Because 10⁶ = 1,000,000 (1 million). log₁₀(1,000,000) = 6! 💰</div>
         </div>
 
         <div class="quiz-card">
-          <div class="quiz-question">8. What exponent goes in the blank: log₁₀(100,000) = ___ ?</div>
+          <div class="quiz-question">8. 🍎 What is log₁₀(100,000)? (100,000 apples = ? baskets)</div>
           <button class="btn-answer" onclick="revealAnswer('q8')">Show Answer</button>
-          <div class="quiz-answer" id="q8"><strong>5</strong>! Because 10⁵ = 100,000 (1 followed by 5 zeros)! ⭐</div>
+          <div class="quiz-answer" id="q8"><strong>5 baskets!</strong> Because 10⁵ = 100,000 (1 followed by 5 zeros)! ⭐</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">9. 🍎 Why is it easier to say "9 baskets" instead of "1,000,000,000 apples"?</div>
+          <button class="btn-answer" onclick="revealAnswer('q9')">Show Answer</button>
+          <div class="quiz-answer" id="q9">Because <strong>"9"</strong> is much easier to write and say than "1,000,000,000"! Logs shrink huge numbers into tiny ones! 🐳➡️🐜</div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-question">10. 🧁 What is the opposite of "baking 3 batches of 10 cupcakes" (10³)?</div>
+          <button class="btn-answer" onclick="revealAnswer('q10')">Show Answer</button>
+          <div class="quiz-answer" id="q10">The opposite is <strong>log₁₀(1,000) = 3</strong>! Baking makes cupcakes, logarithms tell you how many batches you baked! 🔄</div>
         </div>
       </section>
     </div>
