@@ -550,6 +550,63 @@
       80% { transform: translateX(6px); }
     }
 
+    /* ============ Rate of Change Tables (Car & Bicycle) ============ */
+    .rate-table-wrap {
+      background: #fff;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem 1.25rem;
+      margin-top: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+    .rate-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      text-align: center;
+    }
+    .rate-table caption {
+      caption-side: top;
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--color-text-light);
+      padding-bottom: 0.6rem;
+    }
+    .rate-table th, .rate-table td {
+      padding: 0.6rem 0.7rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+    .rate-table thead th {
+      background: #37474F;
+      color: #fff;
+    }
+    .rate-table thead th:first-child { border-top-left-radius: 12px; }
+    .rate-table thead th:last-child { border-top-right-radius: 12px; }
+    .rate-table tbody td { border-top: 2px solid var(--color-bg-tone); }
+    .rate-table tbody td.col-equation { color: var(--color-text-light); font-weight: 600; }
+    .rate-table.car td.col-time { color: #1565C0; }
+    .rate-table.car td.col-dist { color: #2E7D32; font-weight: 800; }
+    .rate-table.bike td.col-time { color: #E64A19; }
+    .rate-table.bike td.col-dist { color: #1565C0; font-weight: 800; }
+    .rate-table tbody tr:hover td { background: var(--color-primary-light); }
+    .rate-table tbody tr.active td { background: #FFF8E1; }
+    .rate-table.car tbody tr.active td { background: #E3F2FD; }
+    .rate-table.bike tbody tr.active td { background: #FFF3E0; }
+    .rate-table tbody tr.active td.col-dist::after {
+      content: ' ★';
+      color: #FF9800;
+    }
+    .rate-note {
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+      margin-top: 0.6rem;
+    }
+
     @media (max-width: 768px) {
       .road-scene { min-height: 260px; padding: 1.5rem 1rem; }
       .car-on-road { font-size: 2.5rem; }
@@ -557,6 +614,8 @@
       .calc-display { font-size: 1.2rem; }
       .calc-display .calc-num { width: 50px; height: 50px; font-size: 1.2rem; }
       .time-btn { padding: 0.6rem 1.2rem; font-size: 1rem; }
+      .rate-table th, .rate-table td { padding: 0.5rem 0.4rem; font-size: 0.95rem; }
+      .rate-table-wrap { padding: 0.75rem 0.75rem 1rem; }
     }
   </style>
 </head>
@@ -663,9 +722,30 @@
           <button class="btn-drive" id="driveBtn">▶️ Drive!</button>
           <button class="btn-reset-drive" id="resetDriveBtn">↺ Reset</button>
         </div>
-      </section>
 
-      <!-- ============ Calculation Display ============ -->
+        <!-- Car trip rate-of-change table -->
+        <div class="rate-table-wrap">
+          <table class="rate-table car">
+            <caption>🚗 Car Trip — travels <strong>50 km</strong> every hour</caption>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Equation</th>
+                <th>Distance</th>
+              </tr>
+            </thead>
+            <tbody id="carRateRows">
+              <tr data-hours="1"><td>1 hour</td><td class="col-equation">50 × 1</td><td class="col-dist">50 km</td></tr>
+              <tr data-hours="2"><td>2 hours</td><td class="col-equation">50 × 2</td><td class="col-dist">100 km</td></tr>
+              <tr data-hours="3"><td>3 hours</td><td class="col-equation">50 × 3</td><td class="col-dist">150 km</td></tr>
+              <tr data-hours="4"><td>4 hours</td><td class="col-equation">50 × 4</td><td class="col-dist">200 km</td></tr>
+              <tr data-hours="5"><td>5 hours</td><td class="col-equation">50 × 5</td><td class="col-dist">250 km</td></tr>
+              <tr data-hours="6"><td>6 hours</td><td class="col-equation">50 × 6</td><td class="col-dist">300 km</td></tr>
+            </tbody>
+          </table>
+          <p class="rate-note">📈 The car adds <strong>+50 km every hour</strong> — that's its rate of change! ★ marks the hours you picked.</p>
+        </div>
+      </section>
       <section>
         <h3>🧮 The Calculation</h3>
 
@@ -746,6 +826,29 @@
             <div class="ex-equation" id="bikeEquation">
               <span id="bikeEquationText">10 × 3 = 30 km</span>
             </div>
+          </div>
+
+          <!-- Bicycle rate-of-change table -->
+          <div class="rate-table-wrap">
+            <table class="rate-table bike">
+              <caption>🚴 Bicycle Ride — travels <strong>10 km</strong> every hour</caption>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Equation</th>
+                  <th>Distance</th>
+                </tr>
+              </thead>
+              <tbody id="bikeRateRows">
+                <tr data-hours="1"><td>1 hour</td><td class="col-equation">10 × 1</td><td class="col-dist">10 km</td></tr>
+                <tr data-hours="2"><td>2 hours</td><td class="col-equation">10 × 2</td><td class="col-dist">20 km</td></tr>
+                <tr data-hours="3"><td>3 hours</td><td class="col-equation">10 × 3</td><td class="col-dist">30 km</td></tr>
+                <tr data-hours="4"><td>4 hours</td><td class="col-equation">10 × 4</td><td class="col-dist">40 km</td></tr>
+                <tr data-hours="5"><td>5 hours</td><td class="col-equation">10 × 5</td><td class="col-dist">50 km</td></tr>
+                <tr data-hours="6"><td>6 hours</td><td class="col-equation">10 × 6</td><td class="col-dist">60 km</td></tr>
+              </tbody>
+            </table>
+            <p class="rate-note">📉 The bicycle adds <strong>+10 km every hour</strong> — a much slower rate than the car! ★ marks the hours you picked.</p>
           </div>
         </div>
 
@@ -917,6 +1020,18 @@
     var SPEED = 50; // km per hour
     var ROAD_TOTAL = 200; // max km on the road scale
 
+    // Highlight the row in a rate table that matches the chosen hours
+    function markActiveRateRow(tbodyId, hours) {
+      var rows = document.querySelectorAll('#' + tbodyId + ' tr');
+      rows.forEach(function(row) {
+        if (parseInt(row.getAttribute('data-hours')) === hours) {
+          row.classList.add('active');
+        } else {
+          row.classList.remove('active');
+        }
+      });
+    }
+
     function selectTime(hours) {
       if (isAnimating) return;
       selectedHours = hours;
@@ -949,6 +1064,7 @@
           marker.classList.remove('reached');
         }
       });
+      markActiveRateRow('carRateRows', selectedHours);
     }
 
     function animateCar() {
@@ -1055,6 +1171,7 @@
       var hours = getBikeHours();
       var total = BIKE_SPEED * hours;
       bikeEquationText.textContent = BIKE_SPEED + ' × ' + hours + ' = ' + total + ' km';
+      markActiveRateRow('bikeRateRows', hours);
     }
 
     function animateBike() {
@@ -1102,6 +1219,7 @@
     bikeGoBtn.addEventListener('click', animateBike);
     bikeResetBtn.addEventListener('click', resetBike);
     bikeHoursInput.addEventListener('change', updateBikeEquation);
+    updateBikeEquation();
 
     // ============ Walking Animation ============
     var WALK_SPEED = 5; // km per hour

@@ -114,8 +114,12 @@
     .gc-x4 .gc-equation b { color: #E65100; }
     .gc-message { font-size: 1.05rem; color: var(--color-text-light); font-weight: 600; min-height: 1.7rem; margin-top: 0.25rem; }
     .gc-groups { display: flex; flex-wrap: wrap; gap: 0.45rem; justify-content: center; margin: 0.9rem 0 0.25rem; min-height: 2.4rem; }
-    .gc-group { display: flex; gap: 0.1rem; padding: 0.3rem 0.5rem; background: var(--color-bg-tone); border-radius: 12px; animation: popIn 0.3s ease; }
+    .gc-group { display: flex; gap: 0.1rem; padding: 0.3rem 0.5rem; background: var(--color-bg-tone); border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     .gc-group .gc-item { font-size: 1.2rem; }
+    .gc-counter { margin-top: 0.35rem; min-height: 1.6rem; font-size: 1.05rem; font-weight: 700; color: var(--color-text-light); }
+    .gc-x2 .gc-counter b { color: #2E7D32; }
+    .gc-x3 .gc-counter b { color: #1565C0; }
+    .gc-x4 .gc-counter b { color: #E65100; }
 
     .gc-controls { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 1.25rem; }
     .gc-btn {
@@ -421,6 +425,7 @@
         '<div class="gc-status">' +
           '<div class="gc-equation">' + cfg.mult + ' × 1 = ' + cfg.mult + '</div>' +
           '<div class="gc-groups"></div>' +
+          '<div class="gc-counter"></div>' +
           '<div class="gc-message">Press <strong>▶ Play</strong> to start it growing! 🌱</div>' +
         '</div>' +
         '<div class="gc-controls">' +
@@ -451,30 +456,37 @@
         running: false,
         eq: host.querySelector('.gc-equation'),
         groupsEl: host.querySelector('.gc-groups'),
+        counter: host.querySelector('.gc-counter'),
         msg: host.querySelector('.gc-message'),
         playBtn: host.querySelectorAll('.gc-btn')[0],
         nextBtn: host.querySelectorAll('.gc-btn')[1],
         resetBtn: host.querySelectorAll('.gc-btn')[2]
       };
 
+      function appendGroupEl() {
+        var g = document.createElement('div');
+        g.className = 'gc-group';
+        for (var j = 1; j <= cfg.mult; j++) {
+          var it = document.createElement('span');
+          it.className = 'gc-item';
+          it.textContent = cfg.emoji;
+          g.appendChild(it);
+        }
+        widget.groupsEl.appendChild(g);
+        gsap.from(g, { scale: 0.4, duration: 0.3, ease: 'back.out(2)' });
+      }
+
       function renderChartStatus(step) {
         var addr = cfg.mult * step;
         if (step === 0) {
           widget.eq.innerHTML = '<span>' + cfg.mult + ' × 1 = ' + cfg.mult + '</span>';
+        } else {
+          widget.eq.innerHTML = '<span>' + cfg.mult + ' × <b>' + step + '</b> = <b>' + addr + '</b></span>';
+        }
+        widget.counter.innerHTML = 'Groups: <b>' + step + '</b> × ' + cfg.mult + ' each = <b>' + addr + '</b> total ' + cfg.emoji;
+        if (step === 0) {
           widget.msg.innerHTML = 'Press <strong>▶ Play</strong> to start it growing! 🌱';
-          widget.groupsEl.innerHTML = '';
-          return;
-        }
-        widget.eq.innerHTML = '<span>' + cfg.mult + ' × <b>' + step + '</b> = <b>' + addr + '</b></span>';
-        var html = '';
-        for (var g = 1; g <= step; g++) {
-          html += '<div class="gc-group">';
-          for (var j = 1; j <= cfg.mult; j++) { html += '<span class="gc-item">' + cfg.emoji + '</span>'; }
-          html += '</div>';
-        }
-        widget.groupsEl.innerHTML = html;
-        gsap.from(widget.groupsEl.children, { scale: 0, opacity: 0, duration: 0.3, stagger: 0.05, ease: 'back.out(2)' });
-        if (step === 1) {
+        } else if (step === 1) {
           widget.msg.innerHTML = 'Step 1: our first group of <b>' + cfg.mult + '</b>! That makes <b>' + addr + '</b> total!';
         } else {
           widget.msg.innerHTML = 'Step ' + step + ': we added <b>+' + cfg.mult + '</b> more! Now <b>' + (addr - cfg.mult) + ' ➜ ' + addr + '</b> 📈';
@@ -500,7 +512,12 @@
           col.classList.add('gc-reached');
         }
         widget.cols[step - 1].classList.add('current-col');
-        widget.currentStep = step;
+
+        while (widget.currentStep < step) {
+          widget.currentStep++;
+          appendGroupEl();
+        }
+
         renderChartStatus(step);
       }
 
@@ -511,6 +528,7 @@
           widget.cols[i].querySelector('.gc-value').style.removeProperty('transform');
         }
         widget.currentStep = 0;
+        widget.groupsEl.innerHTML = '';
         renderChartStatus(0);
       }
 
