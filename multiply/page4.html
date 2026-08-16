@@ -185,6 +185,143 @@
     .thinking-steps .step-number { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: #FFB74D; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; }
     .thinking-steps .step-text { font-size: 1.1rem; line-height: 1.65; }
 
+    /* ============ Age Progression Showcase ============ */
+    .ap-wrap {
+      background: #fff;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      margin: 2rem 0;
+      padding: 1.7rem 1.5rem 1.3rem;
+    }
+    .ap-wrap h3 { margin-bottom: 0.35rem; text-align: center; }
+    .ap-sub {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--color-text-light);
+      text-align: center;
+      max-width: 780px;
+      margin: 0 auto 1.15rem;
+    }
+    .ap-sub strong { color: var(--color-text); }
+
+    .ap-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem 1.1rem;
+      background: #FFF8E1;
+      border: 2px dashed #FFCA28;
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 1.2rem;
+      margin-bottom: 1.4rem;
+      font-size: 0.98rem;
+      font-weight: 800;
+      text-align: center;
+    }
+    .ap-swatch { display: inline-flex; align-items: center; gap: 0.5rem; }
+    .ap-em-ex { font-style: normal; font-size: 1.9rem; line-height: 1; }
+    .tw-light { filter: saturate(0.5) brightness(1.5); }
+    .tw-dark { filter: saturate(1.3) brightness(0.85); }
+
+    .ap-card {
+      background: #fff;
+      border: 3px solid;
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1rem 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .ap-rabbit { border-color: #81C784; background: linear-gradient(180deg, #FFFFFF 0%, #F1F8E9 100%); }
+    .ap-rabbit .ap-card-head { color: #2E7D32; }
+    .ap-car { border-color: #64B5F6; background: linear-gradient(180deg, #FFFFFF 0%, #E3F2FD 100%); }
+    .ap-car .ap-card-head { color: #1565C0; }
+    .ap-card-head { text-align: center; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.9rem; }
+
+    .ap-strip {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.6rem 0.4rem;
+    }
+    .ap-stage { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; width: 150px; opacity: 0; }
+    .ap-photo {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: 100%;
+      height: 126px;
+      background: #fff;
+      border: 4px solid #E0E0E0;
+      border-radius: 14px;
+      padding-bottom: 0.9rem;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+    }
+    .ap-emoji { line-height: 1; display: inline-block; transform-origin: center bottom; }
+    .ap-stage.s0 .ap-emoji { font-size: 3.1rem; filter: saturate(0.5) brightness(1.55); }
+    .ap-stage.s1 .ap-emoji { font-size: 4.1rem; filter: saturate(0.8) brightness(1.2); }
+    .ap-stage.s2 .ap-emoji { font-size: 5.3rem; filter: saturate(1.25) brightness(0.86); }
+
+    .ap-beam-track { width: 100%; height: 11px; border-radius: 8px; background: #ECEFF1; overflow: hidden; }
+    .ap-beam { display: block; height: 100%; width: 0; border-radius: 8px; }
+    .ap-rabbit .ap-stage.s0 .ap-beam { background: #C8E6C9; }
+    .ap-rabbit .ap-stage.s1 .ap-beam { background: #81C784; }
+    .ap-rabbit .ap-stage.s2 .ap-beam { background: #2E7D32; }
+    .ap-car .ap-stage.s0 .ap-beam { background: #BBDEFB; }
+    .ap-car .ap-stage.s1 .ap-beam { background: #64B5F6; }
+    .ap-car .ap-stage.s2 .ap-beam { background: #1565C0; }
+
+    .ap-tag { font-size: 0.82rem; font-weight: 800; color: #fff; padding: 0.2rem 0.7rem; border-radius: 20px; }
+    .ap-rabbit .ap-stage.s0 .ap-tag { background: #81C784; }
+    .ap-rabbit .ap-stage.s1 .ap-tag { background: #4CAF50; }
+    .ap-rabbit .ap-stage.s2 .ap-tag { background: #2E7D32; }
+    .ap-car .ap-stage.s0 .ap-tag { background: #90CAF9; }
+    .ap-car .ap-stage.s1 .ap-tag { background: #42A5F5; }
+    .ap-car .ap-stage.s2 .ap-tag { background: #1565C0; }
+
+    .ap-caption { font-size: 1.02rem; font-weight: 800; color: #263238; }
+    .ap-arrow { opacity: 0; font-size: 2.1rem; font-weight: 900; color: #B0BEC5; line-height: 1; padding-bottom: 2.2rem; }
+    .ap-legend .ap-arrow { opacity: 1; padding-bottom: 0; font-size: 1.6rem; }
+
+    .ap-status {
+      margin: 1rem auto 0;
+      max-width: 680px;
+      text-align: center;
+      font-size: 1.02rem;
+      font-weight: 700;
+      background: #FFF8E1;
+      border: 2px dashed #FFCA28;
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 1rem;
+    }
+    .ap-controls { text-align: center; margin-top: 0.7rem; }
+    .ap-btn {
+      cursor: pointer;
+      padding: 0.8rem 2rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, #FFB74D 0%, #F57C00 100%);
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 5px 14px rgba(245, 124, 0, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .ap-btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 7px 18px rgba(245, 124, 0, 0.45); }
+    .ap-btn:disabled { opacity: 0.6; cursor: default; transform: none; box-shadow: none; }
+    .ap-hint { text-align: center; font-size: 0.95rem; font-weight: 700; color: var(--color-text-light); margin-top: 0.75rem; }
+
+    @media (max-width: 768px) {
+      .ap-stage { width: 132px; }
+      .ap-photo { height: 102px; }
+      .ap-stage.s0 .ap-emoji { font-size: 2.4rem; }
+      .ap-stage.s1 .ap-emoji { font-size: 3.3rem; }
+      .ap-stage.s2 .ap-emoji { font-size: 4.3rem; }
+      .ap-arrow { font-size: 1.6rem; padding-bottom: 1.6rem; }
+    }
+
     /* ============ Quiz ============ */
     .grow-quiz-options { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 0.75rem 0; }
     .grow-option { padding: 0.7rem 1.5rem; font-size: 1.1rem; font-weight: 700; border: 3px solid var(--color-border); background: white; border-radius: 50px; cursor: pointer; transition: all 0.2s ease; }
@@ -349,6 +486,83 @@
           <span class="step-text">Multiplication is like <strong>super-charged counting</strong> — we can reach big numbers in only a few steps! 🌟</span>
         </div>
       </div>
+
+      <!-- ============ AGE PROGRESSION SHOWCASE ============ -->
+      <section class="ap-wrap" id="apWrap">
+        <h3>📸 Age Progression — Watch Them GROW UP! 🐣</h3>
+        <p class="ap-sub">
+          In age-progression pictures, the <strong>same</strong> kid appears again and again — each picture bigger and older!
+          Look at the <strong>same</strong> 🐰 and 🚗 below: the <strong>old size</strong> stays right there next to the
+          <strong>growing size</strong> — same colour, but the grown-up stages use a <strong>darker tone</strong>. Watch them grow up! 🌱
+        </p>
+
+        <div class="ap-legend">
+          <span class="ap-swatch"><i class="ap-em-ex tw-light">🐰</i>Old size ➜ lighter tone</span>
+          <span class="ap-arrow">➜</span>
+          <span class="ap-swatch"><i class="ap-em-ex tw-dark">🐰</i>Grown size ➜ same colour, darker tone</span>
+        </div>
+
+        <!-- Rabbit: baby ➜ bigger ➜ adult -->
+        <div class="ap-card ap-rabbit" id="apRabbit">
+          <div class="ap-card-head">🐰 The Rabbit — baby ➜ bigger ➜ adult!</div>
+          <div class="ap-strip">
+            <div class="ap-stage s0">
+              <div class="ap-photo"><span class="ap-emoji">🐰</span></div>
+              <div class="ap-beam-track"><span class="ap-beam"></span></div>
+              <div class="ap-tag">× 1</div>
+              <div class="ap-caption">Baby</div>
+            </div>
+            <span class="ap-arrow">➜</span>
+            <div class="ap-stage s1">
+              <div class="ap-photo"><span class="ap-emoji">🐰</span></div>
+              <div class="ap-beam-track"><span class="ap-beam"></span></div>
+              <div class="ap-tag">× 2</div>
+              <div class="ap-caption">Bigger</div>
+            </div>
+            <span class="ap-arrow">➜</span>
+            <div class="ap-stage s2">
+              <div class="ap-photo"><span class="ap-emoji">🐰</span></div>
+              <div class="ap-beam-track"><span class="ap-beam"></span></div>
+              <div class="ap-tag">× 3</div>
+              <div class="ap-caption">Adult</div>
+            </div>
+          </div>
+          <div class="ap-status">🐰 Watch the same rabbit grow from a baby to a bigger rabbit, then a full-grown adult!</div>
+        </div>
+
+        <!-- Car: its SIZE gets bigger -->
+        <div class="ap-card ap-car" id="apCar">
+          <div class="ap-card-head">🚗 The Car — its SIZE gets bigger and bigger!</div>
+          <div class="ap-strip">
+            <div class="ap-stage s0">
+              <div class="ap-photo"><span class="ap-emoji">🚗</span></div>
+              <div class="ap-beam-track"><span class="ap-beam"></span></div>
+              <div class="ap-tag">size 1</div>
+              <div class="ap-caption">Small</div>
+            </div>
+            <span class="ap-arrow">➜</span>
+            <div class="ap-stage s1">
+              <div class="ap-photo"><span class="ap-emoji">🚗</span></div>
+              <div class="ap-beam-track"><span class="ap-beam"></span></div>
+              <div class="ap-tag">size 2</div>
+              <div class="ap-caption">Bigger</div>
+            </div>
+            <span class="ap-arrow">➜</span>
+            <div class="ap-stage s2">
+              <div class="ap-photo"><span class="ap-emoji">🚗</span></div>
+              <div class="ap-beam-track"><span class="ap-beam"></span></div>
+              <div class="ap-tag">size 3</div>
+              <div class="ap-caption">Biggest</div>
+            </div>
+          </div>
+          <div class="ap-status">🚗 Watch the same car get a bigger and bigger size — see the size bar under it grow, too!</div>
+        </div>
+
+        <div class="ap-controls">
+          <button type="button" class="ap-btn" id="apPlayBtn">▶️ Watch them GROW!</button>
+        </div>
+        <p class="ap-hint">↔️ Same thing, grown bigger — just like numbers when we multiply! ✖️</p>
+      </section>
 
       <!-- ============ QUIZ ============ -->
       <section class="quiz-section">
@@ -717,9 +931,117 @@
       }
     }
 
+    // ============ Age Progression Showcase ============
+    var AP_CONFIGS = {
+      apRabbit: {
+        statuses: [
+          '🐰 Stage 1 of 3 — the BABY rabbit: the OLD size, lighter tone!',
+          '🐰 Stage 2 of 3 — the rabbit is BIGGER now: same colour, darker tone, growing! 🌱',
+          '🐰 Stage 3 of 3 — the ADULT rabbit! 🎉 Same colour, darkest tone, biggest size: 1 ➜ 2 ➜ 3!'
+        ]
+      },
+      apCar: {
+        statuses: [
+          '🚗 Stage 1 of 3 — a SMALL car: the OLD size, lighter tone!',
+          '🚗 Stage 2 of 3 — the SIZE of the car is bigger now: same colour, darker tone!',
+          '🚗 Stage 3 of 3 — the BIGGEST car! 🏆 Same colour, darkest tone — now it needs a giant parking spot! 🅿️'
+        ]
+      }
+    };
+    var AP_BEAM_PCT = [30, 55, 100];
+
+    function initAgeProgression() {
+      var wrap = document.getElementById('apWrap');
+      var playBtn = document.getElementById('apPlayBtn');
+      if (!wrap || !playBtn) return;
+
+      var players = {};
+      var playing = false;
+
+      Object.keys(AP_CONFIGS).forEach(function (cardId) {
+        var card = document.getElementById(cardId);
+        if (!card) return;
+        var stages = card.querySelectorAll('.ap-stage');
+        var emojis = card.querySelectorAll('.ap-emoji');
+        var arrows = card.querySelectorAll('.ap-arrow');
+        var beams = card.querySelectorAll('.ap-beam');
+        var status = card.querySelector('.ap-status');
+        var msgs = AP_CONFIGS[cardId].statuses;
+        var tl = null;
+
+        function setOff() {
+          if (tl) tl.kill();
+          gsap.set(stages, { opacity: 0, y: 26 });
+          gsap.set(emojis, { scale: 1 });
+          gsap.set(arrows, { opacity: 0, scale: 0.3 });
+          gsap.set(beams, { width: '0%' });
+        }
+
+        function growStage(i, at) {
+          var s = stages[i];
+          tl.fromTo(s, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.42, ease: 'back.out(1.8)' }, at);
+          tl.to(beams[i], { width: AP_BEAM_PCT[i] + '%', duration: 0.6, ease: 'power2.out' }, at + 0.12);
+          if (i === 0) {
+            tl.fromTo(emojis[0], { scale: 1.15 }, { scale: 1, duration: 0.4, ease: 'back.out(2)' }, at + 0.05);
+          } else {
+            // the same thing grows up from its old small size to its new bigger size
+            tl.fromTo(emojis[i], { scale: 0.4 }, { scale: 1, duration: 0.7, ease: 'elastic.out(1, 0.55)' }, at + 0.12);
+            tl.fromTo(arrows[i - 1], { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' }, at + 0.1);
+          }
+        }
+
+        function cardPlay(onDone) {
+          setOff();
+          tl = gsap.timeline({ onComplete: onDone });
+          growStage(0, 0);
+          tl.call(function () { status.textContent = msgs[0]; }, null, 0.5);
+          growStage(1, 0.95);
+          tl.call(function () { status.textContent = msgs[1]; }, null, 1.5);
+          growStage(2, 2.1);
+          tl.call(function () { status.textContent = msgs[2]; }, null, 2.7);
+          tl.to(emojis[2], { scale: 1.1, yoyo: true, repeat: 3, duration: 0.22, ease: 'power1.inOut' }, 3.05);
+        }
+
+        players[cardId] = cardPlay;
+        setOff();
+      });
+
+      function playAll() {
+        if (playing || Object.keys(players).length === 0) return;
+        playing = true;
+        playBtn.disabled = true;
+        var left = Object.keys(players).length;
+        Object.keys(players).forEach(function (code) {
+          players[code](function () {
+            left--;
+            if (left === 0) {
+              playing = false;
+              playBtn.disabled = false;
+            }
+          });
+        });
+      }
+
+      playBtn.addEventListener('click', playAll);
+
+      var autoPlayed = false;
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting && !autoPlayed) {
+              autoPlayed = true;
+              playAll();
+            }
+          });
+        }, { threshold: 0.3 });
+        io.observe(wrap);
+      }
+    }
+
     // ============ Init on load ============
     document.addEventListener('DOMContentLoaded', function () {
       buildRace();
+      initAgeProgression();
       var chart2 = buildGrowthChart({ id: 'chartX2', mult: 2, emoji: '🍎', cls: 'gc-x2' });
       var chart3 = buildGrowthChart({ id: 'chartX3', mult: 3, emoji: '🚗', cls: 'gc-x3' });
       var chart4 = buildGrowthChart({ id: 'chartX4', mult: 4, emoji: '🐶', cls: 'gc-x4' });
