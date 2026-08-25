@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Diamond Ratio Game!</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ============ Diamond Ratio Game Specific Styles ============ */
+    .game-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%);
+      border-left: 6px solid #9C27B0;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .game-intro p {
+      margin-bottom: 0.5rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .game-intro p:last-child { margin-bottom: 0; }
+
+    /* How to Play instructions */
+    .howto {
+      background: var(--color-bg);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .howto-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--color-primary-dark);
+    }
+    .howto-steps {
+      list-style: none;
+      counter-reset: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      padding-left: 0;
+    }
+    .howto-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .step-num {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-primary);
+      color: #fff;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-top: 0.15rem;
+    }
+    .howto-tips {
+      margin-top: 1.25rem;
+      background: var(--color-bg-tone);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.25rem;
+      font-size: 1.05rem;
+      color: var(--color-text-light);
+    }
+
+    /* Score bar */
+    .score-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 900px;
+      margin: 0 auto 1.25rem auto;
+    }
+    .score-chip {
+      background: var(--color-bg);
+      border: 2px solid var(--color-border);
+      border-radius: 999px;
+      padding: 0.5rem 1.4rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+    }
+    .score-chip span { color: var(--color-primary-dark); }
+
+    /* Target ratio banner */
+    .target-banner {
+      max-width: 900px;
+      margin: 0 auto 1rem auto;
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+      border: 3px dashed var(--color-yellow);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .target-banner h2 {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--color-text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.5rem;
+    }
+    .target-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
+    .target-part {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: 0.35rem 0.9rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .target-part .mini-gem { width: 34px; height: 34px; }
+    .target-colon { font-size: 2rem; color: var(--color-text-light); }
+
+    /* Live counters */
+    .counters {
+      max-width: 900px;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .counter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--color-bg-tone);
+      border-radius: 999px;
+      padding: 0.35rem 1.1rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .counter-chip .mini-gem { width: 24px; height: 24px; }
+    .counter-chip.done {
+      background: #C8E6C9;
+      transform: scale(1.06);
+    }
+
+    /* Game board */
+    #board {
+      position: relative;
+      max-width: 900px;
+      height: 540px;
+      margin: 0 auto;
+      background: linear-gradient(160deg, #EDE7F6 0%, #E3F2FD 55%, #E8F5E9 100%);
+      border: 3px solid #B39DDB;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      touch-action: manipulation;
+    }
+
+    .diamond {
+      position: absolute;
+      width: 58px;
+      height: 58px;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .diamond svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.18));
+    }
+    .diamond:hover { transform: scale(1.15); }
+    .diamond.selected { transform: scale(1.28); z-index: 5; }
+    .diamond.selected svg {
+      filter: drop-shadow(0 0 10px rgba(255, 235, 59, 0.95))
+              drop-shadow(0 0 18px rgba(255, 235, 59, 0.6));
+    }
+    .diamond.not-needed { opacity: 0.45; }
+    .diamond.not-needed:hover { opacity: 0.75; }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-12deg) scale(1.1); }
+      75% { transform: rotate(12deg) scale(1.1); }
+    }
+    .diamond.wiggle { animation: wiggle 0.35s ease; }
+
+    @keyframes popOut {
+      0% { transform: scale(1.28); opacity: 1; }
+      50% { transform: scale(1.7) rotate(20deg); opacity: 1; }
+      100% { transform: scale(0) rotate(-90deg); opacity: 0; }
+    }
+    .diamond.pop { animation: popOut 0.45s ease forwards; pointer-events: none; }
+
+    /* Confetti sparkles */
+    .sparkle {
+      position: absolute;
+      font-size: 1.6rem;
+      pointer-events: none;
+      z-index: 20;
+      animation: sparkleFly 0.9s ease-out forwards;
+    }
+    @keyframes sparkleFly {
+      0% { transform: translate(0, 0) scale(0.6); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(1.4) rotate(200deg); opacity: 0; }
+    }
+
+    /* Game over overlay */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 32, 44, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+    #overlay.show { display: flex; }
+    .overlay-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 3rem;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+      animation: overlayIn 0.4s ease;
+    }
+    @keyframes overlayIn {
+      from { transform: translateY(30px) scale(0.9); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .overlay-card .big-emoji { font-size: 4rem; margin-bottom: 0.5rem; }
+    .overlay-card h2 { font-size: 1.9rem; margin-bottom: 0.5rem; }
+    .overlay-card p {
+      color: var(--color-text-light);
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .overlay-card p strong { color: var(--color-primary-dark); font-size: 1.5rem; }
+
+    .btn-restart {
+      display: inline-block;
+      background: var(--color-primary);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 999px;
+      padding: 0.8rem 2.2rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-restart:hover { background: var(--color-primary-dark); transform: scale(1.05); }
+
+    @media (max-width: 720px) {
+      #board { height: 420px; }
+      .diamond { width: 46px; height: 46px; }
+      .target-line { font-size: 1.35rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page5b.html">Ratio</a></li>
+        <li><a href="page5c.html" class="active">Diamond Game</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="index.html">More&hellip;</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section section-gray">
+      <div class="section-container">
+        <div class="game-intro">
+          <p>💎 <strong>Diamond Ratio Game!</strong> Look at the target ratio &mdash; for example <strong>1 green : 2 red</strong>. Tap exactly 1 green diamond and 2 red diamonds anywhere on the board. Position doesn't matter, only the ratio!</p>
+          <p>If you match it, the diamonds disappear with a sparkle and you get a point, then a brand-new ratio appears. Keep going until the board can't make the ratio anymore&hellip; then the game is over! 🎮</p>
+        </div>
+
+        <!-- How to Play -->
+        <div class="howto">
+          <h2 class="howto-title">📖 How to Play</h2>
+          <ol class="howto-steps">
+            <li><span class="step-num">1</span> Look at the yellow banner &mdash; it shows the <strong>target ratio</strong>, for example <strong>1 🟢 green : 2 🔴 red</strong>.</li>
+            <li><span class="step-num">2</span> <strong>Tap</strong> that exact number of each colored diamond &mdash; anywhere on the board! Where they are doesn't matter, only how many of each color.</li>
+            <li><span class="step-num">3</span> Watch the counters under the banner (like <em>Red: 1/2</em>) &mdash; when both turn green ✓ you've done it!</li>
+            <li><span class="step-num">4</span> Matched diamonds pop away with sparkles ✨ and you win <strong>+1 point</strong>. A brand-new random ratio appears right away!</li>
+            <li><span class="step-num">5</span> Keep playing round after round. When there aren't enough diamonds left to make any ratio&hellip; <strong>Game Over!</strong> See how many points you can score! 🏆</li>
+          </ol>
+          <p class="howto-tips">💡 <strong>Tips:</strong> Tap a selected diamond again to un-select it. Diamonds in colors you don't need look faded &mdash; ignore them! If you tap too many of one color, nothing bad happens, it just wiggles.</p>
+        </div>
+
+        <!-- Score bar -->
+        <div class="score-bar">
+          <div class="score-chip">⭐ Points: <span id="score">0</span></div>
+          <div class="score-chip">🏆 Best: <span id="best">0</span></div>
+          <div class="score-chip">💎 Diamonds left: <span id="left">0</span></div>
+          <button class="btn-restart" id="restartBtnTop" type="button">🔄 Restart</button>
+        </div>
+
+        <!-- Target ratio -->
+        <div class="target-banner">
+          <h2>🎯 Collect this ratio</h2>
+          <div class="target-line" id="targetLine"></div>
+        </div>
+
+        <!-- Live selection counters -->
+        <div class="counters" id="counters"></div>
+
+        <!-- Board -->
+        <div id="board"></div>
+
+        <p style="text-align:center; margin-top:1.25rem;">
+          <a href="index.html" class="card-btn">&larr; Back to Home</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Game Over Overlay -->
+  <div id="overlay">
+    <div class="overlay-card">
+      <div class="big-emoji" id="overlayEmoji">🎉</div>
+      <h2>Game Over!</h2>
+      <p>No more diamonds can make the ratio.<br>You collected <strong id="finalScore">0</strong> points!</p>
+      <button class="btn-restart" id="restartBtn" type="button">▶️ Play Again</button>
+    </div>
+  </div>
+
+  <!-- App Footer -->
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    'use strict';
+
+    // ================= Configuration =================
+    const MAX_RATIO_PART = 5;   // ratio parts range from 1..5
+    const BOARD_COLS = 9;
+    const BOARD_ROWS = 5;
+
+    const COLORS = [
+      { name: 'green',  label: 'Green',  fill: '#4CAF50', dark: '#2E7D32' },
+      { name: 'red',    label: 'Red',    fill: '#EF5350', dark: '#B71C1C' },
+      { name: 'blue',   label: 'Blue',   fill: '#42A5F5', dark: '#1565C0' },
+      { name: 'gold',   label: 'Gold',   fill: '#FFCA28', dark: '#F57F17' },
+      { name: 'purple', label: 'Purple', fill: '#AB47BC', dark: '#6A1B9A' }
+    ];
+
+    // ================= State =================
+    const boardEl = document.getElementById('board');
+    const targetLineEl = document.getElementById('targetLine');
+    const countersEl = document.getElementById('counters');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const leftEl = document.getElementById('left');
+    const overlayEl = document.getElementById('overlay');
+    const finalScoreEl = document.getElementById('finalScore');
+    const overlayEmojiEl = document.getElementById('overlayEmoji');
+
+    let diamonds = [];        // {id, color, el}
+    let target = null;        // {a, b, colorA, colorB}
+    let selectedIds = new Set();
+    let score = 0;
+    let best = 0;
+    let nextId = 0;
+    let busy = false;         // blocks input during win animation
+
+    // ================= Helpers =================
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function gemSVG(color, cls) {
+      return '<svg class="' + (cls || '') + '" viewBox="0 0 100 100" aria-hidden="true">' +
+        '<polygon points="50,6 94,50 50,94 6,50" fill="' + color.fill +
+        '" stroke="' + color.dark + '" stroke-width="5" stroke-linejoin="round"/>' +
+        '<polyline points="28,50 50,28 72,50 50,72" fill="none" stroke="#FFFFFF"' +
+        ' stroke-opacity="0.55" stroke-width="4" stroke-linejoin="round"/>' +
+        '</svg>';
+    }
+
+    function countByColor(colorIdx) {
+      return diamonds.filter(d => d.color === colorIdx).length;
+    }
+
+    function updateLeftCounter() {
+      leftEl.textContent = diamonds.length;
+    }
+
+    // ================= Board setup =================
+    function buildBoard() {
+      boardEl.innerHTML = '';
+      diamonds = [];
+      nextId = 0;
+
+      const total = BOARD_COLS * BOARD_ROWS;
+      // Give every color a solid base amount, then scatter the rest randomly,
+      // so each color usually has enough for a few rounds.
+      const colorPool = [];
+      COLORS.forEach((c, idx) => {
+        for (let i = 0; i < 6; i++) colorPool.push(idx);   // base: 6 each = 30
+      });
+      while (colorPool.length < total) {
+        colorPool.push(randInt(0, COLORS.length - 1));      // extra random
+      }
+      const pool = shuffle(colorPool);
+
+      let p = 0;
+      for (let row = 0; row < BOARD_ROWS; row++) {
+        for (let col = 0; col < BOARD_COLS; col++) {
+          const colorIdx = pool[p++];
+          const cellW = 100 / BOARD_COLS;
+          const cellH = 100 / BOARD_ROWS;
+          // Random jitter inside each grid cell keeps diamonds scattered
+          // but never overlapping.
+          const x = col * cellW + cellW * (0.15 + Math.random() * 0.35);
+          const y = row * cellH + cellH * (0.15 + Math.random() * 0.35);
+
+          const el = document.createElement('div');
+          el.className = 'diamond';
+          el.style.left = x + '%';
+          el.style.top = y + '%';
+          el.innerHTML = gemSVG(COLORS[colorIdx]);
+          // Capture this diamond's id NOW (const), otherwise the closure would
+          // see the final value of nextId for every diamond.
+          const id = nextId;
+          el.addEventListener('click', () => onDiamondClick(id));
+          boardEl.appendChild(el);
+
+          diamonds.push({ id, color: colorIdx, el });
+          nextId++;
+        }
+      }
+      updateLeftCounter();
+    }
+
+    // ================= Round / target ratio =================
+    function startRound() {
+      selectedIds.clear();
+
+      // Gather ALL feasible targets (two different colors, parts 1..MAX_RATIO_PART)
+      const options = [];
+      for (let ca = 0; ca < COLORS.length; ca++) {
+        for (let cb = 0; cb < COLORS.length; cb++) {
+          if (ca === cb) continue;
+          const nA = countByColor(ca);
+          const nB = countByColor(cb);
+          for (let a = 1; a <= MAX_RATIO_PART; a++) {
+            for (let b = 1; b <= MAX_RATIO_PART; b++) {
+              if (nA >= a && nB >= b) {
+                options.push({ a, b, colorA: ca, colorB: cb });
+              }
+            }
+          }
+        }
+      }
+
+      if (options.length === 0) {
+        endGame();
+        return;
+      }
+      target = options[randInt(0, options.length - 1)];
+      renderTarget();
+      renderCounters();
+      updateDimming();
+    }
+
+    function renderTarget() {
+      const ca = COLORS[target.colorA];
+      const cb = COLORS[target.colorB];
+      targetLineEl.innerHTML =
+        '<span class="target-part">' + gemSVG(ca, 'mini-gem') + ' ' + target.a + '</span>' +
+        '<span class="target-colon">:</span>' +
+        '<span class="target-part">' + gemSVG(cb, 'mini-gem') + ' ' + target.b + '</span>';
+    }
+
+    function renderCounters() {
+      const ca = COLORS[target.colorA];
+      const cb = COLORS[target.colorB];
+      countersEl.innerHTML =
+        counterHTML(ca, countSelected(target.colorA), target.a) +
+        counterHTML(cb, countSelected(target.colorB), target.b);
+    }
+
+    function counterHTML(color, have, need) {
+      return '<span class="counter-chip ' + (have >= need ? 'done' : '') + '">' +
+        gemSVG(color, 'mini-gem') + ' ' + color.label + ': ' + have + '/' + need +
+        '</span>';
+    }
+
+    function updateDimming() {
+      diamonds.forEach(d => {
+        const needed = d.color === target.colorA || d.color === target.colorB;
+        d.el.classList.toggle('not-needed', !needed);
+      });
+    }
+
+    function countSelected(colorIdx) {
+      let n = 0;
+      diamonds.forEach(d => {
+        if (selectedIds.has(d.id) && d.color === colorIdx) n++;
+      });
+      return n;
+    }
+
+    // ================= Interaction =================
+    function onDiamondClick(id) {
+      if (busy || !target) return;
+      const d = diamonds.find(x => x.id === id);
+      if (!d) return;
+
+      // Deselect on second tap
+      if (selectedIds.has(id)) {
+        selectedIds.delete(id);
+        d.el.classList.remove('selected');
+        renderCounters();
+        return;
+      }
+
+      const isA = d.color === target.colorA;
+      const isB = d.color === target.colorB;
+      if (!isA && !isB) {           // wrong color entirely -> friendly wiggle
+        wiggle(d.el);
+        return;
+      }
+      const need = isA ? target.a : target.b;
+      if (countSelected(d.color) >= need) {  // already picked enough of this color
+        wiggle(d.el);
+        return;
+      }
+
+      selectedIds.add(id);
+      d.el.classList.add('selected');
+      renderCounters();
+
+      // Win check
+      if (countSelected(target.colorA) === target.a &&
+          countSelected(target.colorB) === target.b) {
+        winRound();
+      }
+    }
+
+    function wiggle(el) {
+      el.classList.remove('wiggle');
+      void el.offsetWidth; // restart animation
+      el.classList.add('wiggle');
+      setTimeout(() => el.classList.remove('wiggle'), 400);
+    }
+
+    function winRound() {
+      busy = true;
+      score++;
+      scoreEl.textContent = score;
+      if (score > best) {
+        best = score;
+        bestEl.textContent = best;
+      }
+
+      // Sparkle confetti + pop animation on every matched diamond
+      diamonds.forEach(d => {
+        if (!selectedIds.has(d.id)) return;
+        spawnSparkles(d.el);
+        setTimeout(() => d.el.classList.add('pop'), 120);
+      });
+
+      // Remove matched diamonds after the pop animation, then next round
+      setTimeout(() => {
+        diamonds = diamonds.filter(d => {
+          if (selectedIds.has(d.id)) {
+            d.el.remove();
+            return false;
+          }
+          return true;
+        });
+        updateLeftCounter();
+        selectedIds.clear();
+        busy = false;
+
+        if (diamonds.length < 2) {
+          endGame();
+        } else {
+          startRound();   // may itself call endGame if nothing is feasible
+        }
+      }, 650);
+    }
+
+    function spawnSparkles(el) {
+      const cx = parseFloat(el.style.left);
+      const cy = parseFloat(el.style.top);
+      for (let i = 0; i < 6; i++) {
+        const s = document.createElement('span');
+        s.className = 'sparkle';
+        s.textContent = ['✨', '⭐', '💎'][randInt(0, 2)];
+        s.style.left = cx + '%';
+        s.style.top = cy + '%';
+        s.style.setProperty('--dx', randInt(-70, 70) + 'px');
+        s.style.setProperty('--dy', randInt(-80, 40) + 'px');
+        boardEl.appendChild(s);
+        setTimeout(() => s.remove(), 950);
+      }
+    }
+
+    // ================= Game over / restart =================
+    function endGame() {
+      target = null;
+      busy = true;
+      finalScoreEl.textContent = score;
+      overlayEmojiEl.textContent = score >= 10 ? '🏆' : (score >= 5 ? '🎉' : '💪');
+      overlayEl.classList.add('show');
+    }
+
+    function restart() {
+      score = 0;
+      scoreEl.textContent = '0';
+      overlayEl.classList.remove('show');
+      busy = false;
+      buildBoard();
+      startRound();
+    }
+
+    document.getElementById('restartBtn').addEventListener('click', restart);
+    document.getElementById('restartBtnTop').addEventListener('click', restart);
+
+    // ================= Go! =================
+    buildBoard();
+    startRound();
+  </script>
+</body>
+</html>
+
+
+
+

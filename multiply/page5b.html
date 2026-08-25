@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Ratios: Rectangle A vs Rectangle B</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Intro ============ */
+    .ratio-intro {
+      background: linear-gradient(135deg, #F3E5F5 0%, #FFF8E1 100%);
+      border-left: 6px solid #8E24AA;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .ratio-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .ratio-intro p:last-child { margin-bottom: 0; }
+
+    .explain-box {
+      background: #fff;
+      border-left: 5px solid #8E24AA;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      margin: 1rem 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .explain-box p { margin-bottom: 0.5rem; font-size: 1.05rem; line-height: 1.6; }
+    .explain-box p:last-child { margin-bottom: 0; }
+
+    .highlight {
+      background: #FFF3E0;
+      color: #E65100;
+      padding: 0.1rem 0.45rem;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+
+    /* ============ Ratio Chooser ============ */
+    .ratio-chooser {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .ratio-choice-btn {
+      padding: 0.7rem 1.6rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      border: 3px solid #CE93D8;
+      background: white;
+      color: #6A1B9A;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ratio-choice-btn:hover { transform: translateY(-3px); background: #F3E5F5; }
+    .ratio-choice-btn.active {
+      background: linear-gradient(135deg, #AB47BC, #6A1B9A);
+      border-color: #6A1B9A;
+      color: white;
+      box-shadow: 0 4px 12px rgba(106, 27, 154, 0.35);
+      transform: scale(1.05);
+    }
+
+    .btn-play-ratio {
+      padding: 0.7rem 1.8rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #AB47BC, #6A1B9A);
+      color: white;
+      box-shadow: 0 4px 12px rgba(106, 27, 154, 0.3);
+      transition: all 0.2s ease;
+    }
+    .btn-play-ratio:hover:not(:disabled) { transform: translateY(-3px) scale(1.05); }
+    .btn-play-ratio:disabled { opacity: 0.5; cursor: default; transform: none !important; }
+
+    /* ============ Rectangle Stage ============ */
+    .rect-stage {
+      position: relative;
+      background: linear-gradient(180deg, #EDE7F6 0%, #E8F5E9 100%);
+      border: 3px solid #D1C4E9;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 1rem 0;
+      margin: 1.25rem 0 0.75rem;
+      overflow: hidden;
+    }
+
+    .rect-row {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 4.5rem;
+    }
+
+    .rect-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .rect-name {
+      font-weight: 800;
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+    }
+    .rect-name.a { color: #5E35B1; }
+    .rect-name.b { color: #EF6C00; }
+
+    .rect-height-label {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--color-text);
+      background: rgba(255,255,255,0.9);
+      padding: 0.15rem 0.8rem;
+      border-radius: 30px;
+      margin-bottom: 0.6rem;
+      min-width: 90px;
+      text-align: center;
+    }
+    .rect-height-label.a { color: #5E35B1; }
+    .rect-height-label.b { color: #EF6C00; }
+
+    .rect-stack {
+      width: 160px;
+      display: flex;
+      flex-direction: column-reverse;   /* first block sits at the bottom */
+      border-radius: 12px 12px 0 0;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    }
+
+    .unit-block {
+      width: 100%;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.95);
+      box-sizing: border-box;
+    }
+    .unit-block.a {
+      background: linear-gradient(180deg, #7E57C2, #5E35B1);
+      border-top: 3px solid #4527A0;
+    }
+    .unit-block.b {
+      background: linear-gradient(180deg, #FFB74D, #F57C00);
+      border-top: 3px solid #E65100;
+    }
+
+    .ground-line {
+      height: 8px;
+      margin-top: 0;
+      background: linear-gradient(90deg, #8D6E63, #A1887F, #8D6E63);
+      border-radius: 4px 4px 0 0;
+    }
+
+    .stage-caption {
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+      margin-top: 0.75rem;
+    }
+
+    /* ============ Equation Display ============ */
+    .ratio-equation-box {
+      background: white;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin: 1rem auto 0.25rem;
+      max-width: 560px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .ratio-display-big {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #6A1B9A;
+      margin-bottom: 0.35rem;
+    }
+    .ratio-equation-line {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+    }
+    /* ============ Apple Scene ============ */
+    .kid-name {
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+    .kid-face {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+    .apple-count-label {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--color-text);
+      background: rgba(255,255,255,0.9);
+      padding: 0.15rem 0.8rem;
+      border-radius: 30px;
+      margin-bottom: 0.5rem;
+      min-width: 100px;
+      text-align: center;
+    }
+    .apple-count-label.aaron { color: #C62828; }
+    .apple-count-label.zana { color: #1565C0; }
+
+    .apple-pile {
+      display: flex;
+      flex-wrap: wrap-reverse;
+      justify-content: center;
+      align-content: flex-end;
+      gap: 0.35rem;
+      min-width: 170px;
+      max-width: 240px;
+      min-height: 80px;
+      padding: 0.6rem;
+      background: rgba(255,255,255,0.75);
+      border-radius: 14px;
+      border: 2px dashed rgba(139, 195, 74, 0.8);
+    }
+    .apple {
+      font-size: 2rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
+    }
+
+    .scale-chooser {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 1rem 0;
+    }
+    /* ============ Quiz ============ */
+    .rate-quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .rate-option {
+      padding: 0.85rem 1rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--color-text);
+    }
+    .rate-option:hover:not(:disabled) {
+      transform: translateY(-3px);
+      border-color: #8E24AA;
+      box-shadow: var(--shadow-sm);
+    }
+    .rate-option.correct {
+      background: #C8E6C9 !important;
+      border-color: #2E7D32 !important;
+      animation: popIn 0.4s ease;
+    }
+    .rate-option.wrong {
+      background: #FFCDD2 !important;
+      border-color: #C62828 !important;
+      animation: shake 0.5s ease;
+    }
+    .rate-result {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 0.9rem 1.2rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .rate-result.show { display: block; animation: fadeIn 0.4s ease; }
+    .rate-result.correct-result {
+      background: #E8F5E9;
+      border-left: 4px solid var(--color-green);
+      color: #2E7D32;
+    }
+    .rate-result.wrong-result {
+      background: #FFEBEE;
+      border-left: 4px solid #C62828;
+      color: #C62828;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .rect-row { gap: 1.75rem; }
+      .rect-stack { width: 110px; }
+      .unit-block { height: 60px; font-size: 1.05rem; }
+      .ratio-display-big { font-size: 1.3rem; }
+      .ratio-choice-btn { padding: 0.55rem 1.15rem; font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="page2.html">Multiply by 3</a></li>
+        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page4.html">Growth</a></li>
+        <li><a href="page5.html">Rate of Change</a></li>
+        <li><a href="page5b.html" class="active">Ratio</a></li>
+        <li><a href="page6.html">Shapes</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>⚖️ Ratios: Rectangle A vs Rectangle B 📏</h2>
+
+      <!-- Intro -->
+      <div class="ratio-intro">
+        <p><strong>What is a ratio?</strong></p>
+        <p>A <strong>ratio</strong> compares two things. We write it with a colon, like <span class="highlight">A : B = 2 : 1</span>, and read it as <em>"two to one"</em>.</p>
+        <p><span class="highlight">2 : 1</span> means: <strong>Rectangle A is 2 times as big as Rectangle B</strong>. In multiplication words:</p>
+        <p style="text-align:center; font-size:1.3rem;"><strong>A = 2 × B</strong> ✨</p>
+      </div>
+
+      <!-- ============ INTERACTIVE SCENE ============ -->
+      <section>
+        <h3>🎮 Try It: Change the Ratio!</h3>
+
+        <div class="explain-box">
+          <p>Pick a ratio below and watch what happens: <strong>Rectangle B stays 1 unit tall</strong>, while <strong>Rectangle A grows to match the first number of the ratio</strong>.</p>
+          <p>That's the secret of ratios — A is always <span class="highlight">the first number × B</span>!</p>
+        </div>
+
+        <!-- Ratio chooser -->
+        <div class="ratio-chooser" id="rectChooser">
+          <button class="ratio-choice-btn active" data-ratio="2" onclick="selectRatio(2)">2 : 1</button>
+          <button class="ratio-choice-btn" data-ratio="3" onclick="selectRatio(3)">3 : 1</button>
+          <button class="ratio-choice-btn" data-ratio="4" onclick="selectRatio(4)">4 : 1</button>
+          <button class="btn-play-ratio" id="playBtn">▶️ Animate Again!</button>
+        </div>
+
+        <!-- The stage: Rectangle A vs Rectangle B -->
+        <div class="rect-stage">
+          <div class="rect-row">
+            <!-- Rectangle A -->
+            <div class="rect-group">
+              <div class="rect-name a">Rectangle A (purple)</div>
+              <div class="rect-height-label a" id="labelA">0 units</div>
+              <div class="rect-stack" id="stackA"></div>
+            </div>
+            <!-- Rectangle B -->
+            <div class="rect-group">
+              <div class="rect-name b">Rectangle B (orange)</div>
+              <div class="rect-height-label b" id="labelB">0 units</div>
+              <div class="rect-stack" id="stackB"></div>
+            </div>
+          </div>
+          <div class="ground-line"></div>
+          <p class="stage-caption">Both rectangles sit on the same ground line — compare their heights! 👀</p>
+        </div>
+
+        <!-- Equation box -->
+        <div class="ratio-equation-box">
+          <div class="ratio-display-big" id="bigDisplay">A : B = 2 : 1</div>
+          <div class="ratio-equation-line" id="equationLine">&nbsp;</div>
+        </div>
+      </section>
+
+      <!-- ============ APPLE SCENE: AARON VS ZANA ============ -->
+      <section>
+        <h3>🍎 Apples: Aaron vs Zana</h3>
+
+        <div class="explain-box">
+          <p>👦 Aaron and 👧 Zana pick apples in a ratio of <span class="highlight">Aaron : Zana = 2 : 1</span>.</p>
+          <p>That means: <strong>for every 1 apple Zana has, Aaron has 2</strong>. In multiplication words:</p>
+          <p style="text-align:center; font-size:1.3rem;"><strong>Aaron's apples = 2 × Zana's apples</strong> 🍎🍎 per 🍎</p>
+          <p>Now watch the magic of ratios: choose how many apples <strong>Zana</strong> has — the ratio never changes, so Aaron always gets <strong>2 × more</strong>! ✨</p>
+        </div>
+
+        <!-- Scale chooser -->
+        <div class="scale-chooser">
+          <span style="font-weight:700;">Zana has:</span>
+          <button class="ratio-choice-btn active" data-scale="1" onclick="selectScale(1)">1 🍎</button>
+          <button class="ratio-choice-btn" data-scale="2" onclick="selectScale(2)">2 🍎</button>
+          <button class="ratio-choice-btn" data-scale="3" onclick="selectScale(3)">3 🍎</button>
+          <button class="ratio-choice-btn" data-scale="4" onclick="selectScale(4)">4 🍎</button>
+          <button class="ratio-choice-btn" data-scale="5" onclick="selectScale(5)">5 🍎</button>
+          <button class="btn-play-ratio" id="applePlayBtn">▶️ Animate Again!</button>
+        </div>
+
+        <!-- The stage -->
+        <div class="rect-stage">
+          <div class="rect-row">
+            <!-- Aaron -->
+            <div class="rect-group">
+              <div class="kid-face">👦</div>
+              <div class="kid-name" style="color:#C62828;">Aaron</div>
+              <div class="apple-count-label aaron" id="appleLabelA">0 apples</div>
+              <div class="apple-pile" id="pileA"></div>
+            </div>
+            <!-- Zana -->
+            <div class="rect-group">
+              <div class="kid-face">👧</div>
+              <div class="kid-name" style="color:#1565C0;">Zana</div>
+              <div class="apple-count-label zana" id="appleLabelB">0 apples</div>
+              <div class="apple-pile" id="pileB"></div>
+            </div>
+          </div>
+          <p class="stage-caption">For every 1 apple in Zana's basket, 2 apples appear in Aaron's! 👀</p>
+        </div>
+
+        <!-- Equation box -->
+        <div class="ratio-equation-box">
+          <div class="ratio-display-big" id="appleBigDisplay">Aaron : Zana = 2 : 1</div>
+          <div class="ratio-equation-line" id="appleEquationLine">&nbsp;</div>
+        </div>
+      </section>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="quiz-section">
+        <h3>🧠 Ratio Quiz!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Rectangle B is always 1 unit tall. Can you work out Rectangle A?</p>
+
+        <!-- Q1 -->
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ 📏 If A : B = 2 : 1, how many times as big as B is Rectangle A?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq1', false)">1 time</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq1', true)">2 times</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq1', false)">3 times</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq1', false)">4 times</button>
+          </div>
+          <div id="rq1result" class="rate-result"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ 🟪 If A : B = 2 : 1 and B is 1 unit tall, how tall is A?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq2', false)">1 unit</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq2', false)">3 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq2', true)">2 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq2', false)">4 units</button>
+          </div>
+          <div id="rq2result" class="rate-result"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ 🟪 If A : B = 3 : 1 and B is 1 unit tall, how tall is A?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq3', true)">3 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq3', false)">2 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq3', false)">6 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq3', false)">9 units</button>
+          </div>
+          <div id="rq3result" class="rate-result"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ 🟧 If A : B = 4 : 1 and B is 1 unit tall, how tall is A?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq4', false)">5 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq4', false)">3 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq4', true)">4 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq4', false)">8 units</button>
+          </div>
+          <div id="rq4result" class="rate-result"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ 🧠 Rectangle A is 9 units tall and the ratio is A : B = 3 : 1. How tall is B?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq5', false)">27 units (9 × 3)</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq5', true)">3 units (9 ÷ 3)</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq5', false)">6 units</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq5', false)">12 units</button>
+          </div>
+          <div id="rq5result" class="rate-result"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ 🍎 Aaron : Zana = 2 : 1. If Zana has <strong>4 apples</strong>, how many apples does Aaron have?</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq6', false)">2 apples</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq6', false)">6 apples</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq6', true)">8 apples</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq6', false)">4 apples</button>
+          </div>
+          <div id="rq6result" class="rate-result"></div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="quiz-card">
+          <p class="quiz-question">7️⃣ 🧠 If Zana has 5 apples instead of 1, how many does Aaron have? (Ratio stays 2 : 1)</p>
+          <div class="rate-quiz-options">
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq7', true)">10 apples (2 × 5)</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq7', false)">5 apples</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq7', false)">7 apples</button>
+            <button class="rate-option" onclick="checkRatioAnswer(this, 'rq7', false)">25 apples</button>
+          </div>
+          <div id="rq7result" class="rate-result"></div>
+        </div>
+
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Rectangle Ratio Animation ============
+    var currentRatio = 2;
+    var isAnimating = false;
+    var playBtn = document.getElementById('playBtn');
+    var stackA = document.getElementById('stackA');
+    var stackB = document.getElementById('stackB');
+    var labelA = document.getElementById('labelA');
+    var labelB = document.getElementById('labelB');
+    var bigDisplay = document.getElementById('bigDisplay');
+    var equationLine = document.getElementById('equationLine');
+
+    // Build the stacks of unit blocks (first child = bottom block)
+    function buildStacks(ratio) {
+      stackA.innerHTML = '';
+      stackB.innerHTML = '';
+
+      for (var i = 0; i < ratio; i++) {
+        var block = document.createElement('div');
+        block.className = 'unit-block a';
+        block.textContent = i + 1;
+        stackA.appendChild(block);
+      }
+
+      var bBlock = document.createElement('div');
+      bBlock.className = 'unit-block b';
+      bBlock.textContent = '1';
+      stackB.appendChild(bBlock);
+    }
+
+    function playScene() {
+      if (isAnimating) return;
+      isAnimating = true;
+      playBtn.disabled = true;
+
+      buildStacks(currentRatio);
+
+      var aBlocks = stackA.querySelectorAll('.unit-block');
+      var bBlock = stackB.querySelector('.unit-block');
+
+      labelA.textContent = '0 units';
+      labelB.textContent = '0 units';
+      equationLine.innerHTML = '&nbsp;';
+      bigDisplay.textContent = 'A : B = ' + currentRatio + ' : 1';
+
+      gsap.set(aBlocks, { scaleY: 0, transformOrigin: 'bottom' });
+      gsap.set(bBlock, { scaleY: 0, transformOrigin: 'bottom' });
+
+      // Live counter for A's height while its blocks pop in
+      var counterA = { n: 0 };
+
+      var tl = gsap.timeline({
+        onComplete: function() {
+          labelA.textContent = currentRatio + ' unit' + (currentRatio > 1 ? 's' : '');
+          labelB.textContent = '1 unit';
+          equationLine.innerHTML =
+            'A = ' + currentRatio + ' × B &nbsp;&rarr;&nbsp; ' +
+            currentRatio + ' × 1 unit = <strong style="color:#5E35B1;">' +
+            currentRatio + ' unit' + (currentRatio > 1 ? 's' : '') + '</strong>';
+          gsap.from(equationLine, { scale: 0.7, duration: 0.35, ease: 'back.out(2)' });
+          isAnimating = false;
+          playBtn.disabled = false;
+        }
+      });
+
+      // Step 1: Rectangle B grows first — it is our "1"
+      tl.to(bBlock, {
+        scaleY: 1,
+        duration: 0.45,
+        ease: 'back.out(1.5)',
+        onStart: function() { labelB.textContent = '1 unit'; }
+      });
+
+      // Step 2: Rectangle A's blocks pop in one by one, bottom to top
+      tl.to(aBlocks, {
+        scaleY: 1,
+        duration: 0.4,
+        stagger: 0.45,
+        ease: 'back.out(1.5)'
+      }, '+=0.2');
+
+      // Step 3: A's height label counts up in sync with the blocks
+      tl.to(counterA, {
+        n: currentRatio,
+        duration: 0.4 * currentRatio + 0.45 * (currentRatio - 1),
+        ease: 'none',
+        onUpdate: function() {
+          var n = Math.round(counterA.n);
+          labelA.textContent = n + ' unit' + (n === 1 ? '' : 's');
+        }
+      }, '-=' + (0.4 * currentRatio + 0.45 * (currentRatio - 1)));
+    }
+
+    function selectRatio(ratio) {
+      if (isAnimating) return;
+      currentRatio = ratio;
+
+      // Highlight the chosen ratio button
+      document.querySelectorAll('#rectChooser .ratio-choice-btn').forEach(function(btn) {
+        btn.classList.toggle('active', parseInt(btn.getAttribute('data-ratio')) === ratio);
+      });
+
+      playScene();
+    }
+
+    playBtn.addEventListener('click', playScene);
+
+    // Animate once when the page loads
+    window.addEventListener('load', function() {
+      playScene();
+      playApples();
+    });
+
+    // ============ Apple Scene: Aaron vs Zana ============
+    var zanaCount = 1;
+    var applesAnimating = false;
+    var applePlayBtn = document.getElementById('applePlayBtn');
+    var pileA = document.getElementById('pileA');
+    var pileB = document.getElementById('pileB');
+    var appleLabelA = document.getElementById('appleLabelA');
+    var appleLabelB = document.getElementById('appleLabelB');
+    var appleBigDisplay = document.getElementById('appleBigDisplay');
+    var appleEquationLine = document.getElementById('appleEquationLine');
+
+    // Build the two piles of apples
+    function buildApplePiles() {
+      pileA.innerHTML = '';
+      pileB.innerHTML = '';
+
+      for (var i = 0; i < zanaCount; i++) {
+        var a = document.createElement('span');
+        a.className = 'apple';
+        a.textContent = '🍎';
+        pileB.appendChild(a);
+      }
+
+      for (var j = 0; j < 2 * zanaCount; j++) {
+        var b = document.createElement('span');
+        b.className = 'apple';
+        b.textContent = '🍎';
+        pileA.appendChild(b);
+      }
+    }
+
+    function playApples() {
+      if (applesAnimating) return;
+      applesAnimating = true;
+      applePlayBtn.disabled = true;
+
+      buildApplePiles();
+
+      var zanaApples = pileB.querySelectorAll('.apple');
+      var aaronApples = pileA.querySelectorAll('.apple');
+
+      appleLabelA.textContent = '0 apples';
+      appleLabelB.textContent = '0 apples';
+      appleEquationLine.innerHTML = '&nbsp;';
+      appleBigDisplay.textContent = 'Aaron : Zana = 2 : 1';
+
+      gsap.set(zanaApples, { scale: 0, rotation: -90 });
+      gsap.set(aaronApples, { scale: 0, rotation: 90 });
+
+      // Live counter while Aaron's apples pop in
+      var counterA = { n: 0 };
+
+      // Aaron's apples appear in pairs (2 per round), so time it accordingly
+      var aaronDuration = 0.3 + 0.25 * (aaronApples.length - 1);
+      if (zanaApples.length === 0) aaronDuration = 0.5;
+
+      var tl = gsap.timeline({
+        onComplete: function() {
+          var total = 2 * zanaCount;
+          appleLabelA.textContent = total + ' apple' + (total > 1 ? 's' : '');
+          appleLabelB.textContent = zanaCount + ' apple' + (zanaCount > 1 ? 's' : '');
+          appleEquationLine.innerHTML =
+            "Aaron = 2 × Zana &nbsp;&rarr;&nbsp; 2 × " + zanaCount +
+            ' = <strong style="color:#C62828;">' + total +
+            ' apple' + (total > 1 ? 's' : '') + '</strong>';
+          gsap.from(appleEquationLine, { scale: 0.7, duration: 0.35, ease: 'back.out(2)' });
+          applesAnimating = false;
+          applePlayBtn.disabled = false;
+        }
+      });
+
+      // Step 1: Zana's apples drop in one by one
+      tl.to(zanaApples, {
+        scale: 1,
+        rotation: 0,
+        duration: 0.35,
+        stagger: 0.3,
+        ease: 'back.out(2)',
+        onStart: function() { appleLabelB.textContent = zanaCount + ' apple' + (zanaCount > 1 ? 's' : ''); }
+      });
+
+      // Step 2: Aaron's apples pop in (twice as many!)
+      tl.to(aaronApples, {
+        scale: 1,
+        rotation: 0,
+        duration: 0.3,
+        stagger: 0.25,
+        ease: 'back.out(2)'
+      }, '+=0.15');
+
+      // Step 3: count Aaron's apples up in sync with his pile
+      tl.to(counterA, {
+        n: 2 * zanaCount,
+        duration: aaronDuration,
+        ease: 'none',
+        onUpdate: function() {
+          var n = Math.round(counterA.n);
+          appleLabelA.textContent = n + ' apple' + (n === 1 ? '' : 's');
+        }
+      }, '-=' + aaronDuration);
+    }
+
+    function selectScale(n) {
+      if (applesAnimating) return;
+      zanaCount = n;
+
+      // Highlight the chosen scale button
+      document.querySelectorAll('.scale-chooser .ratio-choice-btn').forEach(function(btn) {
+        btn.classList.toggle('active', parseInt(btn.getAttribute('data-scale')) === n);
+      });
+
+      playApples();
+    }
+
+    applePlayBtn.addEventListener('click', playApples);
+
+    // ============ Quiz ============
+    function checkRatioAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.rate-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').includes('true')) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+  </script>
+</body>
+</html>
