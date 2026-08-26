@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - River Crossing I: The Royal Rescue!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ River Crossing Puzzle Styles (page5-specific) ============ */
+    .rc-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #E0F7FA 100%);
+      border-left: 6px solid #0288D1;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .rc-intro p { margin-bottom: 0.75rem; font-size: 1.15rem; line-height: 1.7; }
+    .rc-intro p:last-child { margin-bottom: 0; }
+    .rc-intro .big-idea {
+      font-size: 1.35rem; font-weight: 800; color: #01579B; text-align: center;
+      margin-top: 1rem; background: white; border-radius: var(--radius-md);
+      padding: 1rem; border: 3px solid #B3E5FC;
+    }
+    .rc-rules { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 1.5rem 0 2rem; }
+    .rc-rule {
+      flex: 1; min-width: 220px; max-width: 280px; background: white;
+      border-radius: var(--radius-md); padding: 1rem 1.25rem; text-align: center;
+      box-shadow: var(--shadow-sm); border: 3px solid var(--color-border);
+    }
+    .rc-rule .rc-rule-icon { font-size: 2rem; }
+    .rc-rule h4 { font-size: 1.05rem; margin: 0.35rem 0 0.25rem; color: #0277BD; }
+    .rc-rule p { font-size: 0.95rem; color: var(--color-text-light); line-height: 1.45; }
+
+    .level-picker { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .level-btn {
+      font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      padding: 0.7rem 1.6rem; border-radius: 999px; border: 3px solid var(--color-border);
+      background: white; color: var(--color-text-light); transition: all 0.2s ease;
+    }
+    .level-btn:hover { transform: translateY(-3px); }
+    .level-btn.active { background: var(--color-primary); border-color: var(--color-primary); color: white; box-shadow: var(--shadow-md); }
+
+    .game-panel {
+      background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+      border: 3px solid var(--color-border); padding: 1.5rem; max-width: 980px; margin: 0 auto 3rem;
+    }
+    .hud { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-bottom: 1rem; }
+    .hud-chip {
+      display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 1.1rem;
+      background: var(--color-bg-tone); border-radius: 999px; font-weight: 700; font-size: 1rem;
+      color: var(--color-text-light); border: 2px solid var(--color-border);
+    }
+    .hud-chip b { color: var(--color-primary-dark); font-size: 1.15rem; }
+    .hud-chip.par-chip b { color: #E65100; }
+    /* Board */
+    .board {
+      position: relative; height: 520px; border-radius: var(--radius-md);
+      overflow: hidden; background: #FFF8E1; border: 3px solid #B3E5FC;
+    }
+    .board-sky { position: absolute; left: 0; right: 0; top: 0; height: 13%;
+      background: linear-gradient(180deg, #B3E5FC, #E1F5FE); }
+    .sun { position: absolute; top: 6%; left: 46%; font-size: 2.2rem; animation: rcSpinSlow 24s linear infinite; }
+    @keyframes rcSpinSlow { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+    .cloud { position: absolute; font-size: 1.8rem; opacity: 0.9; animation: rcDrift 38s linear infinite; }
+    .cloud.c1 { top: 3%; } .cloud.c2 { top: 8%; font-size: 1.3rem; animation-delay: -19s; }
+    @keyframes rcDrift { from { left: -10%; } to { left: 105%; } }
+
+    .bank { position: absolute; top: 13%; bottom: 0; width: 31%;
+      background: linear-gradient(180deg, #AED581 0%, #81C784 55%, #66BB6A 100%); }
+    .bank-left { left: 0; } .bank-right { right: 0; }
+    .water { position: absolute; left: 31%; right: 31%; top: 13%; bottom: 0;
+      background: linear-gradient(180deg, #4FC3F7 0%, #0288D1 100%); }
+    .waves { position: absolute; inset: 0; opacity: 0.35;
+      background: repeating-linear-gradient(180deg, transparent 0 26px, rgba(255,255,255,0.55) 26px 29px);
+      animation: rcWaves 6s linear infinite; }
+    @keyframes rcWaves { from { background-position: 0 0; } to { background-position: 0 58px; } }
+    .fish { position: absolute; font-size: 1.3rem; opacity: 0.85; animation: rcFish 9s ease-in-out infinite alternate; }
+    .fish.f1 { bottom: 8%; left: 40%; }
+    .fish.f2 { bottom: 22%; right: 38%; animation-delay: -4s; animation-duration: 11s; }
+    @keyframes rcFish { from { transform: translateX(-14px) scaleX(1); } to { transform: translateX(14px) scaleX(-1); } }
+
+    .dock-label {
+      position: absolute; top: 16%; padding: 0.25rem 0.9rem; border-radius: 999px;
+      background: rgba(255,255,255,0.85); font-weight: 800; font-size: 0.8rem;
+      letter-spacing: 1px; color: #2E7D32; z-index: 5;
+    }
+    .dock-label.left { left: 8%; }
+    .dock-label.right { right: 8%; color: #1565C0; }
+
+    /* Pieces */
+    .piece {
+      position: absolute; width: 76px; z-index: 10; text-align: center; cursor: pointer;
+      user-select: none; -webkit-user-select: none;
+    }
+    .piece .piece-circle {
+      width: 64px; height: 64px; margin: 0 auto; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.92); border: 3px solid transparent;
+      box-shadow: var(--shadow-md); transition: all 0.2s ease;
+    }
+    .piece .glyph { font-size: 44px; line-height: 1; display: block; transform: translateY(-3px); }
+    .piece .tag {
+      display: inline-block; margin-top: 4px; padding: 1px 9px; border-radius: 999px;
+      background: rgba(255,255,255,0.95); font-size: 0.72rem; font-weight: 800; color: var(--color-text-light);
+      box-shadow: var(--shadow-sm); white-space: nowrap;
+    }
+    .piece:hover .piece-circle { transform: translateY(-5px) scale(1.06); }
+    .piece.selected .piece-circle { border-color: #FFC107; background: #FFF9C4;
+      box-shadow: 0 0 0 5px rgba(255,193,7,0.35), var(--shadow-md); transform: translateY(-7px); }
+    .piece.dimmed { opacity: 0.45; cursor: default; }
+
+    /* Raft */
+    .boat { position: absolute; bottom: 7%; width: 190px; height: 110px; z-index: 20; left: 22%; }
+    .boat-riders {
+      position: absolute; left: 0; right: 0; top: -34px; height: 70px;
+      display: flex; align-items: flex-end; justify-content: center; gap: 4px;
+    }
+    .boat-riders .piece { position: relative !important; width: 60px; left: auto !important; top: auto !important; cursor: default; }
+    .boat-riders .piece .piece-circle { width: 54px; height: 54px; box-shadow: var(--shadow-sm); }
+    .boat-riders .piece .glyph { font-size: 36px; }
+    .boat-riders .piece .tag { display: none; }
+    .raft-body { font-size: 84px; line-height: 1; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.18)); text-align: center; }
+    /* Status bar & controls */
+    .status-bar {
+      margin-top: 1rem; padding: 0.9rem 1.25rem; border-radius: var(--radius-md);
+      background: var(--color-primary-light); color: var(--color-primary-dark);
+      font-weight: 700; font-size: 1.08rem; text-align: center; min-height: 3.2rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .status-bar.warn { background: #FFF3E0; color: #BF360C; }
+    .controls-row { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+    .btn {
+      font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      padding: 0.7rem 1.6rem; border-radius: 999px; border: none; transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-sail { background: var(--color-primary); color: white; }
+    .btn-hint { background: #FFF59D; color: #795548; }
+    .btn-solve { background: #CE93D8; color: white; }
+    .btn-reset { background: var(--color-bg-tone); color: var(--color-text-light); border: 2px solid var(--color-border); }
+
+    /* Win overlay */
+    .win-overlay {
+      position: absolute; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center;
+      background: rgba(21,101,192,0.55); backdrop-filter: blur(2px); opacity: 0; pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .win-overlay.show { opacity: 1; pointer-events: auto; }
+    .win-card {
+      background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+      padding: 2rem 2.5rem; text-align: center; max-width: 480px; margin: 1rem;
+      transform: scale(0.7); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .win-overlay.show .win-card { transform: scale(1); }
+    .win-card h3 { font-size: 1.9rem; color: var(--color-primary-dark); margin-bottom: 0.75rem; }
+    .win-card p { font-size: 1.1rem; color: var(--color-text-light); margin-bottom: 1.25rem; }
+    .confetti-bit { position: absolute; top: -20px; width: 12px; height: 12px; border-radius: 3px; z-index: 50; }
+
+    /* Learning section */
+    .learn-section {
+      background: linear-gradient(135deg, #E8F5E9 0%, #E3F2FD 100%);
+      border-radius: var(--radius-lg); border: 3px solid #A5D6A7;
+      padding: 2rem; margin: 0 auto 3rem; max-width: 980px;
+    }
+    .learn-section h2 { text-align: center; color: #1B5E20; margin-bottom: 0.5rem; }
+    .learn-section > p { text-align: center; color: var(--color-text-light); margin-bottom: 1.5rem; font-size: 1.1rem; }
+    .learn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    .learn-card { background: white; border-radius: var(--radius-md); padding: 1.25rem;
+      box-shadow: var(--shadow-sm); border-top: 5px solid #66BB6A; }
+    .learn-card:nth-child(even) { border-top-color: #42A5F5; }
+    .learn-card .learn-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+    .learn-card h4 { font-size: 1.05rem; color: #2E7D32; margin-bottom: 0.3rem; }
+    .learn-card:nth-child(even) h4 { color: #1565C0; }
+    .learn-card p { font-size: 0.95rem; color: var(--color-text-light); line-height: 1.5; }
+
+    @media (max-width: 768px) {
+      .board { height: 460px; }
+      .piece { width: 62px; }
+      .piece .piece-circle { width: 52px; height: 52px; }
+      .piece .glyph { font-size: 34px; }
+      .boat { width: 140px; height: 90px; }
+      .raft-body { font-size: 62px; }
+      .dock-label { font-size: 0.68rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page3.html">Adventure 3</a></li>
+        <li><a href="page4.html">Adventure 4</a></li>
+        <li><a href="page5.html" class="active">Adventure 5</a></li>
+        <li><a href="page6.html">Adventure 6</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>River Crossing I: <span>The Royal Rescue!</span> 👑</h1>
+      <p>The royal chess family is stranded! The King, the Queen and their loyal Pawns must cross the river — but the little raft has <b>very strict rules</b>. Can you find the <b>smartest plan</b> that breaks NO rules?</p>
+    </section>
+
+    <div class="rc-intro">
+      <p>🛶 <b>The story:</b> A chess tournament starts on the far bank — and the whole royal family must get there using <b>one small raft</b>. It carries at most <b>2 pieces</b>, and it can NEVER glide across by itself!</p>
+      <p>🧠 This is a famous <b>logic puzzle</b> that is over 1,000 years old. Your mission is not just to get everyone across — it's to do it in the <b>fewest trips possible</b>. That's called <b>optimization</b>: finding the BEST solution!</p>
+      <div class="big-idea">🎯 Goal: bring EVERY piece safely across — in as few raft trips as possible!</div>
+    </div>
+
+    <div class="rc-rules">
+      <div class="rc-rule"><div class="rc-rule-icon">🛶</div><h4>Raft Capacity</h4><p>The raft holds a <b>maximum of 2 pieces</b> on any single trip.</p></div>
+      <div class="rc-rule"><div class="rc-rule-icon">🚣</div><h4>No Ghost Raft!</h4><p>The raft can't move alone — at least one piece who knows how to <b>row</b> must be aboard.</p></div>
+      <div class="rc-rule"><div class="rc-rule-icon">👑</div><h4>The King's Safety</h4><p>The King can't row, and must <b>never be left alone</b> — on a bank or on the raft — without a loyal follower!</p></div>
+      <div class="rc-rule"><div class="rc-rule-icon">♕</div><h4>The Queen's Rule</h4><p>The Queen CAN row… but only when she is <b>completely alone</b> on the raft. No passengers, ever!</p></div>
+      <div class="rc-rule" style="border-color:#FFB74D;"><div class="rc-rule-icon">♙</div><h4>The Pawn's Rule</h4><p>Pawns are the friendly rowers — they happily paddle <b>alone or with any other piece</b>.</p></div>
+    </div>
+
+    <!-- Game panel -->
+    <div class="game-panel">
+      <div class="level-picker">
+        <button class="level-btn active" id="level1Btn">🌱 Level 1: King, Queen &amp; 2 Pawns</button>
+        <button class="level-btn" id="level2Btn">🔥 Level 2: + 1 more Pawn</button>
+        <button class="level-btn" id="level3Btn">🌋 Level 3: + 1 extra Pawn!</button>
+      </div>
+
+      <div class="hud">
+        <span class="hud-chip">🚣 Trips: <b id="moveCount">0</b></span>
+        <span class="hud-chip par-chip">🎯 Best possible: <b id="parCount">7</b> trips</span>
+      </div>
+
+      <div class="board" id="board">
+        <div class="board-sky">
+          <span class="sun">☀️</span>
+          <span class="cloud c1">☁️</span>
+          <span class="cloud c2">☁️</span>
+        </div>
+        <div class="bank bank-left"></div>
+        <div class="water"><div class="waves"></div>
+          <span class="fish f1">🐟</span>
+          <span class="fish f2">🐠</span>
+        </div>
+        <div class="bank bank-right"></div>
+        <span class="dock-label left">START 🏰</span>
+        <span class="dock-label right">TOURNAMENT ♟️</span>
+        <div class="boat" id="boat">
+          <div class="boat-riders" id="boatRiders"></div>
+          <div class="raft-body">🛶</div>
+        </div>
+        <div class="win-overlay" id="winOverlay">
+          <div class="win-card">
+            <h3 id="winTitle">PERFECT PLAN! ⭐🏆</h3>
+            <p id="winStats"></p>
+            <button class="btn btn-sail" id="playAgainBtn">Play Again 🔁</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-bar" id="statusMsg">Get ALL pieces across! 🏁 Tap a piece (or two!) standing with the raft, then press Sail!</div>
+
+      <div class="controls-row">
+        <button class="btn btn-sail" id="sailBtn">⛵ Sail across!</button>
+        <button class="btn btn-hint" id="hintBtn">💡 Hint</button>
+        <button class="btn btn-solve" id="solveBtn">🪄 Show best plan</button>
+        <button class="btn btn-reset" id="resetBtn">🔄 Reset</button>
+      </div>
+    </div>
+    <!-- Learn section -->
+    <div class="learn-section">
+      <h2>🧠 The Math Behind the River</h2>
+      <p>Why is this a MATH adventure? Because solving it uses real mathematical superpowers:</p>
+      <div class="learn-grid">
+        <div class="learn-card"><div class="learn-icon">🔢</div><h4>Counting trips</h4><p>Level 1 takes <b>7</b> trips, Level 3 takes <b>11</b>. Spot the pattern? Every extra Pawn adds exactly <b>2 trips</b> — predicting patterns is powerful math!</p></div>
+        <div class="learn-card"><div class="learn-icon">📏</div><h4>Lower bounds</h4><p>We checked EVERY possible plan by computer (<b>breadth-first search</b>) and proved no plan can beat 7–9–11. Finding the true best is called optimization!</p></div>
+        <div class="learn-card"><div class="learn-icon">🔎</div><h4>Systematic trying</h4><p>There aren't that many plans! Listing them all is called <b>enumeration</b> — the seed of computer science.</p></div>
+        <div class="learn-card"><div class="learn-icon">↩️</div><h4>Working backwards</h4><p>"Who must row back at the end?" Thinking from the goal backwards cracks many puzzles faster.</p></div>
+        <div class="learn-card"><div class="learn-icon">🗺️</div><h4>State spaces</h4><p>Each arrangement of pieces is a "state"; solving means finding a path of states. That's how GPS and game AI think!</p></div>
+        <div class="learn-card"><div class="learn-icon">💪</div><h4>Resilience</h4><p>A rule-break isn't failure — it's information! "Oops, the King was alone" teaches you what to avoid next try.</p></div>
+      </div>
+      <p style="margin-top:1.5rem;">👪 This puzzle belongs to the same ancient family as <i>wolf–goat–cabbage</i> and the <i>missionaries and cannibals</i> — logic puzzles people have loved for over 1,000 years! Computers solve them using <b>breadth-first search</b>: "try everything systematically" — exactly what smart puzzle-solvers do. Want a twist? Try <a href="page6.html"><b>River Crossing II: The Speedy Knight!</b> 🐴</a> where each piece rows at a different speed.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ River Crossing I — Game Logic ============
+    const LEVELS = {
+      1: {
+        par: 7,
+        pieces: [
+          { id: 'king',  glyph: '♔', name: 'King',  color: '#F4511E', tag: "can't row!" },
+          { id: 'queen', glyph: '♕', name: 'Queen', color: '#AB47BC', tag: 'rows alone' },
+          { id: 'p1',    glyph: '♙', name: 'Pawn 1', color: '#00897B', tag: 'happy rower' },
+          { id: 'p2',    glyph: '♙', name: 'Pawn 2', color: '#EF6C00', tag: 'happy rower' }
+        ],
+        // Optimal: 7 trips (proven minimum by checking every possible plan)
+        solution: [['p1','p2'], ['p1'], ['king','p1'], ['p1'], ['queen'], ['p2'], ['p1','p2']],
+        hints: [
+          "Who can row? Only the Pawns… and the Queen, but ONLY when she's totally alone!",
+          "The poor King can't row at all — he always needs a Pawn to paddle him across.",
+          "Start with BOTH Pawns sailing together. Someone has to row the raft back…",
+          "After the King crosses, his Pawn MUST row back — the King can never be left alone!",
+          "Try: P+P over → P back → K+P over → P back → Queen solo → P over → P+P over. 7 trips!"
+        ]
+      },
+      2: {
+        par: 9,
+        pieces: [
+          { id: 'king',  glyph: '♔', name: 'King',  color: '#F4511E', tag: "can't row!" },
+          { id: 'queen', glyph: '♕', name: 'Queen', color: '#AB47BC', tag: 'rows alone' },
+          { id: 'p1',    glyph: '♙', name: 'Pawn 1', color: '#00897B', tag: 'happy rower' },
+          { id: 'p2',    glyph: '♙', name: 'Pawn 2', color: '#EF6C00', tag: 'happy rower' },
+          { id: 'p3',    glyph: '♙', name: 'Pawn 3', color: '#5C6BC0', tag: 'happy rower' }
+        ],
+        // Optimal: 9 trips (proven minimum)
+        solution: [['p1','p2'], ['p1'], ['king','p1'], ['p1'], ['queen'], ['p2'], ['p1','p2'], ['p1'], ['p1','p3']],
+        hints: [
+          "Five pieces need NINE trips — and mathematicians proved nothing fewer works!",
+          "Spot the repeating pattern: the Pawns are ferrymen who shuffle back and forth.",
+          "After the King crosses, his Pawn MUST row straight back — no lonely Kings allowed!",
+          "The Queen sails alone in the MIDDLE of the plan, when both banks stay safe.",
+          "Pattern: P+P over → P back → K+P over → P back → Q solo → P over → P+P over → P back → P+P over. 9!"
+        ]
+      },
+      3: {
+        par: 11,
+        pieces: [
+          { id: 'king',  glyph: '♔', name: 'King',  color: '#F4511E', tag: "can't row!" },
+          { id: 'queen', glyph: '♕', name: 'Queen', color: '#AB47BC', tag: 'rows alone' },
+          { id: 'p1',    glyph: '♙', name: 'Pawn 1', color: '#00897B', tag: 'happy rower' },
+          { id: 'p2',    glyph: '♙', name: 'Pawn 2', color: '#EF6C00', tag: 'happy rower' },
+          { id: 'p3',    glyph: '♙', name: 'Pawn 3', color: '#5C6BC0', tag: 'happy rower' },
+          { id: 'p4',    glyph: '♙', name: 'Pawn 4', color: '#C2185B', tag: 'happy rower' }
+        ],
+        // Optimal: 11 trips (proven minimum) — see the pattern? Each extra pawn adds exactly 2 trips!
+        solution: [['p1','p2'], ['p1'], ['king','p1'], ['p1'], ['queen'], ['p2'], ['p1','p2'], ['p1'], ['p1','p3'], ['p1'], ['p1','p4']],
+        hints: [
+          "Six pieces take ELEVEN trips. Notice: every extra pawn adds exactly 2 more trips!",
+          "Same winning idea: Pawns ferry everyone across one load at a time.",
+          "After EVERY King trip, a Pawn must immediately row back — the King can't be left alone!",
+          "The Queen sails solo right after the King's crossing, while both banks stay safe.",
+          "Keep repeating: P+P over → P back … until only the last pair remains. 11 trips total!"
+        ]
+      }
+    };
+
+    const board = document.getElementById('board');
+    const boatEl = document.getElementById('boat');
+    const boatRiders = document.getElementById('boatRiders');
+    const statusMsg = document.getElementById('statusMsg');
+    const winOverlay = document.getElementById('winOverlay');
+
+    let G = null;      // game state
+    let hintStep = 0;  // cycles through hints
+
+    function setStatus(text, warn) {
+      statusMsg.textContent = text;
+      statusMsg.classList.toggle('warn', !!warn);
+    }
+
+    // Standing spots on each bank: [xPercent, yPercent] — kept clear of the docked raft
+    const SLOT_POS = [[2, 22], [11.5, 36], [2, 50], [11.5, 64], [2, 78], [11.5, 89]];
+
+    function slotPos(side, i) {
+      const p = SLOT_POS[i % SLOT_POS.length];
+      const x = side === 'L' ? p[0] : 100 - p[0] - 9;
+      return { left: x, top: p[1] };
+    }
+
+    function makePieceEl(def) {
+      const el = document.createElement('div');
+      el.className = 'piece';
+      el.dataset.id = def.id;
+      el.innerHTML =
+        '<div class="piece-circle"><span class="glyph" style="color:' + def.color + '">' + def.glyph + '</span></div>' +
+        '<span class="tag">' + def.name + ' · ' + def.tag + '</span>';
+      el.addEventListener('click', () => onPieceClick(def.id));
+      return el;
+    }
+
+    function isPawn(id) { return id.charAt(0) === 'p'; }
+
+    function newGame(level) {
+      const L = LEVELS[level];
+      document.querySelectorAll('.piece').forEach(p => p.remove());
+      boatRiders.innerHTML = '';
+      winOverlay.classList.remove('show');
+
+      G = {
+        level, par: L.par, solution: L.solution,
+        pieces: {}, side: {}, sel: [], boat: 'L', moves: 0, busy: false
+      };
+      L.pieces.forEach((def, i) => {
+        G.pieces[def.id] = def;
+        G.side[def.id] = 'L';
+        board.appendChild(makePieceEl(def));
+        placePiece(def.id, i);
+      });
+      dockBoat(true);
+      updateHUD();
+      hintStep = 0;
+      setStatus('Get ALL pieces across! 🏁 Tap a piece (or two!) standing with the raft, then press Sail!');
+    }
+
+    function placePiece(id, slotIdx) {
+      const el = board.querySelector('.piece[data-id="' + id + '"]');
+      if (!el) return;
+      const pos = slotPos(G.side[id], slotIdx);
+      gsap.set(el, { left: pos.left + '%', top: pos.top + '%', xPercent: 0, yPercent: 0, scale: 1 });
+    }
+
+    function layoutAll() {
+      if (!G) return;
+      let li = 0, ri = 0;
+      Object.keys(G.pieces).forEach(id => {
+        if (G.side[id] === 'L') placePiece(id, li++);
+        else placePiece(id, ri++);
+      });
+    }
+
+    function dockBoat(instant) {
+      const targetLeft = G.boat === 'L' ? '22%' : '59%';
+      if (instant) gsap.set(boatEl, { left: targetLeft });
+      else gsap.to(boatEl, { left: targetLeft, duration: 0.5, ease: 'power2.out' });
+      updateDimming();
+    }
+
+    function updateDimming() {
+      document.querySelectorAll('.piece').forEach(el => {
+        const id = el.dataset.id;
+        el.classList.toggle('dimmed', !G.busy && G.side[id] !== G.boat);
+      });
+    }
+
+    function updateHUD() {
+      document.getElementById('moveCount').textContent = G.moves;
+      document.getElementById('parCount').textContent = G.par;
+    }
+
+    function onPieceClick(id) {
+      if (!G || G.busy) return;
+      const i = G.sel.indexOf(id);
+      if (i >= 0) {
+        G.sel.splice(i, 1);
+      } else {
+        if (G.side[id] !== G.boat) { setStatus('That piece is on the other side of the river! Pick one standing with the raft 🛶', true); return; }
+        if (G.sel.length >= 2) { setStatus('Only 2 pieces fit on the raft! Tap a selected piece to unselect it first.', true); return; }
+        G.sel.push(id);
+      }
+      document.querySelectorAll('.piece').forEach(el =>
+        el.classList.toggle('selected', G.sel.includes(el.dataset.id)));
+      setStatus(G.sel.length === 0 ? 'Now pick who sails!' :
+        G.sel.length === 1 ? 'Nice! Add a second passenger (or sail solo — but remember who can row!).' :
+        'Two aboard! Hit ⛵ Sail across!');
+    }
+
+    // ===== Rule checking — the heart of the puzzle =====
+    function checkRules(sel) {
+      const hasKing = sel.includes('king');
+      const hasQueen = sel.includes('queen');
+      const pawnCount = sel.filter(isPawn).length;
+
+      // Rule: Queen must be completely alone on the raft
+      if (hasQueen && sel.length > 1) {
+        return 'ROYAL DECREE! 👑 The Queen must be completely ALONE on the raft — she refuses to share!';
+      }
+      // Rule: no autonomous movement — someone capable must row
+      if (pawnCount === 0 && !hasQueen) {
+        return hasKing
+          ? "Oh no! The raft can't move by itself, and Kings can't row! 👑 Bring a loyal Pawn along 🙇"
+          : 'The raft cannot move by itself — at least one rower must be aboard! 🚣';
+      }
+      // Rule: King's safety ON THE RAFT (mid-river he'd have no loyal follower)
+      if (hasKing && pawnCount === 0) {
+        return 'The King can never be on the raft without a loyal follower! He needs a Pawn beside him 👑';
+      }
+      // Rule: King's safety ON THE BANKS (check both banks AFTER this trip lands)
+      const to = G.boat === 'L' ? 'R' : 'L';
+      const sideAfter = Object.assign({}, G.side);
+      sel.forEach(id => { sideAfter[id] = to; });
+      for (const bank of ['L', 'R']) {
+        const onBank = Object.keys(sideAfter).filter(pid => sideAfter[pid] === bank);
+        if (onBank.includes('king') && onBank.length === 1) {
+          return 'DANGER! 😱 That trip would leave the poor King ALL ALONE on a bank. He must always have a loyal follower with him!';
+        }
+      }
+      return null; // all rules satisfied!
+    }
+
+    function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function pieceElById(id) {
+      return document.querySelector('.piece[data-id="' + id + '"]');
+    }
+
+    async function sailCore(riders) {
+      G.busy = true;
+      G.sel = [];
+      document.querySelectorAll('.piece').forEach(el => el.classList.remove('selected'));
+      updateDimming();
+
+      // 1) Embark: glide riders onto the raft
+      riders.forEach(id => {
+        const el = pieceElById(id);
+        const first = el.getBoundingClientRect();
+        boatRiders.appendChild(el);
+        const last = el.getBoundingClientRect();
+        gsap.fromTo(el, { x: first.left - last.left, y: first.top - last.top },
+          { x: 0, y: 0, duration: 0.45, ease: 'power2.inOut' });
+      });
+      setStatus(riders.map(id => G.pieces[id].name).join(' + ') + ' row across… 🎵');
+      await wait(520);
+
+      // 2) Cross the river (with a gentle rocking animation)
+      const rock = gsap.to(boatEl, { y: '-=5', rotation: -2, duration: 0.35, yoyo: true, repeat: 99, ease: 'sine.inOut' });
+      const destLeft = G.boat === 'L' ? '59%' : '22%';
+      await gsap.to(boatEl, { left: destLeft, duration: 1.1, ease: 'power1.inOut' }).then();
+      rock.kill();
+      gsap.set(boatEl, { y: 0, rotation: 0 });
+
+      // 3) Update state
+      const newSide = G.boat === 'L' ? 'R' : 'L';
+      riders.forEach(id => { G.side[id] = newSide; });
+      G.boat = newSide;
+      G.moves++;
+
+      // 4) Disembark onto the bank slots
+      riders.forEach(id => board.appendChild(pieceElById(id)));
+      layoutAll();
+
+      updateHUD();
+      updateDimming();
+      await wait(500);
+      G.busy = false;
+
+      if (Object.values(G.side).every(s => s === 'R')) win();
+      else {
+        const waiting = Object.values(G.side).filter(s => s !== 'R').length;
+        setStatus('⏳ ' + waiting + ' piece' + (waiting > 1 ? 's' : '') +
+          ' still wait on the other side! The raft MUST be rowed back — pick your sailor(s)! 🛶');
+      }
+    }
+
+    async function attemptSail() {
+      if (!G || G.busy) return;
+      const sel = G.sel.slice();
+      if (sel.length === 0) { setStatus('Tap at least one piece to hop on the raft first! 🛶', true); return; }
+      const brokenRule = checkRules(sel);
+      if (brokenRule) { setStatus(brokenRule, true); return; }
+      await sailCore(sel);
+    }
+
+    function win() {
+      const perfect = G.moves === G.par;
+      document.getElementById('winTitle').textContent =
+        perfect ? 'PERFECT PLAN! ⭐🏆' : 'Everyone made it! 🎉';
+      document.getElementById('winStats').textContent = perfect
+        ? 'You crossed in ' + G.moves + ' trips — that matches the mathematical OPTIMUM of ' + G.par + '! You think like a mathematician!'
+        : 'Everyone crossed safely in ' + G.moves + ' trips. But the best possible plan takes only ' + G.par +
+          '. Can you find it? Try again or press 🪄 Show best plan!';
+      setStatus(perfect ? '🌟 Optimal solution found! Scroll down to see the math behind it.'
+        : 'Solved! But a smarter plan exists — can you do it in ' + G.par + ' trips?', !perfect);
+      winOverlay.classList.add('show');
+      confettiBurst();
+    }
+
+    function confettiBurst() {
+      const colors = ['#1E88E5', '#FFC107', '#4CAF50', '#FF5722', '#AB47BC', '#00ACC1'];
+      for (let i = 0; i < 50; i++) {
+        const bit = document.createElement('div');
+        bit.className = 'confetti-bit';
+        bit.style.left = Math.random() * 100 + '%';
+        bit.style.background = colors[i % colors.length];
+        board.appendChild(bit);
+        gsap.to(bit, {
+          y: board.offsetHeight + 20, x: (Math.random() - 0.5) * 120,
+          rotation: Math.random() * 720, opacity: 0,
+          duration: 2 + Math.random() * 1.5, delay: Math.random() * 0.8,
+          ease: 'power1.in', onComplete: () => bit.remove()
+        });
+      }
+    }
+
+    async function showSolution() {
+      if (!G || G.busy) return;
+      newGame(G.level);
+      G.busy = true;
+      setButtonsDisabled(true);
+      setStatus('Watch closely! 🪄 Here is the fastest legal plan, step by step…');
+      const steps = LEVELS[G.level].solution;
+      for (const step of steps) {
+        step.forEach(id => pieceElById(id).classList.add('selected'));
+        await wait(700);
+        await sailCore(step);
+        G.busy = true; // keep the lock during auto-play
+        await wait(650);
+      }
+      G.busy = false;
+      setButtonsDisabled(false);
+    }
+
+    function setButtonsDisabled(disabled) {
+      ['sailBtn', 'hintBtn', 'solveBtn', 'resetBtn'].forEach(id => {
+        document.getElementById(id).disabled = disabled;
+      });
+    }
+
+    // ============ Wire up controls ============
+    document.getElementById('sailBtn').addEventListener('click', attemptSail);
+
+    document.getElementById('resetBtn').addEventListener('click', () => { if (!G.busy) newGame(G.level); });
+    document.getElementById('playAgainBtn').addEventListener('click', () => newGame(G.level));
+
+    document.getElementById('hintBtn').addEventListener('click', () => {
+      const hints = LEVELS[G.level].hints;
+      setStatus('💡 ' + hints[hintStep % hints.length]);
+      hintStep++;
+    });
+
+    document.getElementById('solveBtn').addEventListener('click', showSolution);
+
+    document.getElementById('level1Btn').addEventListener('click', () => {
+      if (G && G.busy) return;
+      setActiveLevel('level1Btn'); newGame(1);
+    });
+    document.getElementById('level2Btn').addEventListener('click', () => {
+      if (G && G.busy) return;
+      setActiveLevel('level2Btn'); newGame(2);
+    });
+    document.getElementById('level3Btn').addEventListener('click', () => {
+      if (G && G.busy) return;
+      setActiveLevel('level3Btn'); newGame(3);
+    });
+    function setActiveLevel(btnId) {
+      ['level1Btn', 'level2Btn', 'level3Btn'].forEach(id =>
+        document.getElementById(id).classList.toggle('active', id === btnId));
+    }
+
+    window.addEventListener('resize', () => { if (G && !G.busy) layoutAll(); });
+
+    // Start Level 1
+    newGame(1);
+  </script>
+</body>
+</html>

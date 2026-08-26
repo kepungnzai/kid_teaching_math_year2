@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Treasure Hunt Plotting Game!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Treasure Hunt Game Styles ============ */
+
+    body {
+      background: linear-gradient(180deg, #FFF8E1 0%, #E8F5E9 100%);
+    }
+
+    .content-wrapper { max-width: 850px; }
+
+    .game-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .game-header h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #E65100;
+      margin-bottom: 0.5rem;
+    }
+    .game-header p {
+      font-size: 1.15rem;
+      color: var(--color-text-light);
+    }
+
+    /* Score & target banner */
+    .score-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    .score-chip {
+      background: white;
+      border: 3px solid #FFC107;
+      border-radius: 50px;
+      padding: 0.6rem 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #E65100;
+      box-shadow: var(--shadow-sm);
+    }
+    .target-chip {
+      background: linear-gradient(135deg, #8E24AA 0%, #6A1B9A 100%);
+      color: white;
+      border: none;
+      font-size: 1.35rem;
+    }
+    .target-chip span { color: #FFEB3B; }
+
+    /* Board */
+    .game-board {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      text-align: center;
+    }
+    #gridSvg {
+      width: 100%;
+      max-width: 520px;
+      height: auto;
+      touch-action: manipulation;
+    }
+    #gridSvg .cell {
+      fill: #FAFAFA;
+      stroke: #CFD8DC;
+      stroke-width: 1.5;
+      cursor: pointer;
+      transition: fill 0.15s ease;
+    }
+    #gridSvg .cell:hover { fill: #FFF3E0; }
+    #gridSvg .axis-line {
+      stroke: #90A4AE;
+      stroke-width: 3;
+    }
+    #gridSvg .num-label {
+      font-size: 13px;
+      font-weight: 700;
+      fill: #888;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      pointer-events: none;
+    }
+    #gridSvg .axis-caption {
+      font-size: 14px;
+      font-weight: 800;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      pointer-events: none;
+    }
+    #gridSvg .treasure {
+      font-size: 26px;
+      pointer-events: none;
+    }
+    #gridSvg .hint-line {
+      stroke: #FF6F00;
+      stroke-width: 3;
+      stroke-dasharray: 8,6;
+      pointer-events: none;
+    }
+
+    /* Feedback message */
+    .feedback-msg {
+      min-height: 2.6rem;
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      background: #F5F5F5;
+      color: var(--color-text-light);
+    }
+
+    /* Controls */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.25rem;
+    }
+    .btn-game-ui {
+      font-family: var(--cds-font-sans);
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-game-ui:hover { transform: translateY(-3px) scale(1.04); }
+    .btn-hint { background: #FFF3E0; color: #E65100; border: 2px solid #FFB74D !important; }
+    .btn-new { background: #8E24AA; color: white; }
+    .btn-reset { background: #ECEFF1; color: #455A64; }
+
+    /* How to play */
+    .how-to-play {
+      background: linear-gradient(135deg, #E1F5FE 0%, #F3E5F5 100%);
+      border-left: 6px solid #29B6F6;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin: 2.5rem 0 1rem;
+    }
+    .how-to-play h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #0277BD;
+      margin-bottom: 0.75rem;
+    }
+    .how-to-play ol {
+      margin-left: 1.25rem;
+      font-size: 1.08rem;
+      line-height: 1.9;
+    }
+
+    @media (max-width: 768px) {
+      .score-chip { font-size: 1rem; padding: 0.5rem 1.1rem; }
+      .how-to-play { padding: 1.25rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="page3.html" class="back-btn">&larr; Back to Adventure 3</a>
+
+    <div class="game-header" style="margin-top:1.5rem;">
+      <h2>🎯 Treasure Hunt: Find the Point!</h2>
+      <p>A treasure 💎 is hiding somewhere on the grid. Read its coordinate and click the correct square! 🗺️</p>
+    </div>
+
+
+    <!-- Score & target -->
+    <div class="score-row">
+      <div class="score-chip">⭐ Score: <span id="scoreVal">0</span></div>
+      <div class="score-chip target-chip">🎯 Find: <span id="targetText">(?, ?)</span></div>
+    </div>
+
+    <!-- Board -->
+    <div class="game-board">
+      <svg id="gridSvg" viewBox="0 0 500 500" role="img" aria-label="A 10 by 10 grid for finding coordinates"></svg>
+      <div class="feedback-msg" id="feedbackMsg">👆 Click the square where the treasure is hiding!</div>
+
+      <div class="controls-row">
+        <button id="hintBtn" class="btn-game-ui btn-hint">👀 Hint</button>
+        <button id="newTargetBtn" class="btn-game-ui btn-new">🔀 New Treasure</button>
+        <button id="resetBtn" class="btn-game-ui btn-reset">🔄 Reset Score</button>
+      </div>
+    </div>
+
+    <!-- How to play -->
+    <div class="how-to-play">
+      <h3>🕹️ How to Play</h3>
+      <ol>
+        <li>Look at the treasure coordinate — like <strong>(4, 7)</strong>.</li>
+        <li>The <strong style="color:#E65100;">first number is X</strong> — count across ➡️ from the left edge.</li>
+        <li>The <strong style="color:#1565C0;">second number is Y</strong> — count up ⬆️ from the bottom.</li>
+        <li>Click that square. If the treasure 💎 appears — you win a point and a NEW treasure hides somewhere else!</li>
+      </ol>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Game Setup ============
+    var SIZE = 10;          // 10 x 10 squares
+    var CELL = 44;          // pixel size of each square (svg units)
+    var X0 = 50;            // left edge of grid
+    var Y1 = 450;           // bottom edge of grid
+    var target = null;
+    var score = 0;
+    var locked = false;
+    var hintOn = false;
+    var cellMap = {};       // "x,y" -> rect element
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.getElementById('gridSvg');
+
+    function px(cx) { return X0 + (cx - 1) * CELL; }   // left of column cx
+    function py(cy) { return Y1 - cy * CELL; }         // top of row cy
+    function randCoord() { return Math.floor(Math.random() * SIZE) + 1; }
+
+    function makeSvgEl(tag, attrs) {
+      var el = document.createElementNS(svgNS, tag);
+      for (var k in attrs) { el.setAttribute(k, attrs[k]); }
+      return el;
+    }
+
+    // ============ Build the Board ============
+    function buildGrid() {
+      // Squares
+      for (var cx = 1; cx <= SIZE; cx++) {
+        for (var cy = 1; cy <= SIZE; cy++) {
+          var rect = makeSvgEl('rect', {
+            x: px(cx), y: py(cy), width: CELL, height: CELL,
+            'class': 'cell', rx: 3,
+            'data-x': cx, 'data-y': cy
+          });
+          rect.addEventListener('click', onCellClick);
+          svg.appendChild(rect);
+          cellMap[cx + ',' + cy] = rect;
+        }
+      }
+
+      // Axis lines (X along bottom, Y along left)
+      svg.appendChild(makeSvgEl('line', {
+        x1: X0 - 2, y1: Y1 + 2, x2: X0 + SIZE * CELL + 2, y2: Y1 + 2, 'class': 'axis-line'
+      }));
+      svg.appendChild(makeSvgEl('line', {
+        x1: X0 - 2, y1: Y1 - SIZE * CELL - 2, x2: X0 - 2, y2: Y1 + 2, 'class': 'axis-line'
+      }));
+
+      // Numbers on X-axis (bottom)
+      for (var nx = 1; nx <= SIZE; nx++) {
+        var t = makeSvgEl('text', {
+          x: px(nx) + CELL / 2, y: Y1 + 24,
+          'text-anchor': 'middle', 'class': 'num-label'
+        });
+        t.textContent = nx;
+        svg.appendChild(t);
+      }
+
+      // Numbers on Y-axis (left)
+      for (var ny = 1; ny <= SIZE; ny++) {
+        var ty = makeSvgEl('text', {
+          x: X0 - 12, y: py(ny) + CELL / 2 + 5,
+          'text-anchor': 'middle', 'class': 'num-label'
+        });
+        ty.textContent = ny;
+        svg.appendChild(ty);
+      }
+
+      // Axis captions
+      var capX = makeSvgEl('text', {
+        x: X0 + SIZE * CELL / 2, y: Y1 + 45,
+        'text-anchor': 'middle', 'class': 'axis-caption', fill: '#E65100'
+      });
+      capX.textContent = 'X goes across ➡️';
+      svg.appendChild(capX);
+
+      var capY = makeSvgEl('text', {
+        transform: 'rotate(-90 ' + (X0 - 38) + ' ' + (Y1 - SIZE * CELL / 2) + ')',
+        x: X0 - 38, y: Y1 - SIZE * CELL / 2,
+        'text-anchor': 'middle', 'class': 'axis-caption', fill: '#1565C0'
+      });
+      capY.textContent = '⬆️ Y goes up';
+      svg.appendChild(capY);
+
+      // Origin marker
+      svg.appendChild(makeSvgEl('circle', { cx: X0, cy: Y1, r: 5, fill: '#8E24AA' }));
+
+      // Hidden hint lines (positioned when hint toggled)
+      window.hintLineV = makeSvgEl('line', { x1: 0, y1: 10, x2: 0, y2: Y1, 'class': 'hint-line', visibility: 'hidden' });
+      window.hintLineH = makeSvgEl('line', { x1: X0, y1: 0, x2: X0 + SIZE * CELL, y2: 0, 'class': 'hint-line', visibility: 'hidden' });
+      svg.appendChild(window.hintLineV);
+      svg.appendChild(window.hintLineH);
+    }
+
+    // ============ Game Flow ============
+    function newTarget() {
+      target = { x: randCoord(), y: randCoord() };
+      document.getElementById('targetText').textContent = '(' + target.x + ', ' + target.y + ')';
+      gsap.fromTo('#targetText', { scale: 0.5 }, { scale: 1, duration: 0.5, ease: 'back.out(3)' });
+      positionHints();
+      setFeedback('🎯 Where is (' + target.x + ', ' + target.y + ')? Click it!', '#F5F5F5', '#607D8B');
+    }
+
+    function positionHints() {
+      if (!target) return;
+      window.hintLineV.setAttribute('x1', px(target.x) + CELL / 2);
+      window.hintLineV.setAttribute('x2', px(target.x) + CELL / 2);
+      window.hintLineH.setAttribute('y1', py(target.y) + CELL / 2);
+      window.hintLineH.setAttribute('y2', py(target.y) + CELL / 2);
+    }
+
+    function onCellClick(evt) {
+      if (locked || !target) return;
+      var rect = evt.currentTarget;
+      var cx = parseInt(rect.getAttribute('data-x'), 10);
+      var cy = parseInt(rect.getAttribute('data-y'), 10);
+
+      if (cx === target.x && cy === target.y) {
+        // ---- WIN! ----
+        locked = true;
+        rect.setAttribute('fill', '#AED581');
+        rect.setAttribute('stroke', '#66BB6A');
+
+        var gem = makeSvgEl('text', {
+          x: px(cx) + CELL / 2, y: py(cy) + CELL / 2 + 9,
+          'text-anchor': 'middle', 'class': 'treasure'
+        });
+        gem.textContent = '💎';
+        svg.appendChild(gem);
+        gsap.from(gem, { scale: 0, transformOrigin: 'center', duration: 0.6, ease: 'back.out(3)' });
+
+        score++;
+        var scoreEl = document.getElementById('scoreVal');
+        scoreEl.textContent = score;
+        gsap.fromTo(scoreEl.parentElement, { scale: 1.25 },
+          { scale: 1, duration: 0.6, ease: 'back.out(2)' });
+
+        setFeedback('🎉 You found the treasure at (' + cx + ', ' + cy + ')! +1 point! A new treasure is hiding...', '#E8F5E9', '#2E7D32');
+
+        setTimeout(function() {
+          resetBoard();
+          newTarget();
+          locked = false;
+        }, 1400);
+      } else {
+        // ---- TRY AGAIN ----
+        gsap.fromTo(rect, { fill: '#FFCDD2' }, { fill: '#FAFAFA', duration: 0.7 });
+
+        var msg = 'You clicked (' + cx + ', ' + cy + '). ';
+        if (cx !== target.x && cy !== target.y) {
+          msg += 'Both numbers are different! Remember: ➡️ X first (should be ' + target.x + '), then ⬆️ Y (should be ' + target.y + ')!';
+        } else if (cx !== target.x) {
+          msg += 'Almost! Your Y was right — but X should be ' + target.x + '. Count across again! ➡️';
+        } else {
+          msg += 'So close! Your X was right — but Y should be ' + target.y + '. Count up again! ⬆️';
+        }
+        setFeedback(msg, '#FFEBEE', '#C62828');
+      }
+    }
+
+    function resetBoard() {
+      for (var key in cellMap) {
+        cellMap[key].setAttribute('fill', '#FAFAFA');
+        cellMap[key].setAttribute('stroke', '#CFD8DC');
+      }
+      Array.prototype.forEach.call(svg.querySelectorAll('.treasure'), function(el) {
+        el.remove();
+      });
+    }
+
+    function setFeedback(text, bg, color) {
+      var fb = document.getElementById('feedbackMsg');
+      fb.textContent = text;
+      fb.style.background = bg;
+      fb.style.color = color;
+      gsap.from(fb, { y: 8, opacity: 0, duration: 0.3 });
+    }
+
+    // ============ Buttons ============
+    document.getElementById('newTargetBtn').addEventListener('click', function() {
+      if (locked) return;
+      resetBoard();
+      newTarget();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', function() {
+      score = 0;
+      document.getElementById('scoreVal').textContent = 0;
+      if (!locked) {
+        resetBoard();
+        newTarget();
+      }
+      setFeedback('🔄 Score reset! Fresh start — go get that treasure!', '#F5F5F5', '#607D8B');
+    });
+
+    document.getElementById('hintBtn').addEventListener('click', function() {
+      hintOn = !hintOn;
+      this.textContent = hintOn ? '🙈 Hide Hint' : '👀 Hint';
+      var v = hintOn ? 'visible' : 'hidden';
+      window.hintLineV.setAttribute('visibility', v);
+      window.hintLineH.setAttribute('visibility', v);
+    });
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      buildGrid();
+      newTarget();
+      gsap.from('.game-board', { y: 30, opacity: 0, duration: 0.6, ease: 'power2.out' });
+    });
+  </script>
+</body>
+</html>
+
+
+

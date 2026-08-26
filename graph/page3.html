@@ -3,66 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KidRead - Slope & Rate of Change!</title>
+  <title>KidRead - X &amp; Y Axes Adventure!</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
-    /* ============ Slope & Rate of Change Styles ============ */
-    .slope-intro {
-      background: linear-gradient(135deg, #E3F2FD 0%, #FCE4EC 100%);
-      border-left: 6px solid #1565C0;
+    /* ============ X & Y Axes Specific Styles ============ */
+
+    body {
+      background: linear-gradient(180deg, #F3E5F5 0%, #E1F5FE 100%);
+    }
+
+    /* Intro */
+    .xy-intro {
+      background: linear-gradient(135deg, #F3E5F5 0%, #E1F5FE 100%);
+      border-left: 6px solid #8E24AA;
       border-radius: var(--radius-md);
       padding: 1.5rem 2rem;
       margin-bottom: 2.5rem;
     }
-    .slope-intro p {
+    .xy-intro p {
       margin-bottom: 0.75rem;
       font-size: 1.15rem;
       line-height: 1.7;
     }
-    .slope-intro p:last-child { margin-bottom: 0; }
-    .slope-intro .big-idea {
-      font-size: 1.4rem;
+    .xy-intro p:last-child { margin-bottom: 0; }
+    .xy-intro .big-idea {
+      font-size: 1.35rem;
       font-weight: 800;
-      color: #C62828;
+      color: #6A1B9A;
       text-align: center;
       margin-top: 0.75rem;
     }
 
-    /* Slope type cards */
-    .slope-cards {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      justify-content: center;
-      margin: 2rem 0;
-    }
-    .slope-card {
-      flex: 1;
-      min-width: 200px;
-      max-width: 280px;
-      padding: 1.5rem;
-      background: white;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      border: 3px solid var(--color-border);
-      text-align: center;
-      transition: transform 0.3s ease;
-    }
-    .slope-card:hover { transform: translateY(-6px); }
-    .slope-card.steep-card { border-color: #E53935; }
-    .slope-card.gentle-card { border-color: #FB8C00; }
-    .slope-card.flat-card { border-color: #43A047; }
-
-    .slope-card .slope-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .slope-card h4 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .slope-card.steep-card h4 { color: #C62828; }
-    .slope-card.gentle-card h4 { color: #E65100; }
-    .slope-card.flat-card h4 { color: #2E7D32; }
-    .slope-card p { font-size: 0.95rem; color: var(--color-text-light); line-height: 1.5; }
-
-    /* SVG graph area */
-    .graph-display {
+    /* Graph container */
+    .graph-container {
       background: white;
       border-radius: var(--radius-lg);
       padding: 2rem;
@@ -71,188 +45,292 @@
       margin: 2rem 0;
       text-align: center;
     }
-    .graph-display h4 {
+    .graph-container h4 {
       font-size: 1.3rem;
       font-weight: 800;
       color: var(--color-primary-dark);
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
-    .graph-display .graph-svg-wrapper {
+
+    /* Bar chart area (apple graph) */
+    .chart-with-axis {
+      display: flex;
+      align-items: stretch;
+      gap: 0.5rem;
       width: 100%;
-      max-width: 600px;
+      max-width: 550px;
       margin: 0 auto;
     }
-    .graph-display .graph-svg-wrapper svg {
-      width: 100%;
-      height: auto;
-    }
-
-    /* Mini slope visual in cards */
-    .mini-svg {
-      width: 100%;
-      max-width: 160px;
-      margin: 0.75rem auto;
-      display: block;
-    }
-
-    /* Interactive slope explorer */
-    .explorer-area {
-      background: linear-gradient(135deg, #E3F2FD 0%, #FCE4EC 100%);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      text-align: center;
-      margin: 2.5rem 0;
-      border: 3px solid #1565C0;
-    }
-    .explorer-area h3 {
-      color: #1565C0;
-      font-size: 1.6rem;
-      font-weight: 800;
-      margin-bottom: 0.75rem;
-    }
-    .explorer-area .slider-row {
+    .y-axis {
       display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      justify-content: center;
-      align-items: center;
-      margin: 1.5rem 0;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-right: 0.5rem;
+      min-width: 30px;
+      text-align: right;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--color-text-light);
     }
-    .explorer-area .slider-group {
+    .chart-area {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.8rem;
+      padding: 1rem 1.5rem;
+      background: #FAFAFA;
+      border-radius: var(--radius-md);
+      border: 2px solid #E0E0E0;
+      min-height: 240px;
+      width: 100%;
+      justify-content: center;
+    }
+    .bar-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.3rem;
+      flex: 1;
+      max-width: 90px;
     }
-    .explorer-area .slider-group label {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--color-text);
-    }
-    .explorer-area .slider-group input[type="range"] {
-      width: 200px;
-      height: 8px;
-      border-radius: 4px;
-      background: #E0E0E0;
-      -webkit-appearance: none;
-      appearance: none;
-      outline: none;
-    }
-    .explorer-area .slider-group input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #1565C0;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(21, 101, 192, 0.3);
-    }
-    .explorer-area .slider-group .slider-value {
-      font-size: 1.3rem;
+    .bar {
+      width: 100%;
+      min-height: 8px;
+      border-radius: 8px 8px 4px 4px;
+      transition: height 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 0.3rem;
       font-weight: 800;
-      color: #1565C0;
+      font-size: 0.9rem;
+      color: white;
     }
-    .explorer-area .explorer-stats {
+    .bar .bar-value {
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .bar.show-value .bar-value { opacity: 1; }
+    .bar-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+      text-align: center;
+    }
+
+    /* Stats */
+    .graph-stats {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
       justify-content: center;
       margin-top: 1rem;
-    }
-    .explorer-area .explorer-stat {
-      padding: 0.5rem 1.2rem;
-      background: white;
+      padding: 1rem;
+      background: #F5F5F5;
       border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      border: 2px solid #BBDEFB;
-      min-width: 100px;
     }
-    .explorer-area .explorer-stat .stat-label {
+    .graph-stat { padding: 0.5rem 1rem; text-align: center; }
+    .graph-stat .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #8E24AA;
+    }
+    .graph-stat .stat-label {
       font-size: 0.85rem;
       font-weight: 600;
       color: var(--color-text-light);
     }
-    .explorer-area .explorer-stat .stat-value {
-      font-size: 1.4rem;
+  </style>
+  <style>
+    /* ============ Cake SVG Chart ============ */
+    .cake-chart-svg {
+      width: 100%;
+      max-width: 580px;
+      height: auto;
+      background: #FAFAFA;
+      border-radius: var(--radius-md);
+      border: 2px solid #E0E0E0;
+    }
+    .cake-chart-svg .grid-line {
+      stroke: #E8E8E8;
+      stroke-width: 1;
+      stroke-dasharray: 5,5;
+    }
+    .cake-chart-svg .axis-line {
+      stroke: #BDBDBD;
+      stroke-width: 2;
+    }
+    .cake-chart-svg .price-label {
+      font-size: 12px;
+      font-weight: 600;
+      fill: #888;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .cake-chart-svg .cat-label {
+      font-size: 14px;
+      font-weight: 700;
+      fill: #555;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .cake-chart-svg .axis-caption {
+      font-size: 13px;
       font-weight: 800;
-      color: #1565C0;
+      fill: #8E24AA;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+    .cake-chart-svg .value-label {
+      font-size: 15px;
+      font-weight: 800;
+      fill: #fff;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      opacity: 0;
+    }
+    .cake-chart-svg .two-unit-line {
+      fill: none;
+      stroke: #FF6F00;
+      stroke-width: 4;
+      stroke-dasharray: 10,7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .cake-chart-svg .two-unit-dot {
+      fill: #FF6F00;
+      stroke: #FFF3E0;
+      stroke-width: 3;
+    }
+    .cake-chart-svg .two-unit-value {
+      font-size: 16px;
+      font-weight: 800;
+      fill: #E65100;
+      font-family: 'Fredoka', system-ui, sans-serif;
     }
 
-    /* Comparison table */
-    .compare-row {
-      display: flex;
-      flex-wrap: wrap;
+    /* Tips grid */
+    .graph-tips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
-      justify-content: center;
       margin: 2rem 0;
     }
-    .compare-item {
-      flex: 1;
-      min-width: 150px;
-      max-width: 200px;
+    .graph-tip {
       padding: 1rem;
+      background: white;
       border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border-top: 4px solid #CE93D8;
       text-align: center;
     }
-    .compare-item .cmp-label { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
-    .compare-item .cmp-desc { font-size: 0.85rem; }
-    .compare-item.cmp-steep { background: #FFEBEE; border: 2px solid #E53935; }
-    .compare-item.cmp-steep .cmp-label { color: #C62828; }
-    .compare-item.cmp-gentle { background: #FFF3E0; border: 2px solid #FB8C00; }
-    .compare-item.cmp-gentle .cmp-label { color: #E65100; }
-    .compare-item.cmp-flat { background: #E8F5E9; border: 2px solid #43A047; }
-    .compare-item.cmp-flat .cmp-label { color: #2E7D32; }
+    .graph-tip .tip-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .graph-tip h5 { font-size: 1rem; font-weight: 800; color: #6A1B9A; margin-bottom: 0.3rem; }
+    .graph-tip p { font-size: 0.9rem; color: var(--color-text-light); }
 
-    /* Quiz */
-    .slope-quiz-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin: 0.75rem 0;
+    /* Reveal button */
+    .btn-reveal {
+      font-size: 1.2rem;
+      padding: 0.9rem 2rem;
     }
-    .slope-option {
-      padding: 0.7rem 1.5rem;
-      font-size: 1.1rem;
+    .btn-purple {
+      background-color: #8E24AA;
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--cds-font-sans);
       font-weight: 700;
-      border: 3px solid var(--color-border);
-      background: white;
-      border-radius: 50px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .slope-option:hover {
-      border-color: #1565C0;
-      background: #E3F2FD;
+    .btn-purple:hover {
+      background-color: #6A1B9A;
+      transform: translateY(-3px) scale(1.03);
+    }
+
+    /* Quiz */
+    .graph-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .graph-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-family: var(--cds-font-sans);
+      font-weight: 600;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: white;
+      color: var(--color-text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .graph-option:hover {
+      border-color: #8E24AA;
+      background: #F3E5F5;
       transform: scale(1.05);
     }
-    .slope-option.correct {
+    .graph-option.correct {
       border-color: var(--color-green);
       background: #E8F5E9;
     }
-    .slope-option.wrong {
+    .graph-option.wrong {
       border-color: #F44336;
       background: #FFEBEE;
-      animation: shake 0.4s ease;
     }
-    .slope-option:disabled { cursor: default; opacity: 0.7; }
-    .slope-option.correct:disabled { opacity: 1; }
-
-    .slope-result {
+    .graph-option.wrong { animation: shake 0.4s ease; }
+    .graph-option:disabled { cursor: default; opacity: 0.7; }
+    .graph-option.correct:disabled { opacity: 1; }
+    .graph-result {
       margin-top: 0.75rem;
       padding: 0.75rem 1rem;
       border-radius: var(--radius-sm);
-      font-weight: 700;
-      font-size: 1.05rem;
+      font-weight: 600;
       display: none;
     }
-    .slope-result.show { display: block; animation: fadeIn 0.3s ease; }
-    .slope-result.correct-result { background: #E8F5E9; color: #2E7D32; }
-    .slope-result.wrong-result { background: #FFEBEE; color: #C62828; }
+    .graph-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .graph-result.correct-result { background: #E8F5E9; color: #2E7D32; }
+    .graph-result.wrong-result { background: #FFEBEE; color: #C62828; }
 
-    @media (max-width: 768px) {
-      .slope-card { min-width: 160px; }
-      .explorer-area .slider-group input[type="range"] { width: 150px; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* Game CTA */
+    .game-cta {
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+      border: 3px dashed #FF6F00;
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      margin: 3rem 0 1rem;
+    }
+    .game-cta h3 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #E65100;
+      margin-bottom: 0.75rem;
+    }
+    .game-cta p {
+      font-size: 1.1rem;
+      color: var(--color-text-light);
+      margin-bottom: 1.5rem;
+    }
+    .btn-game {
+      display: inline-block;
+      font-size: 1.3rem;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, #FF6F00 0%, #FF8F00 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 800;
+      box-shadow: var(--shadow-md);
+      transition: all 0.2s ease;
+    }
+    .btn-game:hover {
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: var(--shadow-lg);
     }
   </style>
 </head>
@@ -263,286 +341,264 @@
       <img src="logo.png" alt="KidRead Logo" class="logo-img">
       <h1 class="logo-text">Kid<span>Read</span></h1>
     </a>
-    <nav>
-      <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="page1.html">Adventure 1</a></li>
-        <li><a href="page2.html">Adventure 2</a></li>
-        <li><a href="page3.html" class="active">Adventure 3</a></li>
-        <li><a href="page4.html">Adventure 4</a></li>
-        <li><a href="page5.html">Adventure 5</a></li>
-        <li><a href="page6.html">Adventure 6</a></li>
-      </ul>
-    </nav>
   </header>
 
   <main class="content-wrapper">
     <a href="index.html" class="back-btn">&larr; Back to Home</a>
 
     <article class="article">
-      <h2>📈 Slope & Rate of Change! 🚀</h2>
+      <h2>🗺️ X &amp; Y: The Secret Map of Every Graph! ✨</h2>
 
       <!-- Intro -->
-      <div class="slope-intro">
-        <p><strong>What is Slope?</strong></p>
-        <p><strong>Slope</strong> tells us how steep a line is on a graph. It's like climbing a hill — some hills are steep, some are gentle, and some are flat!</p>
-        <p>The <strong>steeper</strong> the line, the <strong>faster</strong> things are changing. A <strong>flat</strong> line means nothing is changing at all!</p>
-        <p>We use slope to understand <strong>speed, growth, and change</strong> in the real world! 🌍</p>
-        <div class="big-idea">🧠 Steep = Fast change &nbsp;|&nbsp; Gentle = Slow change &nbsp;|&nbsp; Flat = No change</div>
+      <div class="xy-intro">
+        <p><strong>Meet X and Y!</strong></p>
+        <p>Every graph is like a treasure map 🗺️ — and it has two magic lines called <strong>axes</strong> (that's the plural of axis!).</p>
+        <p>The <strong style="color:#E65100;">X-axis</strong> lies flat along the bottom ➡️. It tells you <strong>WHAT</strong> we are talking about — like where apples come from, or what kinds of cakes are for sale!</p>
+        <p>The <strong style="color:#1565C0;">Y-axis</strong> stands up tall on the side ⬆️. It tells you <strong>HOW MANY</strong> or <strong>HOW MUCH</strong> — like counting apples or reading prices!</p>
+        <div class="big-idea">🧠 X goes <em>across</em>, Y goes <em>up</em>! Read across to find the thing, then look up to find its number! 🔍</div>
       </div>
 
-      <!-- 3 Types of Slope -->
+      <!-- Parts of a graph -->
       <section>
-        <h3>🏔️ Three Types of Slope</h3>
-        <div class="slope-cards">
-          <!-- Steep -->
-          <div class="slope-card steep-card">
-            <div class="slope-icon">📈</div>
-            <h4>Steep Slope</h4>
-            <svg class="mini-svg" viewBox="0 0 160 80">
-              <line x1="10" y1="70" x2="150" y2="10" stroke="#E53935" stroke-width="4" stroke-linecap="round"/>
-              <circle cx="10" cy="70" r="4" fill="#E53935"/>
-              <circle cx="150" cy="10" r="4" fill="#E53935"/>
-              <text x="80" y="45" text-anchor="middle" font-size="11" font-weight="700" fill="#C62828">Rising fast!</text>
-            </svg>
-            <p>The line goes up <strong>sharply</strong>. A small change horizontally = a big change vertically. <strong>High rate of change!</strong> 🚀</p>
+        <h3>🔍 The Two Super Lines</h3>
+        <div class="graph-tips">
+          <div class="graph-tip">
+            <div class="tip-icon">➡️</div>
+            <h5>X-Axis (across)</h5>
+            <p>The flat line at the bottom. It shows the <strong>categories</strong> — the "what" of our story!</p>
           </div>
-
-          <!-- Gentle -->
-          <div class="slope-card gentle-card">
-            <div class="slope-icon">↗️</div>
-            <h4>Gentle Slope</h4>
-            <svg class="mini-svg" viewBox="0 0 160 80">
-              <line x1="10" y1="65" x2="150" y2="35" stroke="#FB8C00" stroke-width="4" stroke-linecap="round"/>
-              <circle cx="10" cy="65" r="4" fill="#FB8C00"/>
-              <circle cx="150" cy="35" r="4" fill="#FB8C00"/>
-              <text x="80" y="55" text-anchor="middle" font-size="11" font-weight="700" fill="#E65100">Slow rise...</text>
-            </svg>
-            <p>The line goes up <strong>gradually</strong>. A big change horizontally = a small change vertically. <strong>Low rate of change!</strong> 🐢</p>
+          <div class="graph-tip">
+            <div class="tip-icon">⬆️</div>
+            <h5>Y-Axis (up)</h5>
+            <p>The tall line on the left. It shows the <strong>numbers</strong> — how many or how much!</p>
           </div>
-
-          <!-- Flat -->
-          <div class="slope-card flat-card">
-            <div class="slope-icon">➡️</div>
-            <h4>Flat Slope</h4>
-            <svg class="mini-svg" viewBox="0 0 160 80">
-              <line x1="10" y1="45" x2="150" y2="45" stroke="#43A047" stroke-width="4" stroke-linecap="round"/>
-              <circle cx="10" cy="45" r="4" fill="#43A047"/>
-              <circle cx="150" cy="45" r="4" fill="#43A047"/>
-              <text x="80" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#2E7D32">No change...</text>
-            </svg>
-            <p>The line is <strong>horizontal</strong>. No matter how far you go, the value stays the same. <strong>Zero rate of change!</strong> 🧊</p>
+          <div class="graph-tip">
+            <div class="tip-icon">🤝</div>
+            <h5>The Origin (0,0)</h5>
+            <p>Where X and Y meet in the corner. All counting starts here!</p>
+          </div>
+          <div class="graph-tip">
+            <div class="tip-icon">📍</div>
+            <h5>Finding a Point</h5>
+            <p>Pick a bar, slide <em>across</em> to see its name, then look <em>up</em> (or left) to read its number!</p>
           </div>
         </div>
       </section>
 
-      <!-- Real World Comparison -->
+      <!-- ============ EXAMPLE 1: Apples ============ -->
       <section>
-        <h3>🌍 Real-World Examples</h3>
-        <div class="compare-row">
-          <div class="compare-item cmp-steep">
-            <div style="font-size:2rem;margin-bottom:0.3rem;">🏎️</div>
-            <div class="cmp-label">Steep = Fast Car</div>
-            <div class="cmp-desc">A sports car goes 0 to 100 km/h in 3 seconds — that's a <strong>steep slope</strong> on a speed graph!</div>
-          </div>
-          <div class="compare-item cmp-gentle">
-            <div style="font-size:2rem;margin-bottom:0.3rem;">🚲</div>
-            <div class="cmp-label">Gentle = Bicycle</div>
-            <div class="cmp-desc">A bicycle slowly climbs a hill — that's a <strong>gentle slope</strong> on a distance graph!</div>
-          </div>
-          <div class="compare-item cmp-flat">
-            <div style="font-size:2rem;margin-bottom:0.3rem;">🧊</div>
-            <div class="cmp-label">Flat = Water Freezing</div>
-            <div class="cmp-desc">Water stays at 0°C while freezing — that's a <strong>flat slope</strong> on a temperature graph!</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ Interactive Slope Explorer ============ -->
-      <section class="explorer-area">
-        <h3>🎮 Slope Explorer!</h3>
-        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:0.75rem;">
-          Drag the slider to change the slope! Watch how the line changes color and steepness!
-        </p>
-
-        <div class="graph-svg-wrapper" style="max-width:500px;margin:0 auto;">
-          <svg viewBox="0 0 400 220" id="interactiveSlopeSvg">
-            <!-- Grid lines -->
-            <line x1="40" y1="10" x2="40" y2="200" stroke="#E0E0E0" stroke-width="1"/>
-            <line x1="40" y1="200" x2="390" y2="200" stroke="#E0E0E0" stroke-width="1"/>
-            <!-- Grid horizontal -->
-            <line x1="40" y1="50" x2="390" y2="50" stroke="#F5F5F5" stroke-width="1"/>
-            <line x1="40" y1="90" x2="390" y2="90" stroke="#F5F5F5" stroke-width="1"/>
-            <line x1="40" y1="130" x2="390" y2="130" stroke="#F5F5F5" stroke-width="1"/>
-            <line x1="40" y1="170" x2="390" y2="170" stroke="#F5F5F5" stroke-width="1"/>
-            <!-- Grid vertical -->
-            <line x1="110" y1="10" x2="110" y2="200" stroke="#F5F5F5" stroke-width="1"/>
-            <line x1="180" y1="10" x2="180" y2="200" stroke="#F5F5F5" stroke-width="1"/>
-            <line x1="250" y1="10" x2="250" y2="200" stroke="#F5F5F5" stroke-width="1"/>
-            <line x1="320" y1="10" x2="320" y2="200" stroke="#F5F5F5" stroke-width="1"/>
-            <!-- Y-Axis label -->
-            <text x="25" y="105" text-anchor="middle" font-size="12" font-weight="600" fill="#9E9E9E" transform="rotate(-90,25,105)">Amount</text>
-            <!-- X-Axis label -->
-            <text x="215" y="218" text-anchor="middle" font-size="12" font-weight="600" fill="#9E9E9E">Time</text>
-            <!-- The line (will be updated by JS) -->
-            <line id="slopeLine" x1="50" y1="180" x2="350" y2="180" stroke="#43A047" stroke-width="5" stroke-linecap="round"/>
-            <!-- Points -->
-            <circle id="startPoint" cx="50" cy="180" r="6" fill="#1B5E20" stroke="white" stroke-width="2"/>
-            <circle id="endPoint" cx="350" cy="180" r="6" fill="#1B5E20" stroke="white" stroke-width="2"/>
-            <!-- Angle label -->
-            <text id="slopeLabel" x="200" y="30" text-anchor="middle" font-size="16" font-weight="800" fill="#2E7D32">Flat — No Change</text>
-          </svg>
-        </div>
-
-        <div class="slider-row">
-          <div class="slider-group">
-            <label for="slopeSlider">🎚️ Slope Steepness</label>
-            <input type="range" id="slopeSlider" min="0" max="100" value="0">
-            <div class="slider-value" id="sliderValue">0% (Flat)</div>
-          </div>
-        </div>
-
-        <div class="explorer-stats">
-          <div class="explorer-stat">
-            <div class="stat-label">📐 Rise (up)</div>
-            <div class="stat-value" id="riseValue">0</div>
-          </div>
-          <div class="explorer-stat">
-            <div class="stat-label">↔️ Run (across)</div>
-            <div class="stat-value" id="runValue">300</div>
-          </div>
-          <div class="explorer-stat">
-            <div class="stat-label">📊 Slope Type</div>
-            <div class="stat-value" id="slopeTypeValue" style="font-size:1rem;">Flat</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Steepness Spectrum -->
-      <section>
-        <h3>🌈 Slope Spectrum</h3>
+        <h3>🍎 Example 1: Where Do Apples Come From?</h3>
         <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
-          As the slope gets steeper, the color changes from <strong style="color:#43A047;">green</strong> → <strong style="color:#FB8C00;">orange</strong> → <strong style="color:#E53935;">red</strong>!
+          A fruit shop counted its <strong>apples</strong>. The X-axis shows <strong>where each apple came from</strong>, and the Y-axis shows <strong>how many apples</strong>!
         </p>
 
-        <div style="display:flex;flex-direction:column;gap:0.5rem;padding:1.5rem;background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);border:2px solid var(--color-border);">
-          <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 1rem;background:#E8F5E9;border-radius:12px;">
-            <div style="width:40px;height:40px;background:#43A047;border-radius:50%;flex-shrink:0;"></div>
-            <div>
-              <div style="font-weight:800;color:#2E7D32;">🟢 Flat (Slope = 0)</div>
-              <div style="font-size:0.9rem;color:var(--color-text-light);">No change — the line is horizontal</div>
+        <div class="graph-container">
+          <h4>🍎 Apples in the Shop by Country</h4>
+
+          <div class="chart-wrapper">
+            <div class="chart-with-axis">
+              <div class="y-axis" id="appleYAxis">
+                <span>8</span>
+                <span>7</span>
+                <span>6</span>
+                <span>5</span>
+                <span>4</span>
+                <span>3</span>
+                <span>2</span>
+                <span>1</span>
+                <span>0</span>
+              </div>
+              <div class="chart-area" id="appleChart">
+                <!-- New Zealand -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="nzBar" style="height:0px;background:linear-gradient(180deg,#66BB6A,#2E7D32);">
+                    <span class="bar-value" id="nzVal">7</span>
+                  </div>
+                  <div class="bar-label">🇳🇿 New Zealand</div>
+                </div>
+                <!-- Australia -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="ausBar" style="height:0px;background:linear-gradient(180deg,#FFA726,#E65100);">
+                    <span class="bar-value" id="ausVal">4</span>
+                  </div>
+                  <div class="bar-label">🇦🇺 Australia</div>
+                </div>
+                <!-- Other -->
+                <div class="bar-wrapper">
+                  <div class="bar" id="otherBar" style="height:0px;background:linear-gradient(180deg,#26C6DA,#00838F);">
+                    <span class="bar-value" id="otherVal">2</span>
+                  </div>
+                  <div class="bar-label">🌍 Other Places</div>
+                </div>
+              </div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 1rem;background:#FFF3E0;border-radius:12px;">
-            <div style="width:40px;height:40px;background:#FB8C00;border-radius:50%;flex-shrink:0;"></div>
-            <div>
-              <div style="font-weight:800;color:#E65100;">🟠 Gentle (Low Slope)</div>
-              <div style="font-size:0.9rem;color:var(--color-text-light);">Slow change — the line goes up gradually</div>
-            </div>
+
+          <div class="action-buttons">
+            <button id="appleRevealBtn" class="btn btn-reveal btn-purple">👀 Show the Apple Data!</button>
           </div>
-          <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 1rem;background:#FFEBEE;border-radius:12px;">
-            <div style="width:40px;height:40px;background:#E53935;border-radius:50%;flex-shrink:0;"></div>
-            <div>
-              <div style="font-weight:800;color:#C62828;">🔴 Steep (High Slope)</div>
-              <div style="font-size:0.9rem;color:var(--color-text-light);">Fast change — the line rises sharply</div>
+
+          <div class="graph-stats" id="appleStats" style="display:none;">
+            <div class="graph-stat">
+              <div class="stat-value">🇳🇿 7</div>
+              <div class="stat-label">🏆 Most Apples (tallest bar!)</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value">13</div>
+              <div class="stat-label">📊 Total Apples</div>
+            </div>
+            <div class="graph-stat">
+              <div class="stat-value">3</div>
+              <div class="stat-label">📐 NZ has 3 more than Australia</div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Thinking Steps -->
-      <div class="thinking-steps" style="background:#E3F2FD;border-left-color:#1565C0;">
-        <h4 style="color:#1565C0;">🧠 How to Read Slope</h4>
-        <div class="step">
-          <span class="step-number" style="background:#1565C0;">1</span>
-          <span class="step-text">Look at the <strong>direction</strong> of the line — is it going up, down, or staying flat?</span>
-        </div>
-        <div class="step">
-          <span class="step-number" style="background:#1565C0;">2</span>
-          <span class="step-text">Check the <strong>steepness</strong> — a steep line means a <strong>fast</strong> rate of change!</span>
-        </div>
-        <div class="step">
-          <span class="step-number" style="background:#1565C0;">3</span>
-          <span class="step-text">A <strong style="color:#43A047;">green line</strong> = flat (no change), <strong style="color:#FB8C00;">orange</strong> = gentle (slow change), <strong style="color:#E53935;">red</strong> = steep (fast change)</span>
-        </div>
-        <div class="step">
-          <span class="step-number" style="background:#E65100;">💡</span>
-          <span class="step-text">Slope = <strong>Rise ÷ Run</strong>. The bigger the rise for the same run, the steeper the slope!</span>
-        </div>
-      </div>
+      <!-- ============ EXAMPLE 2: Cakes ============ -->
+      <section>
+        <h3>🍰 Example 2: The Cake Shop Prices</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          Now let's visit a cake shop! This time the X-axis shows the <strong>types of cakes</strong>, and the Y-axis shows the <strong>price</strong> in dollars. 🤑
+        </p>
 
-      <!-- ============ QUIZ ============ -->
-      <section class="quiz-section" style="border-color:#1565C0;">
-        <h3>🧠 Slope Quiz!</h3>
-        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1.5rem;">Test your understanding of slope and rate of change!</p>
+        <div class="graph-container">
+          <h4>🎂 Cake Prices at Yummy Bakery</h4>
+
+          <svg class="cake-chart-svg" viewBox="0 0 560 330" role="img" aria-label="Bar chart of cake prices with a hidden line for buying two units">
+            <!-- Gridlines & Y labels -->
+            <line class="grid-line" x1="70" y1="30"    x2="540" y2="30"/>
+            <line class="grid-line" x1="70" y1="57.8"  x2="540" y2="57.8"/>
+            <line class="grid-line" x1="70" y1="85.6"  x2="540" y2="85.6"/>
+            <line class="grid-line" x1="70" y1="113.3" x2="540" y2="113.3"/>
+            <line class="grid-line" x1="70" y1="141.1" x2="540" y2="141.1"/>
+            <line class="grid-line" x1="70" y1="168.9" x2="540" y2="168.9"/>
+            <line class="grid-line" x1="70" y1="196.7" x2="540" y2="196.7"/>
+            <line class="grid-line" x1="70" y1="224.4" x2="540" y2="224.4"/>
+            <line class="grid-line" x1="70" y1="252.2" x2="540" y2="252.2"/>
+            <text class="price-label" x="58" y="284"   text-anchor="end">$0</text>
+            <text class="price-label" x="58" y="256.2" text-anchor="end">$2</text>
+            <text class="price-label" x="58" y="228.4" text-anchor="end">$4</text>
+            <text class="price-label" x="58" y="200.7" text-anchor="end">$6</text>
+            <text class="price-label" x="58" y="172.9" text-anchor="end">$8</text>
+            <text class="price-label" x="58" y="145.1" text-anchor="end">$10</text>
+            <text class="price-label" x="58" y="117.3" text-anchor="end">$12</text>
+            <text class="price-label" x="58" y="89.6"  text-anchor="end">$14</text>
+            <text class="price-label" x="58" y="61.8"  text-anchor="end">$16</text>
+            <text class="price-label" x="58" y="34"    text-anchor="end">$18</text>
+
+            <!-- Axes -->
+            <line class="axis-line" x1="65" y1="280" x2="545" y2="280"/>
+            <line class="axis-line" x1="70" y1="25"  x2="70"  y2="285"/>
+
+            <!-- Bars (start flat, grow on reveal) -->
+            <rect id="chocBar"  x="103.3" y="280" width="90" height="0" rx="6" fill="#8D6E63"/>
+            <rect id="cheeseBar" x="260"  y="280" width="90" height="0" rx="6" fill="#FBC02D"/>
+            <rect id="strawBar" x="416.7" y="280" width="90" height="0" rx="6" fill="#F06292"/>
+
+            <!-- Price labels on bars -->
+            <text class="value-label" id="chocVal"  x="148.3" y="202" text-anchor="middle">$5</text>
+            <text class="value-label" id="cheeseVal" x="305"  y="160" text-anchor="middle">$8</text>
+            <text class="value-label" id="strawVal" x="461.7" y="188" text-anchor="middle">$6</text>
+
+            <!-- Hidden: what if we buy 2 units of each cake? -->
+            <g id="twoUnitGroup" style="opacity:0;">
+              <polyline class="two-unit-line" points="148.3,141.1 305,57.8 461.7,113.3"/>
+              <circle class="two-unit-dot" cx="148.3" cy="141.1" r="9"/>
+              <circle class="two-unit-dot" cx="305"   cy="57.8"  r="9"/>
+              <circle class="two-unit-dot" cx="461.7" cy="113.3" r="9"/>
+              <text class="two-unit-value" x="148.3" y="122" text-anchor="middle">$10</text>
+              <text class="two-unit-value" x="305"   y="39"  text-anchor="middle">$16</text>
+              <text class="two-unit-value" x="461.7" y="94"  text-anchor="middle">$12</text>
+            </g>
+
+            <!-- X labels -->
+            <text class="cat-label" x="148.3" y="303" text-anchor="middle">🍫 Choc</text>
+            <text class="cat-label" x="305"   y="303" text-anchor="middle">🧀 Cheese</text>
+            <text class="cat-label" x="461.7" y="303" text-anchor="middle">🍓 Strawberry</text>
+            <text class="axis-caption" x="305" y="326" text-anchor="middle">Cake Type ➡️ (X-axis)</text>
+            <text class="axis-caption" transform="rotate(-90 20 155)" x="20" y="155" text-anchor="middle">⬅️ Price ($) (Y-axis)</text>
+          </svg>
+
+          <div class="action-buttons">
+            <button id="cakesRevealBtn" class="btn btn-reveal btn-purple">👀 Show the Cake Prices!</button>
+            <button id="twoUnitBtn" class="btn btn-reveal btn-purple" style="display:none;">🍰🍰 What if we buy 2 of each?</button>
+          </div>
+
+          <p id="twoUnitNote" style="display:none;font-size:1.05rem;color:#E65100;font-weight:700;background:#FFF3E0;padding:0.75rem 1rem;border-radius:var(--radius-md);">
+            💡 The dashed orange line shows the price of <strong>2 cakes</strong>: 2 choc = $10, 2 cheese = $16, 2 strawberry = $12. See how every point doubled up — exactly double the height! ✌️
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ Quiz ============ -->
+      <section>
+        <h3>🧠 X &amp; Y Quiz Time!</h3>
+        <p style="font-size:1.05rem;color:var(--color-text-light);margin-bottom:1rem;">
+          Look back at the apple graph and cake graph to answer these!
+        </p>
 
         <!-- Q1 -->
         <div class="quiz-card">
-          <p class="quiz-question">1️⃣ 📈 Which type of slope means the FASTEST rate of change?</p>
-          <div class="slope-quiz-options">
-            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">Steep</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Gentle</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Flat</button>
+          <p class="quiz-question">1️⃣ 🍎 On the apple graph, what does the <strong>X-axis</strong> tell us?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">How many apples</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">Where the apples come from</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">The price of apples</button>
           </div>
-          <div class="slope-result" id="sq1"></div>
+          <div class="graph-result"></div>
         </div>
 
         <!-- Q2 -->
         <div class="quiz-card">
-          <p class="quiz-question">2️⃣ 🧊 What does a flat (horizontal) line on a graph mean?</p>
-          <div class="slope-quiz-options">
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Fast change</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Slow change</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">No change</button>
+          <p class="quiz-question">2️⃣ 🇦🇺 How many apples come from <strong>Australia</strong>?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">7</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">4</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">2</button>
           </div>
-          <div class="slope-result" id="sq2"></div>
+          <div class="graph-result"></div>
         </div>
 
         <!-- Q3 -->
         <div class="quiz-card">
-          <p class="quiz-question">3️⃣ 🚲 You ride a bicycle up a hill slowly. What type of slope is on your distance graph?</p>
-          <div class="slope-quiz-options">
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Steep</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">Gentle</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Flat</button>
+          <p class="quiz-question">3️⃣ 🍰 On the cake graph, which cake costs the <strong>MOST</strong> for one cake?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🍫 Choc cake</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">🧀 Cheese cake</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">🍓 Strawberry cake</button>
           </div>
-          <div class="slope-result" id="sq3"></div>
+          <div class="graph-result"></div>
         </div>
 
         <!-- Q4 -->
         <div class="quiz-card">
-          <p class="quiz-question">4️⃣ 🏎️ A car accelerates from 0 to 100 quickly. What color represents this steep slope?</p>
-          <div class="slope-quiz-options">
-            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">🔴 Red</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">🟠 Orange</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">🟢 Green</button>
+          <p class="quiz-question">4️⃣ 🧀🧀 If you buy <strong>2 cheese cakes</strong>, how much money do you need?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">$8</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">$14</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">$16</button>
           </div>
-          <div class="slope-result" id="sq4"></div>
+          <div class="graph-result"></div>
         </div>
 
         <!-- Q5 -->
         <div class="quiz-card">
-          <p class="quiz-question">5️⃣ 📐 What is the formula for calculating slope?</p>
-          <div class="slope-quiz-options">
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Run ÷ Rise</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">Rise ÷ Run</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">Rise × Run</button>
+          <p class="quiz-question">5️⃣ 🤔 Which axis ALWAYS shows the <strong>numbers</strong> (how many / how much)?</p>
+          <div class="graph-quiz-options">
+            <button class="graph-option" onclick="checkGraphAnswer(this, true)">The Y-axis ⬆️</button>
+            <button class="graph-option" onclick="checkGraphAnswer(this, false)">The X-axis ➡️</button>
           </div>
-          <div class="slope-result" id="sq5"></div>
-        </div>
-
-        <!-- Q6 -->
-        <div class="quiz-card">
-          <p class="quiz-question">6️⃣ 🟢 What color represents a flat slope with NO change?</p>
-          <div class="slope-quiz-options">
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">🔴 Red</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, false)">🟠 Orange</button>
-            <button class="slope-option" onclick="checkSlopeAnswer(this, true)">🟢 Green</button>
-          </div>
-          <div class="slope-result" id="sq6"></div>
+          <div class="graph-result"></div>
         </div>
       </section>
 
+      <!-- ============ Game CTA ============ -->
+      <div class="game-cta">
+        <h3>🎮 Ready for a Challenge?</h3>
+        <p>You know X goes across and Y goes up... now use them to find hidden treasure on a real coordinate grid!</p>
+        <a href="game-plotting.html" class="btn-game">Play the Treasure Hunt Game! 🎯</a>
+      </div>
     </article>
   </main>
 
@@ -551,76 +607,102 @@
   </footer>
 
   <script>
-    // ============ Interactive Slope Explorer ============
-    var slopeSlider = document.getElementById('slopeSlider');
-    var sliderValue = document.getElementById('sliderValue');
-    var slopeLine = document.getElementById('slopeLine');
-    var startPoint = document.getElementById('startPoint');
-    var endPoint = document.getElementById('endPoint');
-    var slopeLabel = document.getElementById('slopeLabel');
-    var riseValue = document.getElementById('riseValue');
-    var runValue = document.getElementById('runValue');
-    var slopeTypeValue = document.getElementById('slopeTypeValue');
+    // ============ Apple Graph Reveal ============
+    document.getElementById('appleRevealBtn').addEventListener('click', function() {
+      var btn = this;
+      btn.disabled = true;
+      btn.textContent = '🎉 Here come the apples!';
 
-    var x1 = 50, x2 = 350, yBase = 180;
-    var maxRise = 160; // max pixels up
+      var bars = [
+        { id: 'nzBar',    h: 175 },
+        { id: 'ausBar',   h: 100 },
+        { id: 'otherBar', h: 50 }
+      ];
+      bars.forEach(function(b, i) {
+        var bar = document.getElementById(b.id);
+        setTimeout(function() {
+          bar.style.height = b.h + 'px';
+          bar.classList.add('show-value');
+          gsap.from(bar, { scaleY: 0.6, transformOrigin: 'bottom', duration: 0.5, ease: 'back.out(1.6)' });
+        }, i * 250);
+      });
 
-    function updateSlope() {
-      var val = parseInt(slopeSlider.value);
-      var rise = (val / 100) * maxRise;
-      var y2 = yBase - rise;
+      setTimeout(function() {
+        var stats = document.getElementById('appleStats');
+        stats.style.display = 'flex';
+        gsap.from('.graph-stats .graph-stat', { y: 20, opacity: 0, duration: 0.4, stagger: 0.15, ease: 'power2.out' });
+      }, 900);
+    });
 
-      // Color based on steepness
-      var color, label, typeText;
-      if (val === 0) {
-        color = '#43A047';
-        label = '🟢 Flat — No Change';
-        typeText = 'Flat (0)';
-      } else if (val < 33) {
-        color = '#FB8C00';
-        label = '🟠 Gentle — Slow Change';
-        typeText = 'Gentle';
-      } else if (val < 66) {
-        color = '#FF7043';
-        label = '🔶 Moderate — Medium Change';
-        typeText = 'Moderate';
-      } else {
-        color = '#E53935';
-        label = '🔴 Steep — Fast Change!';
-        typeText = 'Steep!';
-      }
+    // ============ Cake Graph Reveal ============
+    var cakesRevealed = false;
+    document.getElementById('cakesRevealBtn').addEventListener('click', function() {
+      if (cakesRevealed) return;
+      cakesRevealed = true;
+      var btn = this;
+      btn.disabled = true;
+      btn.textContent = '🎂 Yummy prices!';
 
-      // Update SVG
-      slopeLine.setAttribute('y1', yBase);
-      slopeLine.setAttribute('y2', y2);
-      slopeLine.setAttribute('stroke', color);
-      startPoint.setAttribute('cy', yBase);
-      startPoint.setAttribute('fill', color);
-      endPoint.setAttribute('cy', y2);
-      endPoint.setAttribute('fill', color);
+      // price -> pixel mapping: $1 = 13.89px above baseline y=280
+      var cakes = [
+        { bar: 'chocBar',   val: 'chocVal',   h: 69.4,  y: 210.6 },
+        { bar: 'cheeseBar', val: 'cheeseVal', h: 111.1, y: 168.9 },
+        { bar: 'strawBar',  val: 'strawVal',  h: 83.3,  y: 196.7 }
+      ];
+      cakes.forEach(function(c, i) {
+        gsap.to('#' + c.bar, {
+          attr: { height: c.h, y: c.y },
+          duration: 0.7,
+          delay: i * 0.25,
+          ease: 'bounce.out'
+        });
+        gsap.to('#' + c.val, { opacity: 1, duration: 0.3, delay: 0.5 + i * 0.25 });
+      });
 
-      // Update label
-      slopeLabel.textContent = label;
-      slopeLabel.setAttribute('fill', color);
+      // Show the secret 2-unit button after bars appear
+      setTimeout(function() {
+        var twoBtn = document.getElementById('twoUnitBtn');
+        twoBtn.style.display = 'inline-block';
+        gsap.from(twoBtn, { y: 15, opacity: 0, duration: 0.5, ease: 'back.out(2)' });
+      }, 1300);
+    });
 
-      // Update stats
-      riseValue.textContent = rise.toFixed(0);
-      runValue.textContent = (x2 - x1).toFixed(0);
-      slopeTypeValue.textContent = typeText;
-      slopeTypeValue.style.color = color;
+    // ============ Hidden 2-Unit Line ============
+    document.getElementById('twoUnitBtn').addEventListener('click', function() {
+      var btn = this;
+      btn.disabled = true;
+      btn.textContent = '✨ Doubled!';
 
-      // Slider value text
-      var pctText = val === 0 ? 'Flat' : val + '% steep';
-      sliderValue.textContent = pctText;
-    }
+      var group = document.getElementById('twoUnitGroup');
+      gsap.to(group, { opacity: 1, duration: 0.8, ease: 'power2.inOut' });
+      gsap.from('.cake-chart-svg .two-unit-dot', {
+        scale: 0,
+        transformOrigin: 'center',
+        duration: 0.5,
+        stagger: 0.2,
+        delay: 0.5,
+        ease: 'back.out(3)'
+      });
+      gsap.from('.cake-chart-svg .two-unit-value', {
+        opacity: 0,
+        y: -10,
+        duration: 0.4,
+        stagger: 0.2,
+        delay: 0.7
+      });
 
-    slopeSlider.addEventListener('input', updateSlope);
+      setTimeout(function() {
+        var note = document.getElementById('twoUnitNote');
+        note.style.display = 'block';
+        gsap.from(note, { y: 15, opacity: 0, duration: 0.5 });
+      }, 1200);
+    });
 
     // ============ Quiz ============
-    function checkSlopeAnswer(btn, isCorrect) {
+    function checkGraphAnswer(btn, isCorrect) {
       var parentCard = btn.closest('.quiz-card');
-      var options = parentCard.querySelectorAll('.slope-option');
-      var resultDiv = parentCard.querySelector('.slope-result');
+      var options = parentCard.querySelectorAll('.graph-option');
+      var resultDiv = parentCard.querySelector('.graph-result');
 
       options.forEach(function(opt) { opt.disabled = true; });
 
@@ -638,42 +720,30 @@
       if (isCorrect) {
         resultDiv.classList.add('correct-result');
         resultDiv.classList.remove('wrong-result');
-        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+        resultDiv.textContent = "✅ Correct! You're an X & Y expert! 🌟";
       } else {
         resultDiv.classList.add('wrong-result');
         resultDiv.classList.remove('correct-result');
-        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. 💪';
+        resultDiv.textContent = '❌ Not quite! Remember: X is WHAT, Y is HOW MANY/MUCH. The correct answer is highlighted! 💪';
       }
     }
 
     // ============ On Load ============
     document.addEventListener('DOMContentLoaded', function() {
-      updateSlope();
-
-      gsap.from('.slope-card', {
-        y: 30,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.2,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: '.slope-card',
-          start: 'top 85%'
-        }
-      });
-
-      gsap.from('.compare-item', {
+      gsap.from('.graph-tip', {
         y: 20,
         opacity: 0,
         duration: 0.4,
         stagger: 0.15,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: '.compare-item',
-          start: 'top 85%'
-        }
+        ease: 'power2.out'
       });
     });
   </script>
 </body>
 </html>
+
+
+
+
+
+﻿
