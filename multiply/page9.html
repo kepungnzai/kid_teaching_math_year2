@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Old-School Multiply &amp; Add! Big Numbers</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Old-School "Multiply & Add" Page Styles ============ */
+    .os-intro {
+      background: linear-gradient(135deg, #EDE7F6 0%, #FFF8E1 100%);
+      border-left: 6px solid #7E57C2;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .os-intro p { margin-bottom: 0.75rem; font-size: 1.15rem; line-height: 1.7; }
+    .os-intro p:last-child { margin-bottom: 0; }
+    .os-intro strong { color: #5E35B1; }
+    .os-intro .hl { color: #E65100; font-weight: 800; }
+
+    /* Three example chips */
+    .os-examples { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin: 0.5rem 0 1rem; }
+    .os-ex-chip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.6rem 1.25rem; border-radius: 50px; font-weight: 800; font-size: 1.2rem;
+    }
+    .os-ex-chip.c1 { background: #EDE7F6; color: #5E35B1; border: 3px solid #B39DDB; }
+    .os-ex-chip.c2 { background: #E3F2FD; color: #1565C0; border: 3px solid #90CAF9; }
+    .os-ex-chip.c3 { background: #FFF3E0; color: #E65100; border: 3px solid #FFB74D; }
+
+    .os-note {
+      background: #FFF8E1; border: 2px dashed #FFCA28; border-radius: var(--radius-md);
+      padding: 0.85rem 1.25rem; margin: 1rem 0;
+    }
+    .os-note p { font-size: 1.05rem; color: var(--color-text); margin-bottom: 0.3rem; }
+    .os-note p:last-child { margin-bottom: 0; }
+    .os-note strong { color: #E65100; }
+
+    /* ============ The Wizard ============ */
+    .os-wizard {
+      border-radius: var(--radius-lg); padding: 1.75rem 1.5rem 1.5rem; margin: 1.5rem 0 0.5rem;
+      box-shadow: var(--shadow-md); border: 3px solid #7E57C2; background: #fff;
+    }
+    .os-wizard .os-w-head {
+      display: flex; align-items: center; justify-content: center; gap: 0.55rem;
+      font-size: 1.35rem; font-weight: 800; margin-bottom: 0.9rem; text-align: center; color: #5E35B1;
+    }
+    .os-title-sub { text-align: center; color: var(--color-text-light); font-size: 1rem; margin-bottom: 1rem; }
+
+    /* Problem picker chips */
+    .os-picker { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin: 0.4rem 0 1.1rem; }
+    .os-pb-btn {
+      padding: 0.55rem 1.35rem; font-size: 1.1rem; font-weight: 800; border: 3px solid #B39DDB;
+      background: white; color: #5E35B1; border-radius: 50px; cursor: pointer; transition: all 0.2s ease;
+    }
+    .os-pb-btn:hover:not(:disabled) { transform: translateY(-3px); background: #EDE7F6; }
+    .os-pb-btn.active {
+      background: linear-gradient(135deg, #7E57C2, #5E35B1); border-color: #5E35B1; color: white;
+      box-shadow: 0 4px 12px rgba(94, 53, 177, 0.35); transform: scale(1.05);
+    }
+    .os-pb-btn:disabled { opacity: 0.5; cursor: default; }
+    .os-pb-btn.rand { border-color: #FFB74D; color: #E65100; }
+
+    /* ============ The Chalkboard Sum Stage ============ */
+    .os-chalk {
+      background: linear-gradient(180deg, #EAF7EE 0%, #DFF0E6 100%);
+      border: 3px solid #81C784; border-radius: 20px; margin: 0.75rem auto 0.25rem;
+      max-width: 620px; padding: 1.1rem 1.25rem 1rem; position: relative; min-height: 250px;
+      box-shadow: inset 0 0 30px rgba(129,199,132,0.18);
+    }
+    .os-chalk .os-chalk-label {
+      font-size: 0.85rem; color: #2E7D32; font-weight: 700; text-align: center; margin-bottom: 0.4rem;
+    }
+    .os-row { display: flex; justify-content: flex-end; gap: 0.5rem; box-sizing: border-box; }
+    .os-cell {
+      width: 58px; height: 60px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.9rem; font-weight: 800; border-radius: 10px; background: transparent; color: var(--color-text);
+    }
+    .os-blank { background: transparent; color: transparent; }
+    .os-c-top { background: #EDE7F6; color: #4527A0; border: 2px solid #B39DDB; }
+    .os-c-bottom { background: #FFF3E0; color: #E65100; border: 2px solid #FFB74D; }
+    .os-c-op { width: 42px; background: transparent; color: #1A202C; font-size: 1.4rem; }
+    .os-c-part { background: #E3F2FD; color: #1565C0; border: 2px solid #90CAF9; }
+    .os-c-part2 { background: #E0F7FA; color: #00695C; border: 2px solid #80DEEA; }
+    .os-c-ghost { background: rgba(0,0,0,0.06); color: #9E9E9E; border: 2px dashed #BDBDBD; }
+    .os-c-ans { background: #C8E6C9; color: #14532D; border: 3px solid #4CAF50; box-shadow: 0 4px 12px rgba(76,175,80,0.3); }
+    .os-line { height: 3px; background: #1A202C; margin: 0.25rem 0; border-radius: 2px; }
+
+    /* Beam (scanning column highlight) */
+    .os-beam {
+      position: absolute; top: 0; bottom: 0; width: 58px; pointer-events: none;
+      background: rgba(255, 193, 7, 0.22); border: 2px dashed rgba(255, 152, 0, 0.8);
+      border-radius: 10px; opacity: 0;
+    }
+
+    /* Status / message box */
+    .os-status {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap;
+      margin: 1rem 0; min-height: 3.4rem; padding: 0.85rem 1.1rem; background: #FFF8E1;
+      border-radius: 16px; border: 2px dashed #FFCA28; font-size: 1.12rem; text-align: center;
+      color: var(--color-text); font-weight: 600;
+    }
+    .os-status .os-counter {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 58px;
+      background: #7E57C2; color: #fff; border-radius: 12px; font-size: 1.6rem; font-weight: 800;
+      padding: 0 0.5rem; box-shadow: 0 3px 10px rgba(94,53,177,0.35);
+    }
+
+    /* Controls */
+    .os-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 0.4rem; }
+    .os-btn {
+      padding: 0.7rem 1.6rem; font-size: 1.05rem; font-weight: 800; border: none; border-radius: 50px;
+      cursor: pointer; transition: all 0.2s ease; box-shadow: var(--shadow-sm);
+    }
+    .os-btn.accent { background: linear-gradient(135deg, #7E57C2, #5E35B1); color: white; box-shadow: 0 4px 12px rgba(94,53,177,0.3); }
+    .os-btn.ghost { background: #EDE7F6; color: #4527A0; border: 2px solid #B39DDB; }
+    .os-btn.outline { background: white; color: #E65100; border: 2px solid #FFB74D; }
+    .os-btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.05); }
+    .os-btn:disabled { opacity: 0.55; cursor: default; transform: none !important; }
+
+    /* Quiz option tiles (reuse pattern from other pages) */
+    .os-quiz-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+    .os-option {
+      padding: 0.85rem 1rem; font-size: 1.05rem; font-weight: 700; background: white;
+      border: 2px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer;
+      transition: all 0.2s ease; color: var(--color-text);
+    }
+    .os-option:hover:not(:disabled) { transform: translateY(-3px); border-color: #7E57C2; box-shadow: var(--shadow-sm); }
+    .os-option.correct { background: #C8E6C9 !important; border-color: #2E7D32 !important; animation: popIn 0.4s ease; }
+    .os-option.wrong { background: #FFCDD2 !important; border-color: #C62828 !important; }
+
+    .os-result { margin-top: 0.6rem; padding: 0.55rem 1rem; border-radius: var(--radius-sm); font-weight: 700; display: none; }
+    .os-result.show { display: block; animation: popIn 0.4s ease; }
+    .os-result.correct-result { background: #C8E6C9; color: #14532D; }
+    .os-result.wrong-result { background: #FFCDD2; color: #9b111e; }
+
+    @media (max-width: 640px) {
+      .os-cell { width: 44px; height: 48px; font-size: 1.4rem; }
+      .os-c-op { width: 34px; }
+      .os-beam { width: 44px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="page2.html">Multiply by 3</a></li>
+        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page4.html">Growth</a></li>
+        <li><a href="page5.html">Rate of Change</a></li>
+        <li><a href="page5b.html">Ratio</a></li>
+        <li><a href="page5c.html">💎 Diamond Game</a></li>
+        <li><a href="page6.html">Shapes</a></li>
+        <li><a href="page9.html" class="active">Old-School Multiply</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>✖ Old-School "Multiply &amp; Add" — Big Numbers!</h2>
+
+      <!-- Intro -->
+      <div class="os-intro">
+        <p><strong>Time to go BIG!</strong> You already know small times tables like 3 × 5 = 15. But what about <strong>20 × 11</strong>, <strong>3 × 13</strong> and <strong>20 × 21</strong>? 🤯</p>
+        <p>Long, long ago — before calculators — kids did it the <strong>old-school way</strong>: <span class="hl">MULTIPLY by each digit, then ADD the rows together!</span> No calculator needed!</p>
+        <p>Watch the wizard on this page do it <strong>step by step</strong>, exactly the way it's written in school workbooks. ✨</p>
+      </div>
+
+      <!-- Our three problems -->
+      <section>
+        <div class="example-card">
+          <div class="example-icon">🧮</div>
+          <h4>Our three big challenges</h4>
+          <p>We will solve these the old-school way. Notice how a 2-digit number on top gets <strong>multiplied twice</strong> (once by the ones digit, once by the tens digit) and then we <strong>add</strong> the two rows! 👇</p>
+          <div class="os-examples">
+            <span class="os-ex-chip c1">20 × 11 = <strong>220</strong></span>
+            <span class="os-ex-chip c2">3 × 13 = <strong>39</strong></span>
+            <span class="os-ex-chip c3">20 × 21 = <strong>420</strong></span>
+          </div>
+          <div class="os-note">
+            <p>💡 Did you know? <strong>3 × 13</strong> is exactly the same as <strong>13 × 3</strong> — we just write the bigger number on top so the columns look tidy!</p>
+            <p>💡 A number like 20 is <strong>2 tens + 0 ones</strong>. Multiplying by the tens digit adds a zero at the end (2 × 20 = 40 → <strong>400</strong>).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- The school recipe -->
+      <div class="thinking-steps">
+        <h4>🧠 The old-school recipe (only 4 steps!)</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text"><strong>Line up</strong> the numbers — ones under ones, tens under tens. The bigger number goes on top.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text"><strong>Multiply</strong> the big number by the <strong>ones digit</strong> of the bottom number. Write that row first.</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text"><strong>Multiply</strong> the big number by the <strong>tens digit</strong> of the bottom number. Write a <strong>0 placeholder</strong> in the ones column, then the rest. (That's the "× 10" trick!)</span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-text"><strong>ADD</strong> the two rows together — now you've got the big answer! 🎉</span>
+        </div>
+      </div>
+
+      <!-- ============ THE WIZARD ============ -->
+      <section>
+        <div class="os-wizard">
+          <div class="os-w-head">🧙 The Multiply &amp; Add Wizard</div>
+          <p class="os-title-sub">Pick a problem (or roll a random one), press <strong>▶ Play</strong>, and watch the old-school method happen digit by digit!</p>
+
+          <div class="os-picker" id="osPicker">
+            <button type="button" class="os-pb-btn" data-problem="0">20 × 11</button>
+            <button type="button" class="os-pb-btn" data-problem="1">13 × 3</button>
+            <button type="button" class="os-pb-btn" data-problem="2">20 × 21</button>
+            <button type="button" class="os-pb-btn" data-problem="3">11 × 11</button>
+            <button type="button" class="os-pb-btn" data-problem="4">30 × 11</button>
+            <button type="button" class="os-pb-btn" data-problem="5">12 × 13</button>
+            <button type="button" class="os-pb-btn rand" id="osRandomBtn">🎲 Random!</button>
+          </div>
+
+          <div class="os-chalk" id="osChalk">
+            <div class="os-chalk-label">✍️ The old-school workbook way</div>
+            <div class="os-grid" id="osGrid">
+              <!-- rows built by JavaScript -->
+            </div>
+            <div class="os-beam" id="osBeam"></div>
+          </div>
+
+          <div class="os-status" id="osStatus">
+            <span id="osMsg">Press ▶ Play to go step by step!</span>
+            <span class="os-counter" id="osCnt" style="display:none">0</span>
+          </div>
+
+          <div class="os-controls">
+            <button type="button" class="os-btn accent" id="osPlayBtn">▶ Play</button>
+            <button type="button" class="os-btn ghost" id="osNextBtn">⏭ Next Step</button>
+            <button type="button" class="os-btn outline" id="osResetBtn">↺ Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ QUIZ ============ -->
+      <section>
+        <div class="quiz-section">
+          <h3>🎯 Quick Check — You're the Wizard now!</h3>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q1. Use the old-school way (multiply, then add): <strong>20 × 11</strong> = ?</div>
+            <div class="os-quiz-options">
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq1', true)">220</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq1', false)">31</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq1', false)">201</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq1', false)">200</button>
+            </div>
+            <div id="osq1result" class="os-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q2. Use the old-school way: <strong>3 × 13</strong> = ? (Multiply the ones: 3 × 3 = 9, multiply the tens: 3 × 10 = 30… then add!)</div>
+            <div class="os-quiz-options">
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq2', false)">16</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq2', false)">33</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq2', true)">39</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq2', false)">93</button>
+            </div>
+            <div id="osq2result" class="os-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q3. Last one! <strong>20 × 21</strong> = ? (20 × 1 = 20, then 20 × 2 tens = 400… add them!)</div>
+            <div class="os-quiz-options">
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq3', false)">400</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq3', false)">41</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq3', false)">4200</button>
+              <button class="os-option" onclick="checkOsAnswer(this, 'osq3', true)">420</button>
+            </div>
+            <div id="osq3result" class="os-result"></div>
+          </div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+<script>
+    // ============ Old-School "Multiply & Add" Wizard ============
+    (function () {
+      'use strict';
+
+      var PROBLEMS = [
+        { label: '20 × 11', a: 20, b: 11 },
+        { label: '13 × 3',  a: 13, b: 3  },
+        { label: '20 × 21', a: 20, b: 21 },
+        { label: '11 × 11', a: 11, b: 11 },
+        { label: '30 × 11', a: 30, b: 11 },
+        { label: '12 × 13', a: 12, b: 13 }
+      ];
+
+      var grid     = document.getElementById('osGrid');
+      var chalk    = document.getElementById('osChalk');
+      var beam     = document.getElementById('osBeam');
+      var msgEl    = document.getElementById('osMsg');
+      var cntEl    = document.getElementById('osCnt');
+      var playBtn  = document.getElementById('osPlayBtn');
+      var nextBtn  = document.getElementById('osNextBtn');
+      var resetBtn = document.getElementById('osResetBtn');
+      var randomBtn = document.getElementById('osRandomBtn');
+      var picker   = document.getElementById('osPicker');
+
+      var curIdx = 0;
+      var plan = null;
+      var step = -1;
+      var busy = false;
+
+      // ---------- small helpers ----------
+      function mkCell(text, cls, isBlank) {
+        var c = document.createElement('span');
+        c.className = 'os-cell ' + (cls || 'os-c-top');
+        c.textContent = text;
+        if (isBlank) c.classList.add('os-blank');
+        return c;
+      }
+
+      function rightCells(str, cols, cls) {
+        var pad = cols - str.length;
+        var arr = [];
+        for (var i = 0; i < pad; i++) arr.push(mkCell('', cls, true));
+        for (var j = 0; j < str.length; j++) arr.push(mkCell(str[j], cls, false));
+        return arr;
+      }
+
+      function mkRow(op) {
+        var r = document.createElement('div');
+        r.className = 'os-row';
+        var o = document.createElement('span');
+        o.className = 'os-cell os-c-op';
+        o.textContent = op;
+        r.appendChild(o);
+        return r;
+      }
+
+      function mkLine() {
+        var l = document.createElement('div');
+        l.className = 'os-line';
+        return l;
+      }
+// ---------- build the chalkboard for a problem ----------
+      function buildProblem(idx) {
+        busy = false;
+        step = -1;
+        grid.innerHTML = '';
+        beam.style.opacity = 0;
+        beam.style.display = 'none';
+        cntEl.style.display = 'none';
+
+        var P = PROBLEMS[idx];
+        var a = P.a, b = P.b, ans = a * b;
+        var aStr = String(a), bStr = String(b), ansStr = String(ans);
+        var numCol = Math.max(aStr.length, bStr.length, ansStr.length);
+        var bLen = bStr.length;
+        var aOnes = a % 10, aTens = Math.floor(a / 10);
+        var bOnes = b % 10, bTens = Math.floor(b / 10);
+
+        var groups = [];
+        plan = {
+          numCol: numCol, bLen: bLen, a: a, b: b, ans: ans,
+          aOnes: aOnes, aTens: aTens, bOnes: bOnes, bTens: bTens,
+          groups: groups, steps: [], total: 0
+        };
+
+        // top + bottom + lines
+        var topEl = mkRow('');
+        rightCells(aStr, numCol, 'os-c-top').forEach(function (c) { topEl.appendChild(c); });
+        var botEl = mkRow('×');
+        rightCells(bStr, numCol, 'os-c-bottom').forEach(function (c) { botEl.appendChild(c); });
+        var line1 = mkLine(), line2 = mkLine();
+        grid.appendChild(topEl);
+        grid.appendChild(botEl);
+        grid.appendChild(line1);
+
+        plan.bottomRow = botEl;
+        plan.bottomCells = [].slice.call(botEl.children);
+
+        if (bLen === 2) {
+          var p0 = a * bOnes, p1 = a * bTens, partial1 = p1 * 10;
+
+          var part0El = mkRow('');
+          rightCells(String(p0), numCol, 'os-c-part').forEach(function (c) { part0El.appendChild(c); });
+
+          var part1El = mkRow('+');
+          var part1OpEl = part1El.children[0];
+          var part1Cells = rightCells(String(partial1), numCol, 'os-c-part2');
+          var ghostEl = part1Cells[numCol - 1];
+          ghostEl.classList.add('os-c-ghost');
+          part1Cells.forEach(function (c) { part1El.appendChild(c); });
+
+          var ansRowEl = mkRow('=');
+          var ansCells = rightCells(String(ans), numCol, 'os-c-ans');
+          ansCells.forEach(function (c) { ansRowEl.appendChild(c); });
+
+          grid.appendChild(part0El);
+          grid.appendChild(part1El);
+          grid.appendChild(line2);
+          grid.appendChild(ansRowEl);
+
+          plan.ansRowEl = ansRowEl;
+
+          groups.push({ els: [topEl, botEl, line1, line2], at: 0 });
+          groups.push({ els: [].slice.call(part0El.children), at: 1 });
+          groups.push({ els: [ghostEl, part1OpEl], at: 2 });
+          groups.push({ els: part1Cells.filter(function (c) { return c !== ghostEl; }), at: 3 });
+          groups.push({ els: [].slice.call(ansRowEl.children), at: 4 });
+
+          plan.total = 5;
+          plan.steps = [
+            { msg: 'Step 1 — ✏️ Line up the numbers: <strong>' + a + '</strong> on top and <strong>' + b + '</strong> below — ones under ones!', beam: 0, cnt: 0 },
+            { msg: 'Step 2 — Multiply by the <strong>ONES digit</strong> 🔢: ' + bOnes + ' × ' + a + ' = <strong>' + p0 + '</strong>', beam: 1, cnt: p0 },
+            { msg: 'Step 3 — ✨ The <strong>×10 trick</strong>: write a <strong>0 placeholder</strong> in the ones column of row 2!', beam: 1, cnt: 0 },
+            { msg: 'Step 4 — Multiply by the <strong>TENS digit</strong>: ' + bTens + ' × ' + a + ' = <strong>' + p1 + '</strong>, so write <strong>' + partial1 + '</strong>', beam: 2, cnt: p1 },
+            { msg: 'Step 5 — NOW <strong>ADD the rows</strong> 🧮: ' + p0 + ' + ' + partial1 + ' = <strong>' + ans + '</strong>! 🎉', beam: 0, cnt: ans }
+          ];
+        } else {
+          // one-digit bottom: 13 × 3 → fill the result row digit by digit
+          var tot = a * b, totStr = String(tot);
+          var resCells = rightCells(totStr, numCol, 'os-c-part');
+          var resEl = mkRow('');
+          resCells.forEach(function (c) { resEl.appendChild(c); });
+          grid.appendChild(resEl);
+          grid.appendChild(line2);
+
+          plan.resRowEl = resEl;
+          plan.resCells = resCells;
+
+          var base = [topEl, botEl, line1, line2, resEl.children[0]];
+          groups.push({ els: base, at: 0 });
+          groups.push({ els: [resCells[numCol - 1]], at: 1 });
+          if (numCol >= 2) groups.push({ els: [resCells[numCol - 2]], at: 2 });
+
+          var pOnes = b * aOnes, pTens = b * aTens;
+          plan.total = (numCol >= 2) ? 4 : 3;
+          plan.steps = [
+            { msg: 'Step 1 — ✏️ Line up: <strong>' + a + '</strong> on top, <strong>' + b + '</strong> below. We multiply the ones first!', beam: 0, cnt: 0 },
+            { msg: 'Step 2 — Multiply the <strong>ones</strong> 🔢: ' + b + ' × ' + aOnes + ' = <strong>' + pOnes + '</strong> → write <strong>' + pOnes + '</strong> in the ones column.', beam: 1, cnt: 0 }
+          ];
+          if (numCol >= 2) {
+            plan.steps.push({
+              msg: 'Step 3 — Multiply the <strong>tens</strong> 🔢: ' + b + ' × ' + aTens + ' = <strong>' + pTens + '</strong> → that means <strong>' + (pTens * 10) + '</strong> → write <strong>' + pTens + '</strong> in the tens column.',
+              beam: 2, cnt: 0
+            });
+          }
+          plan.steps.push({ msg: 'Step ' + plan.total + ' — Put it together 🧮: the row reads <strong>' + tot + '</strong> — that\'s your answer! 🌟', beam: 0, cnt: ans });
+        }
+      }
+// ---------- reveal the details of one step onto a timeline ----------
+      function revealStepData(s, tl) {
+        var groups = plan.groups;
+        var st = plan.steps[s];
+
+        for (var g = 0; g < groups.length; g++) {
+          var gr = groups[g];
+          if (gr.at === s) {
+            tl.to(gr.els, {
+              autoAlpha: 1, scale: 1, duration: 0.4, ease: 'back.out(2)', stagger: 0.1
+            }, tl.duration);
+          }
+        }
+
+        tl.call(function () { msgEl.innerHTML = st.msg; }, [], tl.duration);
+
+        // one-digit-bottom: the result row turns green at the final step
+        if (plan.bLen === 1 && s === plan.total - 1) {
+          var done = false;
+          tl.call(function () {
+            if (done) return; done = true;
+            plan.resCells.forEach(function (c) {
+              c.classList.remove('os-c-part');
+              c.classList.add('os-c-ans');
+            });
+          }, [], tl.duration);
+          tl.to(plan.resRowEl, { scale: 0.88, duration: 0.35, ease: 'back.out(2)' }, tl.duration);
+        }
+
+        // counter
+        if (st.cnt > 0) {
+          tl.call(function () { cntEl.style.display = 'inline-flex'; cntEl.textContent = '0'; }, [], tl.duration);
+          var c = { v: 0 };
+          tl.to(c, {
+            v: st.cnt, duration: 0.9, ease: 'power1.inOut',
+            onUpdate: function () { cntEl.textContent = Math.round(c.v); }
+          }, tl.duration);
+        } else {
+          tl.call(function () { cntEl.style.display = 'none'; }, [], tl.duration);
+        }
+
+        // beam column highlight
+        if (st.beam > 0 && plan.bottomRow) {
+          var bi = plan.bottomCells.length - st.beam;
+          var target = plan.bottomCells[bi];
+          var tr = target.getBoundingClientRect();
+          var cr = chalk.getBoundingClientRect();
+          tl.call(function () { beam.style.display = 'block'; }, [], tl.duration);
+          tl.to(beam, {
+            left: (tr.left - cr.left), width: tr.width, opacity: 1,
+            duration: 0.5, ease: 'power2.inOut'
+          }, tl.duration);
+        } else {
+          tl.call(function () { beam.style.opacity = 0; beam.style.display = 'none'; }, [], tl.duration);
+        }
+      }
+
+      // ---------- instant state apply (reset / rebuild) ----------
+      function setState(s) {
+        var groups = plan.groups;
+        for (var g = 0; g < groups.length; g++) {
+          var gr = groups[g];
+          var show = gr.at <= s;
+          gr.els.forEach(function (e) {
+            if (show) gsap.set(e, { autoAlpha: 1, scale: 1 });
+            else gsap.set(e, { autoAlpha: 0, scale: 0.3 });
+          });
+        }
+
+        var st = plan.steps[s];
+        msgEl.innerHTML = st.msg;
+
+        if (st.cnt > 0) { cntEl.textContent = st.cnt; cntEl.style.display = 'inline-flex'; }
+        else cntEl.style.display = 'none';
+
+        if (plan.bLen === 1 && s === plan.total - 1) {
+          plan.resCells.forEach(function (c) {
+            c.classList.remove('os-c-part');
+            c.classList.add('os-c-ans');
+          });
+        }
+
+        if (st.beam > 0 && plan.bottomRow) {
+          var bi = plan.bottomCells.length - st.beam;
+          var target = plan.bottomCells[bi];
+          var tr = target.getBoundingClientRect();
+          var cr = chalk.getBoundingClientRect();
+          beam.style.display = 'block';
+          beam.style.left = (tr.left - cr.left) + 'px';
+          beam.style.width = tr.width + 'px';
+          beam.style.opacity = 1;
+        } else {
+          beam.style.opacity = 0;
+          beam.style.display = 'none';
+        }
+
+        step = s;
+        updateButtons();
+      }
+function updateButtons() {
+        playBtn.disabled = busy;
+        resetBtn.disabled = busy;
+        nextBtn.disabled = busy || step >= plan.total - 1;
+      }
+
+      // ---------- animate a single step forward ----------
+      function applyState(s) {
+        busy = true;
+        updateButtons();
+        var tl = gsap.timeline({ onComplete: function () { busy = false; step = s; updateButtons(); } });
+        revealStepData(s, tl);
+      }
+
+
+// ---------- play all remaining steps ----------
+      function playAll() {
+        if (busy) return;
+        if (step >= plan.total - 1) setState(0);
+
+        busy = true;
+        updateButtons();
+
+        var tl = gsap.timeline({
+          onComplete: function () { busy = false; step = plan.total - 1; updateButtons(); }
+        });
+
+        for (var s2 = step + 1; s2 < plan.total; s2++) {
+          revealStepData(s2, tl);
+        }
+      }
+
+      // ---------- event hooks ----------
+      playBtn.addEventListener('click', playAll);
+
+      nextBtn.addEventListener('click', function () {
+        if (busy || step >= plan.total - 1) return;
+        applyState(step + 1);
+      });
+
+      resetBtn.addEventListener('click', function () {
+        if (busy) return;
+        setState(0);
+      });
+
+      picker.addEventListener('click', function (e) {
+        var btn = e.target.closest('.os-pb-btn');
+        if (!btn || busy) return;
+        var idx = parseInt(btn.getAttribute('data-problem'), 10);
+        if (isNaN(idx)) return;
+        curIdx = idx;
+        selectProblem(idx);
+      });
+
+      randomBtn.addEventListener('click', function () {
+        if (busy) return;
+        var picks = [];
+        for (var i = 0; i < PROBLEMS.length; i++) if (i !== curIdx) picks.push(i);
+        curIdx = picks[Math.floor(Math.random() * picks.length)];
+        selectProblem(curIdx);
+      });
+
+      function selectProblem(idx) {
+        Array.prototype.forEach.call(picker.querySelectorAll('.os-pb-btn'), function (b) {
+          b.classList.toggle('active', parseInt(b.getAttribute('data-problem'), 10) === idx);
+        });
+        buildProblem(idx);
+        setState(0);
+      }
+
+      // ---------- init ----------
+      selectProblem(0);
+
+    })();
+
+    // ============ Quiz ============
+    function checkOsAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.os-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      Array.prototype.forEach.call(options, function (opt) { opt.disabled = true; });
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        Array.prototype.forEach.call(options, function (opt) {
+          if (opt.getAttribute('onclick').indexOf('true') !== -1) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+  </script>
+</body>
+</html>
