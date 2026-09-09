@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Old School Long Division!</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- GSAP Animation Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+  </script>
+  <style>
+    /* Page 3 specific styles - Old School Long Division Theme */
+    .example-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .chip {
+      font-family: inherit;
+      font-size: 1.15rem;
+      font-weight: 700;
+      padding: 0.7rem 1.5rem;
+      border: 3px solid var(--color-primary-light);
+      background-color: white;
+      color: var(--color-text);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-3px) scale(1.05);
+      border-color: var(--color-primary);
+    }
+
+    .chip.active {
+      background-color: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+      box-shadow: 0 6px 15px rgba(30, 136, 229, 0.35);
+    }
+
+    /* Long Division Stage */
+    .ld-stage {
+      background: var(--color-bg-tone);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+    }
+
+    .ld-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--cols, 8), auto);
+      justify-content: center;
+      column-gap: 0.35rem;
+      row-gap: 0.55rem;
+      font-size: 2rem;
+      font-weight: 600;
+      min-height: 240px;
+      align-items: center;
+    }
+
+    .ld-cell {
+      width: 2.3rem;
+      height: 2.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      line-height: 1;
+    }
+
+    .ld-divisor { color: var(--color-orange); font-size: 2.2rem; }
+    .ld-bracket {
+      width: 1.3rem;
+      height: 4.2rem;
+      margin-top: -2.1rem;
+      border-left: 5px solid var(--color-text);
+      border-top: 5px solid var(--color-text);
+      border-top-left-radius: 10px;
+    }
+    .ld-digit { color: var(--color-text); }
+    .ld-quotient { color: var(--color-primary-dark); background: var(--color-primary-light); }
+    .ld-product { color: var(--color-orange); background: #FFF3E0; }
+    .ld-diff { color: var(--color-green); background: #E8F5E9; }
+    .ld-hl { outline: 4px dashed var(--color-yellow); outline-offset: -2px; }
+
+    /* Narration speech bubble */
+    .ld-narration {
+      font-size: 1.25rem;
+      line-height: 1.6;
+      text-align: center;
+      padding: 1.25rem 1.75rem;
+      background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%);
+      border-radius: var(--radius-md);
+      border: 3px solid var(--color-primary-light);
+      min-height: 4.5rem;
+      margin: 1.5rem auto;
+      max-width: 640px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+
+    .btn-step {
+      font-size: 1.15rem;
+      padding: 0.85rem 1.75rem;
+    }
+
+    /* Interactive Quiz */
+    .quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .quiz-option {
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 0.7rem 1.5rem;
+      border: 3px solid var(--color-primary-light);
+      background: white;
+      color: var(--color-text);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .quiz-option:hover:not(:disabled) {
+      transform: translateY(-3px);
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quiz-option.correct { background: #C8E6C9; border-color: var(--color-green); }
+    .quiz-option.wrong { background: #FFCDD2; border-color: #E53935; }
+    .quiz-option:disabled { cursor: default; opacity: 0.9; }
+
+    .quiz-feedback {
+      margin-top: 0.75rem;
+      font-weight: 700;
+      min-height: 1.6rem;
+      color: var(--color-text-light);
+    }
+
+    .quiz-score {
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      padding: 1rem 1.5rem;
+      background-color: var(--color-primary-light);
+      border-radius: var(--radius-md);
+      margin-top: 2rem;
+      min-height: 3.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .ld-grid { font-size: 1.5rem; }
+      .ld-cell { width: 1.8rem; height: 2.2rem; }
+      .ld-bracket { height: 3.4rem; margin-top: -1.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page3.html" class="active">Old School Divide</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+        <li><a href="page4.html">Adventure 3</a></li>
+        <li><a href="page5.html">Adventure 4</a></li>
+        <li><a href="page6.html">Adventure 5</a></li>
+        <li><a href="page7.html">Adventure 6</a></li>
+        <li><a href="page8.html">Adventure 7</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <!-- Back to Home link -->
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <!-- Fun Learning Article -->
+    <article class="article">
+      <h2>✏️ Old School Long Division! 🧮</h2>
+
+      <div class="highlight-box explanation-box">
+        <p><strong>What is the "Old School" Method?</strong></p>
+        <p>Long ago (before calculators! 🧓), people divided big numbers using the <strong>long division</strong> method — sometimes called the "bus stop" method 🚌. You write the numbers in a special bracket, then work <strong>digit by digit</strong>: divide, multiply, subtract, and bring down!</p>
+        <p>It looks like this: <strong>20 ÷ 2</strong> is written as <strong>2 ) 20</strong>, and we solve it one step at a time. Watch the magic below! ✨</p>
+      </div>
+
+      <!-- Equation Display -->
+      <section class="division-display">
+        <div class="equation-box" id="equationBox">
+          <span class="equation-number" id="eqDividend">20</span>
+          <span class="equation-symbol">÷</span>
+          <span class="equation-number" id="eqDivisor">2</span>
+          <span class="equation-symbol">=</span>
+          <span class="equation-number" id="eqResult">?</span>
+        </div>
+        <p class="result-text" id="resultText">Press Play or Next Step to solve it the old school way! 🚌</p>
+      </section>
+
+      <!-- Controls Section -->
+      <section class="controls-section">
+        <h3>🎮 Pick a Problem!</h3>
+        <div class="example-chips">
+          <button class="chip active" data-dividend="20" data-divisor="2">20 ÷ 2</button>
+          <button class="chip" data-dividend="200" data-divisor="10">200 ÷ 10</button>
+          <button class="chip" data-dividend="100" data-divisor="5">100 ÷ 5</button>
+        </div>
+        <div class="controls-row">
+          <div class="control-group">
+            <label for="dividendInput">Big Number 🔢</label>
+            <input type="number" id="dividendInput" min="1" max="9999" value="20">
+            <span class="control-hint">(1 to 9999)</span>
+          </div>
+          <div class="control-group">
+            <label for="divisorInput">Divide By ✖️</label>
+            <input type="number" id="divisorInput" min="1" max="99" value="2">
+            <span class="control-hint">(1 to 99)</span>
+          </div>
+          <div class="control-group">
+            <label>&nbsp;</label>
+            <button id="setBtn" class="btn btn-secondary btn-step">✔ Set Problem</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button id="playBtn" class="btn btn-primary btn-step">▶ Play All Steps</button>
+        <button id="nextBtn" class="btn btn-secondary btn-step">⏭ Next Step</button>
+        <button id="resetBtn" class="btn btn-secondary btn-step btn-reset">🔄 Reset</button>
+      </div>
+
+      <!-- Long Division Animation Area -->
+      <section class="ld-stage">
+        <div class="ld-grid" id="ldGrid" style="--cols: 5;">
+          <!-- Long division cells are generated here -->
+        </div>
+      </section>
+
+      <!-- Narration -->
+      <div class="ld-narration" id="narration">
+        👋 Press <strong>▶ Play All Steps</strong> (or step through with <strong>⏭ Next Step</strong>) to watch the old school method in action!
+      </div>
+
+      <!-- Answer Reveal -->
+      <div class="answer-reveal" id="answerReveal" style="display:none;">
+        <p>🎯 <strong>The Answer:</strong></p>
+        <div class="big-answer" id="bigAnswer"></div>
+        <p id="answerDetail"></p>
+        <div class="fun-fact" id="funFact"></div>
+      </div>
+
+      <!-- Quiz Section -->
+      <section class="quiz-section">
+        <h3>🧠 Old School Division Quiz!</h3>
+        <p style="font-size:1.1rem; color:var(--color-text-light); margin-bottom:1.5rem; text-align:center;">Answer all 5 questions. Pick an answer and see if you're right!</p>
+        <div id="quizArea">
+          <!-- Quiz questions are generated here -->
+        </div>
+        <div class="quiz-score" id="quizScore">Score: 0 / 5 ⭐</div>
+      </section>
+
+    </article>
+  </main>
+
+  <script>
+    // ============ State ============
+    let dividend = 20;
+    let divisor = 2;
+    let steps = [];
+    let currentStep = 0;
+    let playing = false;
+    let playTimer = null;
+
+    const ldGrid = document.getElementById('ldGrid');
+    const narration = document.getElementById('narration');
+    const answerReveal = document.getElementById('answerReveal');
+    const eqResult = document.getElementById('eqResult');
+    const resultText = document.getElementById('resultText');
+    const playBtn = document.getElementById('playBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const dividendInput = document.getElementById('dividendInput');
+    const divisorInput = document.getElementById('divisorInput');
+    const setBtn = document.getElementById('setBtn');
+
+    // ============ Grid Helpers ============
+    // Column mapping: -2 = divisor, -1 = bracket, 0..n = dividend digits
+    // CSS grid columns are 1-based, so cssCol = col + 3
+    function addCell(row, col, text, cls) {
+      const cell = document.createElement('div');
+      cell.className = 'ld-cell ' + (cls || '');
+      cell.textContent = text;
+      cell.style.gridRow = row;
+      cell.style.gridColumn = col + 3;
+      ldGrid.appendChild(cell);
+      return cell;
+    }
+
+    function getDigitCell(col) {
+      // dividend digit cells sit in row 2
+      const cssCol = col + 3;
+      return Array.from(ldGrid.children).find(c =>
+        c.style.gridRow === '2' && c.style.gridColumn === String(cssCol));
+    }
+
+    function clearHighlights() {
+      ldGrid.querySelectorAll('.ld-hl').forEach(c => c.classList.remove('ld-hl'));
+    }
+
+    // ============ Build Base Layout:  divisor ) digits ============
+    function setupBase() {
+      ldGrid.innerHTML = '';
+      const digits = String(dividend).length;
+      ldGrid.style.setProperty('--cols', digits + 2);
+      addCell(2, -2, divisor, 'ld-divisor');
+      addCell(2, -1, '', 'ld-bracket');
+      String(dividend).split('').forEach((d, i) => addCell(2, i, d, 'ld-digit'));
+      gsap.from('.ld-cell', { scale: 0, duration: 0.4, stagger: 0.06, ease: 'back.out(1.7)' });
+    }
+
+    // ============ Step Actions (each animates one piece) ============
+    function hlWorking(c0, c1) {
+      clearHighlights();
+      for (let c = c0; c <= c1; c++) {
+        const cell = getDigitCell(c);
+        if (cell) {
+          cell.classList.add('ld-hl');
+          gsap.fromTo(cell, { scale: 1 }, { scale: 1.25, duration: 0.25, yoyo: true, repeat: 1, ease: 'power1.out' });
+        }
+      }
+    }
+
+    function writeQuotientDigit(col, q) {
+      const cell = addCell(1, col, q, 'ld-quotient');
+      gsap.from(cell, { scale: 0, duration: 0.5, ease: 'back.out(2)' });
+      gsap.fromTo(cell, { backgroundColor: '#FFC107' }, { backgroundColor: '#E3F2FD', duration: 1 });
+    }
+
+    function writeNumberRow(row, value, lastCol, cls) {
+      const digits = String(value).split('');
+      const cells = [];
+      digits.forEach((d, i) => {
+        cells.push(addCell(row, lastCol - digits.length + 1 + i, d, cls));
+      });
+      gsap.from(cells, { scale: 0, y: -25, duration: 0.45, stagger: 0.08, ease: 'back.out(1.7)' });
+    }
+
+    function bringDownDigit(col) {
+      const cell = getDigitCell(col);
+      if (cell) {
+        cell.classList.add('ld-hl');
+        gsap.fromTo(cell, { y: 0 }, { y: 18, duration: 0.3, yoyo: true, repeat: 1, ease: 'power1.inOut' });
+      }
+    }
+
+    function revealAnswer() {
+      const quotient = dividend / divisor;
+      const remainder = dividend % divisor;
+      eqResult.textContent = remainder === 0 ? quotient : quotient + ' r' + remainder;
+      resultText.textContent = remainder === 0
+        ? `🎉 ${dividend} ÷ ${divisor} = ${quotient}! Solved the old school way!`
+        : `🎉 ${dividend} ÷ ${divisor} = ${quotient} remainder ${remainder}!`;
+      bigAnswer.textContent = remainder === 0
+        ? `${dividend} ÷ ${divisor} = ${quotient}! 🌟`
+        : `${dividend} ÷ ${divisor} = ${quotient} r ${remainder} 🌟`;
+      answerDetail.textContent = `Check it: ${quotient} × ${divisor} = ${quotient * divisor}${remainder ? ', plus remainder ' + remainder : ''} = ${dividend}. Multiplication checks division! ✅`;
+      funFact.textContent = '💡 Fun Fact: Divide → Multiply → Subtract → Bring down. That order never changes in long division!';
+      answerReveal.style.display = 'block';
+      gsap.from(answerReveal, { scale: 0.6, opacity: 0, duration: 0.6, ease: 'back.out(1.7)' });
+      gsap.from('#bigAnswer', { scale: 0, duration: 0.7, delay: 0.2, ease: 'elastic.out(1, 0.5)' });
+    }
+
+
+    // ============ Build Steps (old school: Divide → Multiply → Subtract → Bring down) ============
+    function buildSteps() {
+      const digits = String(dividend).split('').map(Number);
+      const result = [];
+      const dvs = divisor;
+
+      result.push({
+        n: `🚌 We are dividing <strong>${dividend}</strong> by <strong>${divisor}</strong>. First, set up the bracket: <strong>${divisor} ) ${dividend}</strong>`,
+        a: setupBase
+      });
+
+      let col = 0;
+      let working = 0;
+
+      // Stage 0: take leading digits until the chunk is at least the divisor
+      while (col < digits.length && working < dvs) {
+        working = working * 10 + digits[col];
+        const c1 = col;
+        result.push({
+          n: working < dvs && col + 1 < digits.length
+            ? `👀 Look at <strong>${working}</strong>... it's smaller than <strong>${dvs}</strong>, so take the next digit too!`
+            : `👀 Look at the first chunk: <strong>${working}</strong>`,
+          a: () => hlWorking(0, c1)
+        });
+        col++;
+      }
+
+      let stage = 0;
+
+      // Main loop: divide, multiply, subtract, bring down
+      while (true) {
+        const q = Math.floor(working / dvs);
+        const prod = q * dvs;
+        const diff = working - prod;
+        const lastCol = col - 1;
+
+        result.push({
+          n: q === 0
+            ? `🤔 How many <strong>${dvs}</strong>s are in <strong>${working}</strong>? None! Write <strong>0</strong> on top.`
+            : `➗ How many <strong>${dvs}</strong>s are in <strong>${working}</strong>? <strong>${q}</strong>! Write <strong>${q}</strong> on top.`,
+          a: () => writeQuotientDigit(lastCol, q)
+        });
+
+        const rowP = 3 + stage * 2;
+        const prodVal = prod;
+        result.push({
+          n: `✖️ Multiply: <strong>${q} × ${dvs} = ${prod}</strong>. Write it under the chunk.`,
+          a: () => writeNumberRow(rowP, prodVal, lastCol, 'ld-product')
+        });
+
+        const rowD = 4 + stage * 2;
+        const diffVal = diff;
+        result.push({
+          n: diffVal === 0
+            ? `➖ Subtract: <strong>${working} − ${prod} = 0</strong>. Nothing left over!`
+            : `➖ Subtract: <strong>${working} − ${prod} = ${diffVal}</strong> left over.`,
+          a: () => writeNumberRow(rowD, diffVal, lastCol, 'ld-diff')
+        });
+
+        if (col >= digits.length) break;
+
+        // Bring down the next digit
+        const nextDigit = digits[col];
+        const bCol = col;
+        const newWorking = diff * 10 + nextDigit;
+        result.push({
+          n: `⬇️ Bring down the next digit <strong>${nextDigit}</strong>. Now we work with <strong>${newWorking}</strong>!`,
+          a: () => bringDownDigit(bCol)
+        });
+
+        working = newWorking;
+        col++;
+        stage++;
+      }
+
+      result.push({
+        n: `🎊 All digits solved! Time to reveal the answer...`,
+        a: revealAnswer
+      });
+
+      return result;
+    }
+
+
+    // ============ Playback ============
+    function runStep(i) {
+      const s = steps[i];
+      if (!s) return;
+      narration.innerHTML = s.n;
+      gsap.fromTo(narration, { opacity: 0.4, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.35 });
+      s.a();
+    }
+
+    function setButtonsDisabled(dis) {
+      playBtn.disabled = dis;
+      nextBtn.disabled = dis;
+      setBtn.disabled = dis;
+    }
+
+    function stopPlaying() {
+      if (!playing) return;
+      playing = false;
+      clearTimeout(playTimer);
+      setButtonsDisabled(false);
+      playBtn.textContent = '▶ Play All Steps';
+    }
+
+    function playAll() {
+      if (playing) return;
+      clearTimeout(playTimer);
+      resetAnimation();
+      playing = true;
+      setButtonsDisabled(true);
+      playBtn.disabled = false;
+      playBtn.textContent = '⏸ Playing...';
+      const tick = () => {
+        if (!playing) return;
+        if (currentStep >= steps.length) {
+          playing = false;
+          setButtonsDisabled(false);
+          playBtn.textContent = '✅ Done! Press Reset to replay';
+          return;
+        }
+        runStep(currentStep++);
+        playTimer = setTimeout(tick, 1900);
+      };
+      tick();
+    }
+
+    function nextStep() {
+      stopPlaying();
+      if (currentStep >= steps.length) {
+        playBtn.textContent = '✅ Done! Press Reset to replay';
+        return;
+      }
+      runStep(currentStep++);
+      if (currentStep >= steps.length) {
+        playBtn.textContent = '✅ Done! Press Reset to replay';
+      }
+    }
+
+    function resetAnimation() {
+      clearTimeout(playTimer);
+      playing = false;
+      setButtonsDisabled(false);
+      playBtn.textContent = '▶ Play All Steps';
+      currentStep = 0;
+      steps = buildSteps();
+      eqResult.textContent = '?';
+      resultText.textContent = 'Press Play or Next Step to solve it the old school way! 🚌';
+      answerReveal.style.display = 'none';
+      narration.innerHTML = '👋 Press <strong>▶ Play All Steps</strong> (or step through with <strong>⏭ Next Step</strong>)!';
+      setupBase();
+    }
+
+    // ============ Problem Selection ============
+    function updateDisplay() {
+      document.getElementById('eqDividend').textContent = dividend;
+      document.getElementById('eqDivisor').textContent = divisor;
+    }
+
+    function selectChip(div, dis) {
+      document.querySelectorAll('.chip').forEach(ch => {
+        ch.classList.toggle('active', Number(ch.dataset.dividend) === div && Number(ch.dataset.divisor) === dis);
+      });
+    }
+
+    function setProblem(div, dis, syncChips) {
+      if (playing) return;
+      dividend = div;
+      divisor = dis;
+      dividendInput.value = div;
+      divisorInput.value = dis;
+      selectChip(syncChips ? div : -1, syncChips ? dis : -1);
+      updateDisplay();
+      resetAnimation();
+    }
+
+    // ============ Init ============
+    function init() {
+      document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          stopPlaying();
+          setProblem(Number(chip.dataset.dividend), Number(chip.dataset.divisor), true);
+        });
+      });
+
+      setBtn.addEventListener('click', () => {
+        stopPlaying();
+        let div = parseInt(dividendInput.value, 10);
+        let dis = parseInt(divisorInput.value, 10);
+        if (isNaN(div) || div < 1 || div > 9999) div = 20;
+        if (isNaN(dis) || dis < 1 || dis > 99) dis = 2;
+        setProblem(div, dis, false);
+        gsap.fromTo('.division-display', { scale: 1 }, { scale: 1.06, duration: 0.2, yoyo: true, repeat: 1 });
+      });
+
+      playBtn.addEventListener('click', playAll);
+      nextBtn.addEventListener('click', nextStep);
+      resetBtn.addEventListener('click', () => {
+        stopPlaying();
+        resetAnimation();
+      });
+
+      updateDisplay();
+      resetAnimation();
+      initQuiz();
+    }
+
+
+    // ============ Interactive Quiz ============
+    const quizData = [
+      {
+        q: '1. ➗ Use the old school method: what is 40 ÷ 4?',
+        options: ['8', '10', '12', '4'],
+        answer: 1,
+        explain: '4 ) 40 → 4 goes into 4 once, bring down the 0 → answer is 10! ✨'
+      },
+      {
+        q: '2. ➗ What is 90 ÷ 3?',
+        options: ['3', '13', '30', '33'],
+        answer: 2,
+        explain: '3 ) 90 → 3 goes into 9 three times, bring down the 0 → 30! 🌟'
+      },
+      {
+        q: '3. 🚌 In long division, what do we do RIGHT AFTER we subtract?',
+        options: ['Give up!', 'Bring down the next digit', 'Start again', 'Multiply by 100'],
+        answer: 1,
+        explain: 'The magic order is: Divide → Multiply → Subtract → Bring down! ⬇️'
+      },
+      {
+        q: '4. ➗ What is 240 ÷ 8?',
+        options: ['30', '24', '40', '3'],
+        answer: 0,
+        explain: '8 ) 240 → 8 goes into 24 three times, then 8 goes into 0 zero times → 30! 🎉'
+      },
+      {
+        q: '5. ➗ What is 125 ÷ 5?',
+        options: ['20', '24', '25', '35'],
+        answer: 2,
+        explain: '5 ) 125 → 5 goes into 12 twice (10), subtract to get 2, bring down 5 → 25 ÷ 5 = 5 → answer 25! 🌟'
+      }
+    ];
+
+    let quizScore = 0;
+    let quizAnswered = 0;
+
+    function initQuiz() {
+      const area = document.getElementById('quizArea');
+      area.innerHTML = '';
+      quizScore = 0;
+      quizAnswered = 0;
+      updateScoreBoard();
+
+      quizData.forEach((item, qIdx) => {
+        const card = document.createElement('div');
+        card.className = 'quiz-card';
+
+        const qP = document.createElement('p');
+        qP.className = 'quiz-question';
+        qP.textContent = item.q;
+        card.appendChild(qP);
+
+        const optsDiv = document.createElement('div');
+        optsDiv.className = 'quiz-options';
+
+        item.options.forEach((opt, oIdx) => {
+          const btn = document.createElement('button');
+          btn.className = 'quiz-option';
+          btn.textContent = opt;
+          btn.addEventListener('click', () => selectAnswer(qIdx, oIdx, optsDiv));
+          optsDiv.appendChild(btn);
+        });
+
+        card.appendChild(optsDiv);
+
+        const feedback = document.createElement('p');
+        feedback.className = 'quiz-feedback';
+        card.appendChild(feedback);
+
+        area.appendChild(card);
+      });
+    }
+
+    function selectAnswer(qIdx, oIdx, optsDiv) {
+      const item = quizData[qIdx];
+      const card = optsDiv.parentElement;
+      const feedback = card.querySelector('.quiz-feedback');
+
+      // Prevent double answering
+      if (card.dataset.answered === 'true') return;
+      card.dataset.answered = 'true';
+      quizAnswered++;
+
+      const buttons = optsDiv.querySelectorAll('.quiz-option');
+      buttons.forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.answer) b.classList.add('correct');
+      });
+
+      if (oIdx === item.answer) {
+        quizScore++;
+        feedback.textContent = '✅ Correct! ' + item.explain;
+        feedback.style.color = 'var(--color-green)';
+        gsap.fromTo(card, { scale: 1 }, { scale: 1.02, duration: 0.2, yoyo: true, repeat: 1 });
+      } else {
+        buttons[oIdx].classList.add('wrong');
+        feedback.textContent = '❌ Not quite! ' + item.explain;
+        feedback.style.color = '#E53935';
+        gsap.fromTo(buttons[oIdx], { x: 0 }, { x: 8, duration: 0.1, yoyo: true, repeat: 5 });
+      }
+
+      updateScoreBoard();
+
+      if (quizAnswered === quizData.length) {
+        const scoreEl = document.getElementById('quizScore');
+        let message;
+        if (quizScore === quizData.length) {
+          message = `🏆 PERFECT! ${quizScore}/${quizData.length} — You are an Old School Division Master!`;
+        } else if (quizScore >= 3) {
+          message = `🌟 Great job! ${quizScore}/${quizData.length} — Keep practicing and you'll be a master!`;
+        } else {
+          message = `💪 You got ${quizScore}/${quizData.length} — Try the animations again, then retake the quiz!`;
+        }
+        scoreEl.textContent = message;
+        gsap.from(scoreEl, { scale: 0.5, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
+      }
+    }
+
+    function updateScoreBoard() {
+      const scoreEl = document.getElementById('quizScore');
+      if (quizAnswered < quizData.length) {
+        scoreEl.textContent = `Score: ${quizScore} / ${quizData.length} ⭐`;
+      }
+    }
+
+    // ============ Start ============
+    init();
+
+
+
+  </script>
+
+</body>
+</html>
