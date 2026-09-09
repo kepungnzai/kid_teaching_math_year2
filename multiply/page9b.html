@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Old-School Multiply Simulator! 🧮</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Old-School Multiply Simulator Styles ============ */
+    :root {
+      --sim-cell: 54px;
+      --sim-fs: 1.8rem;
+    }
+    .sim-intro {
+      background: linear-gradient(135deg, #EAF7EE 0%, #FFF8E1 100%);
+      border-left: 6px solid #2E7D32;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .sim-intro p { margin-bottom: 0.75rem; font-size: 1.15rem; line-height: 1.7; }
+    .sim-intro p:last-child { margin-bottom: 0; }
+    .sim-intro strong { color: #1B5E20; }
+    .sim-intro .hl { color: #E65100; font-weight: 800; }
+
+    /* Example chips */
+    .sim-examples { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin: 0.5rem 0 1.4rem; }
+    .sim-ex-chip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.6rem 1.25rem; border-radius: 50px; font-weight: 800; font-size: 1.2rem;
+      background: #E8F5E9; color: #1B5E20; border: 3px solid #A5D6A7; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .sim-ex-chip:hover { transform: translateY(-3px); background: #C8E6C9; box-shadow: var(--shadow-sm); }
+
+    /* The input card */
+    .sim-input-card {
+      border: 3px solid #66BB6A; border-radius: var(--radius-lg); background: #fff;
+      box-shadow: var(--shadow-md); padding: 1.5rem 1.75rem; margin: 1.5rem 0;
+    }
+    .sim-input-card .sim-ic-head {
+      font-size: 1.4rem; font-weight: 800; color: #1B5E20; margin-bottom: 0.35rem;
+      text-align: center;
+    }
+    .sim-input-card .sim-ic-sub {
+      text-align: center; color: var(--color-text-light); font-size: 1.02rem; margin-bottom: 1.1rem;
+    }
+    .sim-enter { display: flex; align-items: center; justify-content: center; gap: 0.9rem; flex-wrap: wrap; }
+    .sim-enter input {
+      width: 128px; padding: 0.7rem 0.5rem; text-align: center; font-size: 2rem; font-weight: 800;
+      font-family: var(--cds-font-sans); color: #1B5E20; background: #E8F5E9;
+      border: 3px solid #A5D6A7; border-radius: 16px; outline: none; transition: all 0.2s ease;
+    }
+    .sim-enter input:focus { border-color: #2E7D32; background: #fff; box-shadow: 0 0 0 4px rgba(76,175,80,0.18); }
+    .sim-enter .sim-x { font-size: 2rem; font-weight: 800; color: #E65100; }
+    .sim-enter .sim-eq { font-size: 2rem; font-weight: 800; color: #37474F; }
+    .sim-go-btn {
+      padding: 0.9rem 1.8rem; font-size: 1.25rem; font-weight: 800; color: #fff; background: none;
+      border: none; border-radius: 50px; cursor: pointer; transition: all 0.2s ease;
+      background: linear-gradient(135deg, #66BB6A, #2E7D32); box-shadow: 0 6px 16px rgba(46,125,50,0.35);
+    }
+    .sim-go-btn:hover { transform: translateY(-3px) scale(1.04); }
+    .sim-go-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .sim-btns-row { display: flex; justify-content: center; gap: 0.6rem; margin-top: 1rem; flex-wrap: wrap; }
+    .sim-ghost-btn {
+      padding: 0.6rem 1.3rem; font-size: 1rem; font-weight: 800; background: #E8F5E9; color: #1B5E20;
+      border: 2px solid #A5D6A7; border-radius: 50px; cursor: pointer; transition: all 0.2s ease;
+    }
+    .sim-ghost-btn:hover { transform: translateY(-3px); background: #C8E6C9; }
+    .sim-error {
+      text-align: center; color: #B71C1C; background: #FFEBEE; border: 2px solid #EF9A9A;
+      border-radius: 12px; padding: 0.6rem 1rem; margin-top: 1rem; font-weight: 700; display: none;
+    }
+    .sim-note {
+      background: #FFF8E1; border: 2px dashed #FFCA28; border-radius: var(--radius-md);
+      padding: 0.85rem 1.25rem; margin: 1rem 0; display: none;
+    }
+    .sim-note p { font-size: 1.05rem; color: var(--color-text); margin-bottom: 0; }
+    .sim-note strong { color: #E65100; }
+  /* ============ The Chalkboard Stage ============ */
+    .sim-stage {
+      background: linear-gradient(180deg, #EAF7EE 0%, #DFF0E6 100%);
+      border: 3px solid #81C784; border-radius: 20px; margin: 1.25rem auto 0.25rem;
+      max-width: 720px; padding: 1.1rem 1.25rem 1rem; position: relative; min-height: 270px;
+      box-shadow: inset 0 0 30px rgba(129,199,132,0.18);
+    }
+    .sim-stage-label {
+      text-align: center; color: #2E7D32; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.7rem;
+    }
+    .sim-eqline { text-align: center; font-size: 1.35rem; font-weight: 800; color: #1B5E20; margin-bottom: 0.75rem; min-height: 1.7rem; }
+    .sim-grid { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; position: relative; z-index: 2; }
+    .sim-row { display: flex; align-items: center; justify-content: center; }
+    .sim-cell {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: var(--sim-cell); height: var(--sim-cell); margin: 0 2px; border-radius: 10px;
+      font-size: var(--sim-fs); font-weight: 800; border: 2px solid transparent;
+      background: rgba(255,255,255,0.65); color: #1B5E20;
+    }
+    .sim-op { width: 30px; background: transparent; border: none; color: #37474F; }
+    .sim-c-top { background: #C8E6C9; border-color: #81C784; }
+    .sim-c-bottom { background: #BBDEFB; border-color: #90CAF9; color: #0D47A1; }
+    .sim-c-part { background: #FFF3E0; border-color: #FFB74D; color: #E65100; }
+    .sim-c-zero { background: #ECEFF1; border: 2px dashed #B0BEC5; color: #78909C; }
+    .sim-c-ans { background: linear-gradient(135deg, #66BB6A, #2E7D32); border-color: #1B5E20; color: #fff; }
+    .sim-line { height: 3px; background: #81C784; border-radius: 3px; margin: 0.25rem auto; width: 100%; max-width: calc(var(--sim-cell) * 12 + 44px); }
+    .sim-beam {
+      position: absolute; top: 0; bottom: 0; width: var(--sim-cell);
+      background: rgba(255, 193, 7, 0.22); border: 2px dashed rgba(255, 152, 0, 0.8);
+      border-radius: 10px; opacity: 0; pointer-events: none;
+    }
+
+    /* Status */
+    .sim-status {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap;
+      margin: 1rem 0; min-height: 3.4rem; padding: 0.85rem 1.1rem; background: #FFF8E1;
+      border-radius: 16px; border: 2px dashed #FFCA28; font-size: 1.12rem; text-align: center;
+      color: var(--color-text); font-weight: 600;
+    }
+    .sim-status .sim-counter {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 58px;
+      background: #2E7D32; color: #fff; border-radius: 12px; font-size: 1.6rem; font-weight: 800;
+      padding: 0 0.5rem; box-shadow: 0 3px 10px rgba(46,125,50,0.35);
+    }
+    .sim-status .sim-stepcnt {
+      min-width: 44px; text-align: center; background: #E8F5E9; color: #1B5E20; border-radius: 50px;
+      font-size: 1rem; font-weight: 800; padding: 0.25rem 0.7rem;
+    }
+
+    /* Controls */
+    .sim-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 0.4rem; }
+    .sim-btn {
+      padding: 0.7rem 1.6rem; font-size: 1.05rem; font-weight: 800; border: none; border-radius: 50px;
+      cursor: pointer; transition: all 0.2s ease; box-shadow: var(--shadow-sm);
+    }
+    .sim-btn.accent { background: linear-gradient(135deg, #66BB6A, #2E7D32); color: white; }
+    .sim-btn.ghost { background: #E8F5E9; color: #1B5E20; border: 2px solid #A5D6A7; }
+    .sim-btn.outline { background: white; color: #E65100; border: 2px solid #FFB74D; }
+    .sim-btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.05); }
+    .sim-btn:disabled { opacity: 0.55; cursor: default; transform: none !important; }
+
+    @media (max-width: 560px) {
+      .sim-enter input { width: 92px; font-size: 1.6rem; }
+      :root { --sim-cell: 42px; --sim-fs: 1.4rem; }
+      .sim-op { width: 22px; }
+      .sim-line { width: calc(var(--sim-cell) * 8 + 30px); }
+    }
+  /* Quiz tiles (shared pattern) */
+    .os-quiz-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+    .os-option {
+      padding: 0.85rem 1rem; font-size: 1.05rem; font-weight: 700; background: white;
+      border: 2px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer;
+      transition: all 0.2s ease; color: var(--color-text);
+    }
+    .os-option:hover:not(:disabled) { transform: translateY(-3px); border-color: #2E7D32; box-shadow: var(--shadow-sm); }
+    .os-option.correct { background: #C8E6C9 !important; border-color: #2E7D32 !important; animation: popIn 0.4s ease; }
+    .os-option.wrong { background: #FFCDD2 !important; border-color: #C62828 !important; }
+    .os-result { margin-top: 0.6rem; padding: 0.55rem 1rem; border-radius: var(--radius-sm); font-weight: 700; display: none; }
+    .os-result.show { display: block; animation: popIn 0.4s ease; }
+    .os-result.correct-result { background: #C8E6C9; color: #14532D; }
+    .os-result.wrong-result { background: #FFCDD2; color: #9b111e; }
+  </style>
+</head>
+<body>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="page2.html">Multiply by 3</a></li>
+        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page4.html">Growth</a></li>
+        <li><a href="page5.html">Rate of Change</a></li>
+        <li><a href="page5b.html">Ratio</a></li>
+        <li><a href="page5c.html">💎 Diamond Game</a></li>
+        <li><a href="page6.html">Shapes</a></li>
+        <li><a href="page9.html">Old-School Multiply</a></li>
+        <li><a href="page9b.html" class="active">🧮 Simulator</a></li>
+        <li><a href="page10.html">Fast Multiply</a></li>
+        <li><a href="page7.html">Mean</a></li>
+        <li><a href="page11.html">➗ Division</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🧮 Old-School Multiply Simulator — You Pick the Numbers!</h2>
+
+      <!-- Intro -->
+      <div class="sim-intro">
+        <p><strong>Your turn to be the boss!</strong> Type <span class="hl">ANY two numbers</span> and press <strong>Go!</strong> — this simulator will write them out in columns and show the old-school workbook way to multiply them, <strong>step by step</strong>.</p>
+        <p>It follows the exact recipe from the <a href="page9.html">Old-School Wizard</a>: <strong>multiply by each digit</strong>
+of the bottom number (placing a <strong>0</strong> for each shift), then <strong>add the rows</strong> — and the simulator
+shows the <strong>addition</strong> too, column by column, so you see the whole thing exactly like in a real workbook!</p>
+      </div>
+
+      <!-- Section: pick your numbers -->
+      <section>
+        <div class="sim-input-card">
+          <div class="sim-ic-head">✍️ Pick your numbers</div>
+          <p class="sim-ic-sub">Enter any whole numbers from <strong>1 to 99999</strong> — the simulator does the rest!</p>
+
+          <div class="sim-enter">
+            <input id="simInA" type="text" inputmode="numeric" maxlength="5" placeholder="67" aria-label="Top number">
+            <span class="sim-x">×</span>
+            <input id="simInB" type="text" inputmode="numeric" maxlength="5" placeholder="9" aria-label="Bottom number">
+            <span class="sim-eq">=</span>
+            <button type="button" class="sim-go-btn" id="simGoBtn">🚀 Go!</button>
+          </div>
+
+          <div class="sim-btns-row">
+            <button type="button" class="sim-ghost-btn" id="simSurpriseBtn">🎲 Surprise me</button>
+            <button type="button" class="sim-ghost-btn" id="simFlipBtn">🔁 Swap numbers</button>
+          </div>
+
+          <div class="sim-error" id="simError"></div>
+        </div>
+
+        <div class="sim-note" id="simNote">
+          <p></p>
+        </div>
+
+        <!-- Quick examples -->
+        <div class="sim-examples">
+          <span class="sim-ex-chip" data-a="23" data-b="7">23 × 7</span>
+          <span class="sim-ex-chip" data-a="37" data-b="26">37 × 26</span>
+          <span class="sim-ex-chip" data-a="456" data-b="29">456 × 29</span>
+          <span class="sim-ex-chip" data-a="107" data-b="63">107 × 63</span>
+        </div>
+      </section>
+<!-- ============ The Simulator Stage ============ -->
+      <section>
+        <div class="sim-stage" id="simStage">
+          <div class="sim-stage-label">✍️ The old-school workbook way — watch it happen!</div>
+          <div class="sim-eqline" id="simEq"></div>
+          <div class="sim-grid" id="simGrid"></div>
+          <div class="sim-beam" id="simBeam"></div>
+        </div>
+
+        <div class="sim-status">
+          <span class="sim-stepcnt" id="simStepCnt">—</span>
+          <span id="simMsg">Enter two numbers above and press 🚀 Go!</span>
+          <span class="sim-counter" id="simCnt" style="display:none">0</span>
+        </div>
+
+        <div class="sim-controls">
+          <button type="button" class="sim-btn accent" id="simPlayBtn">▶ Play</button>
+          <button type="button" class="sim-btn ghost" id="simNextBtn">⏭ Next Step</button>
+          <button type="button" class="sim-btn outline" id="simResetBtn">↺ Reset</button>
+        </div>
+      </section>
+
+      <!-- The school recipe reminder -->
+      <div class="thinking-steps">
+        <h4>🧠 Remember the old-school recipe?</h4>
+        <div class="step"><span class="step-number">1</span><span class="step-text"><strong>Line up</strong> the numbers — ones under ones. The longer number goes on top.</span></div>
+        <div class="step"><span class="step-number">2</span><span class="step-text"><strong>Multiply</strong> the top number by each digit of the bottom number, starting with the <strong>ones</strong>.</span></div>
+        <div class="step"><span class="step-number">3</span><span class="step-text">For the <strong>tens</strong> (then hundreds…) digit, write a <strong>0 placeholder</strong> — that's the ×10 trick! Each new row shifts left one column.</span></div>
+        <div class="step"><span class="step-number">4</span><span class="step-text"><strong>ADD all the rows</strong> — and you've got the answer! 🎉</span></div>
+      </div>
+
+      <!-- Quick check -->
+      <section>
+        <div class="quiz-section">
+          <h3>🎯 Quick Check</h3>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Use the old-school way (multiply, then add): <strong>23 × 12</strong> = ?</div>
+            <div class="os-quiz-options">
+              <button class="os-option" onclick="checkSimAnswer(this, 'simq1', true)">276</button>
+              <button class="os-option" onclick="checkSimAnswer(this, 'simq1', false)">236</button>
+              <button class="os-option" onclick="checkSimAnswer(this, 'simq1', false)">252</button>
+              <button class="os-option" onclick="checkSimAnswer(this, 'simq1', false)">2326</button>
+            </div>
+            <div id="simq1result" class="os-result"></div>
+          </div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Old-School Multiply Simulator ============
+    (function () {
+      'use strict';
+
+      // ---------- element references ----------
+      var inA = document.getElementById('simInA');
+      var inB = document.getElementById('simInB');
+      var goBtn = document.getElementById('simGoBtn');
+      var surpriseBtn = document.getElementById('simSurpriseBtn');
+      var flipBtn = document.getElementById('simFlipBtn');
+      var errorEl = document.getElementById('simError');
+      var noteEl = document.getElementById('simNote');
+      var noteText = noteEl.querySelector('p');
+      var eqEl = document.getElementById('simEq');
+      var stage = document.getElementById('simStage');
+      var grid = document.getElementById('simGrid');
+      var beam = document.getElementById('simBeam');
+      var msgEl = document.getElementById('simMsg');
+      var cntEl = document.getElementById('simCnt');
+      var stepCntEl = document.getElementById('simStepCnt');
+      var playBtn = document.getElementById('simPlayBtn');
+      var nextBtn = document.getElementById('simNextBtn');
+      var resetBtn = document.getElementById('simResetBtn');
+
+      var plan = null;
+      var step = -1;
+      var busy = false;
+
+      // ---------- small builders ----------
+      function mkCell(text, cls, isZero) {
+        var c = document.createElement('span');
+        c.className = 'sim-cell ' + (cls || '');
+        c.textContent = text;
+        if (isZero) c.classList.add('sim-c-zero');
+        return c;
+      }
+      // Build numCol cells right-aligned from a string; last zeroCount are "0 placeholder" cells
+      function rightCells(str, cols, cls, zeroCount) {
+        var pad = cols - str.length;
+        var arr = [];
+        for (var j = 0; j < pad; j++) arr.push(mkCell('', cls));
+        for (var i = 0; i < str.length; i++) {
+          var isZero = (zeroCount > 0 && i >= str.length - zeroCount && str[i] === '0');
+          arr.push(mkCell(str[i], cls, isZero));
+        }
+        return arr;
+      }
+      function mkRow(op) {
+        var r = document.createElement('div');
+        r.className = 'sim-row';
+        var o = document.createElement('span');
+        o.className = 'sim-cell sim-op';
+        o.textContent = op;
+        r.appendChild(o);
+        return r;
+      }
+      function mkLine() {
+        var l = document.createElement('div');
+        l.className = 'sim-line';
+        return l;
+      }
+
+      // ---------- naming + digit-by-digit description ----------
+      function placeName(i) {
+        var names = ['ones', 'tens', 'hundreds', 'thousands', 'ten-thousands'];
+        return names[i] || ('digit ' + (i + 1));
+      }
+      // Describe the old-school multiplication A × digit with carries, e.g.
+      // "7×6=42 → write 2, carry 4 • 7×3=21 + 4 = 25 → write 25"
+      function describeRow(a, d) {
+        var aStr = String(a);
+        var carry = 0, tokens = [];
+        for (var i = aStr.length - 1; i >= 0; i--) {
+          var ad = Number(aStr[i]);
+          var t = ad * d + carry;
+          var plus = carry ? (' + ' + carry) : '';
+          if (i > 0) {
+            tokens.push(d + '×' + ad + plus + ' = ' + t + ' → write ' + (t % 10) + ', carry ' + Math.floor(t / 10));
+          } else {
+            tokens.push(d + '×' + ad + plus + ' = ' + t + ' → write ' + t);
+          }
+          carry = Math.floor(t / 10);
+        }
+        return tokens;
+      }
+      // Describe the column-by-column addition of the partial rows, with carries,
+      // e.g. for ["21","140"] → "ones: 1+0 = 1 • tens: 2+4 = 6 • hundreds: 0+1 = 1"
+      function columnAddTokens(rowsArr) {
+        var maxLen = 0;
+        rowsArr.forEach(function (s) { if (s.length > maxLen) maxLen = s.length; });
+        var carry = 0, tokens = [];
+        for (var c = 0; c < maxLen; c++) {
+          var sum = carry, partsStr = [];
+          rowsArr.forEach(function (s) {
+            var idx = s.length - 1 - c;
+            if (idx < 0) { partsStr.push('0'); }
+            else { var v = Number(s[idx]); partsStr.push(String(v)); sum += v; }
+          });
+          var isLast = (c === maxLen - 1);
+          var shown = partsStr.join('+') + (carry > 0 ? '(+' + carry + ' carry)' : '');
+          if (isLast) {
+            tokens.push(placeName(c) + ': ' + shown + ' = ' + sum);
+          } else {
+            var digit = sum % 10;
+            var newCarry = Math.floor(sum / 10);
+            tokens.push(placeName(c) + ': ' + shown + ' = ' + sum + ' → write ' + digit + (newCarry ? ', carry ' + newCarry : ''));
+          }
+          carry = Math.floor(sum / 10);
+        }
+        return tokens;
+      }
+
+      // ---------- input handling ----------
+      function showError(text) {
+        errorEl.textContent = text;
+        errorEl.style.display = 'block';
+      }
+      function hideError() {
+        errorEl.style.display = 'none';
+      }
+      function readInputs() {
+        var rawA = inA.value.replace(/\D/g, '');
+        var rawB = inB.value.replace(/\D/g, '');
+        if (!rawA || !rawB) { showError('✏️ Please type BOTH numbers first!'); return null; }
+        var a = parseInt(rawA, 10), b = parseInt(rawB, 10);
+        if (a < 1 || b < 1 || a > 99999 || b > 99999) {
+          showError('⚠️ Numbers must be between 1 and 99,999.');
+          return null;
+        }
+        hideError();
+        return { a: a, b: b };
+      }
+      // ---------- build the chalkboard + step plan for any a × b ----------
+      function buildPlan(a, b) {
+        // Put the LONGER number on top so the columns look tidy
+        var swapped = String(b).length > String(a).length;
+        if (swapped) { var tmp = a; a = b; b = tmp; }
+
+        var aStr = String(a), bStr = String(b);
+        var ans = a * b, ansStr = String(ans);
+
+        // Build the partial-product rows.
+        // - When the bottom number has ONE digit, break the TOP number into its
+        //   place-value pieces ("partial products") so the addition is visible,
+        //   e.g. 23 × 7 → 21 + 140 = 161.
+        // - When the bottom has TWO+ digits, keep one row per bottom digit.
+        var parts = [];
+        var decomposed = (bStr.length === 1 && aStr.length > 1);
+        if (decomposed) {
+          for (var i = aStr.length - 1; i >= 0; i--) {
+            var ad = Number(aStr[i]);
+            var plc = (aStr.length - 1) - i;       // 0 = ones, 1 = tens...
+            var val = ad * b;
+            var full = String(val) + Array(plc + 1).join('0');
+            parts.push({ d: ad, place: plc, val: val, full: full });
+          }
+        } else {
+          for (var j = bStr.length - 1; j >= 0; j--) {
+            var d = Number(bStr[j]);
+            var place = (bStr.length - 1) - j;     // 0 = ones, 1 = tens...
+            var val2 = a * d;
+            var full2 = val2 + Array(place + 1).join('0');
+            parts.push({ d: d, place: place, val: val2, full: full2 });
+          }
+        }
+
+        var numCol = Math.max(aStr.length, bStr.length, ansStr.length);
+        for (var p = 0; p < parts.length; p++) {
+          if (parts[p].full.length > numCol) numCol = parts[p].full.length;
+        }
+
+        // auto-size the cells so wide sums still fit (even on phones)
+        var narrow = (typeof window !== 'undefined') && window.innerWidth < 520;
+        var size, fsz;
+        if (numCol <= 6) { size = narrow ? 42 : 54; fsz = narrow ? 1.4 : 1.8; }
+        else if (numCol <= 8) { size = narrow ? 34 : 44; fsz = narrow ? 1.15 : 1.5; }
+        else { size = narrow ? 26 : 34; fsz = narrow ? 0.95 : 1.15; }
+        stage.style.setProperty('--sim-cell', size + 'px');
+        stage.style.setProperty('--sim-fs', fsz + 'rem');
+
+        grid.innerHTML = '';
+        beam.style.opacity = 0;
+        beam.style.display = 'none';
+        cntEl.style.display = 'none';
+        eqEl.textContent = a + ' × ' + b + '';
+
+        var groups = [];
+
+        // top + bottom + lines
+        var topEl = mkRow('');
+        rightCells(aStr, numCol, 'sim-c-top').forEach(function (c) { topEl.appendChild(c); });
+        var botEl = mkRow('×');
+        rightCells(bStr, numCol, 'sim-c-bottom').forEach(function (c) { botEl.appendChild(c); });
+        var line1 = mkLine(), line2 = mkLine();
+        grid.appendChild(topEl);
+        grid.appendChild(botEl);
+        grid.appendChild(line1);
+
+        var bottomCells = [].slice.call(botEl.children);
+        var topCellsEls = [].slice.call(topEl.children).slice(1); // skip the operator cell
+        var steps = [];
+        groups.push({ els: [topEl, botEl, line1, line2], at: 0 });
+        steps.push({
+          msg: 'Step 1 — ✏️ Line up the numbers: <strong>' + a + '</strong> on top, <strong>' + b + '</strong> below — ones under ones, tens under tens!',
+          beam: 0, cnt: 0
+        });
+
+        // one partial-product row per digit (of the bottom, or of the top when decomposed)
+        parts.forEach(function (p, idx) {
+          var rowEl = mkRow(idx === 0 ? '' : '+');
+          var zeroCount = (p.d === 0) ? 0 : p.place; // only the shift zeros get the "placeholder" look
+          var cells = rightCells(p.full, numCol, 'sim-c-part', zeroCount);
+          cells.forEach(function (c) { rowEl.appendChild(c); });
+          grid.appendChild(rowEl);
+          groups.push({ els: [].slice.call(rowEl.children), at: idx + 1 });
+
+          var msg, beamIdx = p.place + 1, focusEl = null, cnt = parseInt(p.full, 10) || 0;
+          if (decomposed) {
+            // We're multiplying each digit of the TOP by the single bottom digit
+            if (p.d === 0) {
+              msg = 'Step ' + (idx + 2) + ' — The <strong>' + placeName(p.place) + ' digit is 0</strong>: ' + b + ' × 0 = <strong>0</strong>, so we write 0 here.';
+            } else if (p.place === 0) {
+              msg = 'Step ' + (idx + 2) + ' — 📍 ' + placeName(0) + ' column: <strong>' + b + ' × ' + p.d + ' = ' + p.val + '</strong> → write <strong>' + p.val + '</strong>.';
+            } else {
+              msg = 'Step ' + (idx + 2) + ' — ♻️ Shift left: <strong>' + b + ' × ' + p.d + ' = ' + p.val + '</strong>, which is <strong>' + p.val + ' ' + placeName(p.place) + '</strong> → write <strong>' + p.full + '</strong> (with a 0 placeholder).';
+            }
+            beamIdx = 1; // the beam stays under the single-digit multiplier
+            focusEl = topCellsEls[topCellsEls.length - 1 - p.place];
+          } else {
+            if (p.d === 0) {
+              msg = 'Step ' + (idx + 2) + ' — The <strong>' + placeName(p.place) + ' digit is 0</strong>: ' + a + ' × 0 = <strong>0</strong>, so this row is just a zero. Write it down!';
+            } else if (p.place === 0) {
+              msg = 'Step ' + (idx + 2) + ' — 🔢 Multiply by the <strong>' + placeName(0) + ' digit ' + p.d + '</strong>: ' +
+                    describeRow(a, p.d).join(' • ') + '. So write <strong>' + p.full + '</strong> in this row.';
+            } else {
+              msg = 'Step ' + (idx + 2) + ' — ♻️ Shift left: write the <strong>0 placeholder</strong>, then multiply by the <strong>' +
+                    placeName(p.place) + ' digit ' + p.d + '</strong>: ' + describeRow(a, p.d).join(' • ') +
+                    '. The row is ' + p.val + ' → with the ×10 trick: <strong>' + p.full + '</strong>.';
+            }
+          }
+          steps.push({ msg: msg, beam: beamIdx, cnt: cnt, focus: focusEl });
+        });
+
+        // answer row
+        var ansRowEl = mkRow('=');
+        var ansCells = rightCells(ansStr, numCol, 'sim-c-ans');
+        ansCells.forEach(function (c) { ansRowEl.appendChild(c); });
+        grid.appendChild(line2);
+        grid.appendChild(ansRowEl);
+        var ansEls = [].slice.call(ansRowEl.children);
+        groups.push({ els: ansEls, at: parts.length + 1 });
+
+        var finalMsg;
+        if (parts.length === 1) {
+          finalMsg = 'Step ' + (parts.length + 1) + ' — 🧮 The row IS the answer: <strong>' + ans + '</strong>! 🌟';
+        } else {
+          var sumParts = [];
+          parts.forEach(function (p) { sumParts.push(p.full); });
+          var addTokens = columnAddTokens(sumParts);
+          finalMsg = 'Step ' + (parts.length + 1) + ' — ➕ NOW <strong>ADD the rows</strong>: ' + sumParts.join(' + ') +
+                     '. Column by column: <strong>' + addTokens.join(' • ') + '</strong> → the answer is <strong>' + ans + '</strong>! 🎉';
+        }
+        steps.push({ msg: finalMsg, beam: 0, cnt: ans });
+
+        plan = {
+          a: a, b: b, ans: ans, swapped: swapped, decomposed: decomposed,
+          numCol: numCol, groups: groups, steps: steps, total: steps.length,
+          bottomCells: bottomCells, parts: parts,
+          ansRowEl: ansRowEl, ansCells: ansCells, ansEls: ansEls
+        };
+      }
+      // ---------- reveal the details of one step onto a timeline ----------
+      function revealStepData(s, tl) {
+        var groups = plan.groups;
+        var st = plan.steps[s];
+        var isFinalAdd = (s === plan.total - 1);
+
+        for (var g = 0; g < groups.length; g++) {
+          var gr = groups[g];
+          if (gr.at === s) {
+            // On the ADD step the answer cells are revealed one by one below
+            if (isFinalAdd && gr.els === plan.ansEls) continue;
+            tl.to(gr.els, { autoAlpha: 1, scale: 1, duration: 0.4, ease: 'back.out(2)', stagger: 0.09 }, tl.duration);
+          }
+        }
+
+        // pulse the digit we are multiplying right now
+        if (st.focus) {
+          tl.fromTo(st.focus, { scale: 1 }, { scale: 1.35, yoyo: true, repeat: 2, duration: 0.16, ease: 'power1.inOut' }, tl.duration);
+        }
+
+        // on the ADD step, reveal the answer '=' then each digit from the right
+        if (isFinalAdd && plan.ansEls) {
+          var opCell = plan.ansEls[0];
+          var ansCellsRtl = plan.ansCells.slice().reverse();
+          tl.to(opCell, { autoAlpha: 1, scale: 1, duration: 0.3 }, tl.duration);
+          // pulse each answer digit (right to left) when it appears
+          tl.to(ansCellsRtl, {
+            autoAlpha: 1, scale: 1, duration: 0.35, stagger: 0.45,
+            ease: 'back.out(2)',
+            onStart: function (i, target) {
+              gsap.fromTo(target, { scale: 0.4 }, {
+                scale: 1.25, yoyo: true, repeat: 1,
+                duration: 0.18, ease: 'power1.inOut'
+              });
+            }
+          }, tl.duration);
+        }
+
+        tl.call(function () {
+          msgEl.innerHTML = st.msg;
+          stepCntEl.textContent = (s + 1) + ' / ' + plan.total;
+        }, [], tl.duration);
+
+        // counter
+        if (st.cnt > 0) {
+          tl.call(function () { cntEl.style.display = 'inline-flex'; cntEl.textContent = '0'; }, [], tl.duration);
+          var c = { v: 0 };
+          tl.to(c, {
+            v: st.cnt, duration: 0.9, ease: 'power1.inOut',
+            onUpdate: function () { cntEl.textContent = Math.round(c.v); }
+          }, tl.duration);
+        } else {
+          tl.call(function () { cntEl.style.display = 'none'; }, [], tl.duration);
+        }
+
+        // beam highlight on the current bottom digit
+        if (st.beam > 0) {
+          var bi = plan.numCol - st.beam;
+          var target = plan.bottomCells[bi];
+          var tr = target.getBoundingClientRect();
+          var cr = stage.getBoundingClientRect();
+          tl.call(function () { beam.style.display = 'block'; }, [], tl.duration);
+          tl.to(beam, {
+            left: (tr.left - cr.left - 2), width: tr.width, opacity: 1,
+            duration: 0.5, ease: 'power2.inOut'
+          }, tl.duration);
+        } else {
+          tl.call(function () { beam.style.opacity = 0; beam.style.display = 'none'; }, [], tl.duration);
+        }
+      }
+
+      // ---------- instant state apply (reset / rebuild) ----------
+      function setState(s) {
+        for (var g = 0; g < plan.groups.length; g++) {
+          var gr = plan.groups[g];
+          var show = gr.at <= s;
+          gr.els.forEach(function (e) {
+            if (show) gsap.set(e, { autoAlpha: 1, scale: 1 });
+            else gsap.set(e, { autoAlpha: 0, scale: 0.3 });
+          });
+        }
+        var st = plan.steps[s];
+        msgEl.innerHTML = st.msg;
+        stepCntEl.textContent = (s + 1) + ' / ' + plan.total;
+
+        if (st.cnt > 0) { cntEl.textContent = st.cnt; cntEl.style.display = 'inline-flex'; }
+        else cntEl.style.display = 'none';
+
+        if (st.beam > 0) {
+          var bi = plan.numCol - st.beam;
+          var target = plan.bottomCells[bi];
+          var tr = target.getBoundingClientRect();
+          var cr = stage.getBoundingClientRect();
+          beam.style.display = 'block';
+          beam.style.opacity = 1;
+          beam.style.left = (tr.left - cr.left - 2) + 'px';
+          beam.style.width = tr.width + 'px';
+        } else {
+          beam.style.opacity = 0;
+          beam.style.display = 'none';
+        }
+      }
+
+      function updateButtons() {
+        playBtn.disabled = busy || !plan;
+        resetBtn.disabled = busy || !plan;
+        nextBtn.disabled = busy || !plan || step >= plan.total - 1;
+      }
+
+      // ---------- animate a single step forward ----------
+      function applyState(s) {
+        busy = true;
+        updateButtons();
+        var tl = gsap.timeline({ onComplete: function () { busy = false; step = s; updateButtons(); } });
+        revealStepData(s, tl);
+      }
+
+      // ---------- play all remaining steps ----------
+      function playAll() {
+        if (busy || !plan) return;
+        if (step >= plan.total - 1) setState(0);
+
+        busy = true;
+        updateButtons();
+        var tl = gsap.timeline({
+          onComplete: function () { busy = false; step = plan.total - 1; updateButtons(); }
+        });
+        for (var s2 = step + 1; s2 < plan.total; s2++) {
+          revealStepData(s2, tl);
+        }
+      }
+
+      // ---------- build + reset from fresh numbers ----------
+      function go(nums) {
+        buildPlan(nums.a, nums.b);
+        step = -1;
+        busy = false;
+        setState(0);
+        updateButtons();
+
+        // friendly note explaining what the simulator will show
+        noteEl.style.display = 'block';
+        var note = '👉 We will <strong>multiply by each digit</strong> of <strong>' + b + '</strong> (right to left), ' +
+                   'then <strong>add the rows</strong> to get the answer — with the addition shown step by step!';
+        noteText.innerHTML = note;
+      }
+
+      // ---------- event hooks ----------
+      goBtn.addEventListener('click', function () {
+        if (busy) return;
+        var nums = readInputs();
+        if (nums) go(nums);
+      });
+
+      surpriseBtn.addEventListener('click', function () {
+        if (busy) return;
+        var a = Math.floor(Math.random() * 990) + 10;   // 10..999
+        var b = Math.floor(Math.random() * 98) + 2;     // 2..99
+        inA.value = a;
+        inB.value = b;
+        go({ a: a, b: b });
+      });
+
+      flipBtn.addEventListener('click', function () {
+        if (busy) return;
+        var v = inA.value;
+        inA.value = inB.value;
+        inB.value = v;
+        var nums = readInputs();
+        if (nums) go(nums);
+      });
+
+      inA.addEventListener('keydown', function (e) { if (e.key === 'Enter') goBtn.click(); });
+      inB.addEventListener('keydown', function (e) { if (e.key === 'Enter') goBtn.click(); });
+
+      Array.prototype.forEach.call(document.querySelectorAll('.sim-ex-chip'), function (chip) {
+        chip.addEventListener('click', function () {
+          if (busy) return;
+          inA.value = chip.getAttribute('data-a');
+          inB.value = chip.getAttribute('data-b');
+          go({ a: parseInt(chip.getAttribute('data-a'), 10), b: parseInt(chip.getAttribute('data-b'), 10) });
+        });
+      });
+
+      playBtn.addEventListener('click', playAll);
+
+      nextBtn.addEventListener('click', function () {
+        if (busy || !plan || step >= plan.total - 1) return;
+        applyState(step + 1);
+      });
+
+      resetBtn.addEventListener('click', function () {
+        if (busy || !plan) return;
+        setState(0);
+        step = -1;
+        updateButtons();
+      });
+
+      // ---------- init: keep buttons disabled until a problem exists ----------
+      updateButtons();
+    })();
+
+    // ============ Quick Check quiz ============
+    function checkSimAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.os-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      Array.prototype.forEach.call(options, function (opt) { opt.disabled = true; });
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        Array.prototype.forEach.call(options, function (opt) {
+          if (opt.getAttribute('onclick').indexOf('true') !== -1) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      resultDiv.classList.remove('correct-result', 'wrong-result');
+      resultDiv.classList.add(isCorrect ? 'correct-result' : 'wrong-result');
+      resultDiv.textContent = isCorrect
+        ? '✅ Correct! 23 × 12 = 20×12 + 3×12 = 240 + 36 = 276. Great job! 🌟'
+        : '❌ Not quite! The correct answer is highlighted above. Remember: multiply each digit, then add the rows! 💪';
+    }
+  </script>
+</body>
+</html>

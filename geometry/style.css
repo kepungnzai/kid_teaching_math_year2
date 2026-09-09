@@ -122,15 +122,6 @@ header {
   color: white;
 }
 
-/* Centered Cards Section (index page) */
-.section-center {
-  min-height: calc(100vh - 80px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 2rem;
-}
-
 /* Hero Section */
 .hero {
   max-width: 1000px;
@@ -307,6 +298,19 @@ header {
 .card:hover .card-btn {
   color: var(--color-primary-dark);
   gap: 0.75rem;
+}
+
+.coming-soon-badge {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.45rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-light);
+  background-color: var(--color-bg-tone);
+  border: 2px dashed var(--color-border);
+  border-radius: 50px;
+  letter-spacing: 0.5px;
 }
 
 /* Back Button for Page 1 */

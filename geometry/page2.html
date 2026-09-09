@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Angle Adventures!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Angle Adventures Page Specific Styles ============ */
+
+    .angles-intro {
+      background: linear-gradient(135deg, #FFF3E0 0%, #E3F2FD 100%);
+      border-left: 6px solid #E65100;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .angles-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .angles-intro p:last-child { margin-bottom: 0; }
+    .angles-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #BF360C;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    /* Interactive angle explorer */
+    .angle-explorer {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 3px solid var(--color-border);
+      margin: 2.5rem 0;
+      text-align: center;
+    }
+    .explorer-svg {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      margin: 0 auto 1rem;
+    }
+    .explorer-readout {
+      margin: 0.5rem 0 1.25rem;
+    }
+    .big-angle {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #BF360C;
+      line-height: 1.1;
+    }
+    .angle-type-badge {
+      display: inline-block;
+      margin-top: 0.4rem;
+      padding: 0.3rem 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: white;
+      background: var(--color-primary);
+      border-radius: 50px;
+    }
+    .angle-desc {
+      margin-top: 0.6rem;
+      font-size: 1.05rem;
+      color: var(--color-text-light);
+      font-weight: 500;
+    }
+    .angle-slider {
+      width: 100%;
+      max-width: 420px;
+      height: 40px;
+      cursor: pointer;
+      accent-color: #E65100;
+    }
+    .slider-hint {
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-text-light);
+    }
+
+    /* Special angles gallery */
+    .angle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .angle-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1rem 1rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--color-border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .angle-card:hover {
+      transform: translateY(-8px) rotate(-1deg);
+      box-shadow: var(--shadow-md);
+      border-color: #FFCC80;
+    }
+    .angle-card svg {
+      width: 110px;
+      height: 110px;
+      display: block;
+      margin: 0 auto;
+    }
+    .angle-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #BF360C;
+      margin-top: 0.5rem;
+    }
+    .angle-deg {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+    }
+    .angle-meaning {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+      margin-top: 0.25rem;
+    }
+
+    /* Angle type chips */
+    .type-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    .type-chip {
+      padding: 0.6rem 1.1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 50px;
+      background: white;
+      border: 3px solid var(--color-border);
+      color: var(--color-text-light);
+    }
+    .type-chip strong { color: var(--color-primary-dark); }
+
+    /* Real life examples */
+    .reallife-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .reallife-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--color-border);
+      transition: transform 0.3s ease;
+    }
+    .reallife-card:hover { transform: translateY(-6px); }
+    .reallife-card .emoji { font-size: 2.6rem; display: block; margin-bottom: 0.5rem; }
+    .reallife-card strong { color: #BF360C; }
+
+    /* Interactive quiz (angle-option) */
+    .angle-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .angle-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .angle-option:hover {
+      border-color: #E65100;
+      background: #FFF3E0;
+      transform: scale(1.05);
+    }
+    .angle-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .angle-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .angle-option:disabled { cursor: default; opacity: 0.7; }
+    .angle-option.correct:disabled { opacity: 1; }
+
+    .angle-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .angle-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .angle-result.correct-result { background: #E8F5E9; color: #2E7D32; }
+    .angle-result.wrong-result { background: #FFEBEE; color: #C62828; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 768px) {
+      .angle-card svg { width: 90px; height: 90px; }
+      .angle-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+      .big-angle { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Adventure 1</a></li>
+        <li><a href="page2.html" class="active">Adventure 2</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <!-- Back to Home link -->
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <!-- Fun Learning Article -->
+    <article class="article">
+      <h2>📐 Angle Adventures! 🔄</h2>
+
+      <div class="angles-intro">
+        <p><strong>Hello, angle explorer!</strong> 👋 Look at the corner of your book, the hands of a clock, or the tip of a pizza slice. They all have something in common: an <strong>angle</strong>!</p>
+        <p>An angle is like a <strong>turn</strong> between two lines that meet at a point. We measure that turn in <strong>degrees</strong> (°). Today we'll meet the superstar degrees: 45°, 90°, 180°, 360°, and even 720°!</p>
+        <p class="big-idea">An angle is the amount of turn between two lines that meet at a point called the <strong>vertex</strong>. 📏</p>
+      </div>
+
+      <!-- Interactive Angle Explorer -->
+      <section class="angle-explorer">
+        <h3 style="color:var(--color-primary-dark); margin-bottom:0.5rem;">🎮 Spin the Angle Machine!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1rem;">Drag the slider. Watch the orange arm spin from 0° all the way up to 720° — that's <strong>two full turns</strong>!</p>
+
+        <svg id="angleSvg" class="explorer-svg" viewBox="0 0 300 300" aria-label="Interactive angle explorer">
+          <!-- protractor circle -->
+          <circle cx="150" cy="150" r="120" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="2"/>
+          <!-- degree labels (protractor style: 0 right, 90 top) -->
+          <g font-size="13" font-weight="700" fill="#888" font-family="'Fredoka', system-ui, sans-serif" text-anchor="middle">
+            <text x="262" y="156">0°</text>
+            <text x="150" y="22">90°</text>
+            <text x="38" y="156">180°</text>
+            <text x="150" y="294">270°</text>
+          </g>
+          <!-- completed-turns ring -->
+          <circle id="turnsCircle" cx="150" cy="150" r="100" fill="none" stroke="#4CAF50" stroke-width="3" stroke-dasharray="7,7" opacity="0"/>
+          <!-- base arm (blue) -->
+          <line x1="150" y1="150" x2="262" y2="150" stroke="#1E88E5" stroke-width="5" stroke-linecap="round"/>
+          <!-- angle arc -->
+          <path id="angleArc" fill="rgba(255,87,34,0.25)" stroke="#FF5722" stroke-width="3"/>
+          <!-- spinning arm (orange) -->
+          <line id="rotRay" x1="150" y1="150" x2="262" y2="150" stroke="#FF5722" stroke-width="5" stroke-linecap="round"/>
+          <!-- vertex -->
+          <circle cx="150" cy="150" r="8" fill="#1565C0" stroke="white" stroke-width="2"/>
+        </svg>
+
+        <div class="explorer-readout">
+          <div class="big-angle" id="angleValue">45°</div>
+          <div><span class="angle-type-badge" id="angleType">Acute angle</span></div>
+          <p class="angle-desc" id="angleDesc">Half of a right angle — like a slice of an 8-slice pizza! 🍕</p>
+        </div>
+
+        <input type="range" id="angleSlider" class="angle-slider" min="0" max="720" step="5" value="45" aria-label="Spin the angle">
+        <div class="slider-hint">👆 Drag the slider — try to find 45°, 90°, 180°, 360°, and 720°!</div>
+      </section>
+
+      <!-- Special Angles -->
+      <section class="shape-section" style="margin:2.5rem 0;">
+        <h3 style="font-size:1.7rem; color:var(--color-primary-dark); margin-bottom:0.5rem; font-weight:800;">⭐ The Superstar Degrees</h3>
+        <p style="font-size:1.1rem; color:var(--color-text-light); margin-bottom:1.5rem;">Five special angles you will see again and again — in math, sports, art, and every corner of your world!</p>
+
+        <div class="angle-grid">
+          <!-- 45° -->
+          <div class="angle-card">
+            <svg viewBox="0 0 120 120" aria-label="45 degree angle">
+              <line x1="20" y1="100" x2="105" y2="100" stroke="#1E88E5" stroke-width="5" stroke-linecap="round"/>
+              <line x1="20" y1="100" x2="58.9" y2="61.1" stroke="#FF5722" stroke-width="5" stroke-linecap="round"/>
+              <path d="M60,100 A40,40 0 0,0 48.3,71.7" fill="rgba(255,87,34,0.25)" stroke="#FF5722" stroke-width="3"/>
+              <circle cx="20" cy="100" r="4" fill="#1565C0"/>
+              <text x="48" y="93" text-anchor="middle" font-size="13" font-weight="800" fill="#BF360C" font-family="'Fredoka', system-ui, sans-serif">45°</text>
+            </svg>
+            <div class="angle-name">Acute Angle</div>
+            <div class="angle-deg">45°</div>
+            <div class="angle-meaning">Half of a right angle! Like each slice of an 8-slice pizza. 🍕</div>
+          </div>
+
+          <!-- 90° -->
+          <div class="angle-card">
+            <svg viewBox="0 0 120 120" aria-label="90 degree angle">
+              <rect x="20" y="60" width="40" height="40" fill="rgba(30,136,229,0.12)"/>
+              <line x1="20" y1="100" x2="105" y2="100" stroke="#1E88E5" stroke-width="5" stroke-linecap="round"/>
+              <line x1="20" y1="100" x2="20" y2="45" stroke="#FF5722" stroke-width="5" stroke-linecap="round"/>
+              <path d="M60,100 A40,40 0 0,0 20,60" fill="rgba(255,87,34,0.25)" stroke="#FF5722" stroke-width="3"/>
+              <circle cx="20" cy="100" r="4" fill="#1565C0"/>
+              <text x="42" y="84" text-anchor="middle" font-size="13" font-weight="800" fill="#BF360C" font-family="'Fredoka', system-ui, sans-serif">90°</text>
+            </svg>
+            <div class="angle-name">Right Angle</div>
+            <div class="angle-deg">90°</div>
+            <div class="angle-meaning">The perfect L! Like a book corner or a square. 📖</div>
+          </div>
+
+          <!-- 180° -->
+          <div class="angle-card">
+            <svg viewBox="0 0 120 120" aria-label="180 degree angle">
+              <line x1="15" y1="100" x2="105" y2="100" stroke="#1E88E5" stroke-width="5" stroke-linecap="round"/>
+              <path d="M100,100 A40,40 0 0,0 20,100" fill="rgba(255,87,34,0.25)" stroke="#FF5722" stroke-width="3"/>
+              <circle cx="60" cy="100" r="4" fill="#1565C0"/>
+              <text x="60" y="48" text-anchor="middle" font-size="13" font-weight="800" fill="#BF360C" font-family="'Fredoka', system-ui, sans-serif">180°</text>
+            </svg>
+            <div class="angle-name">Straight Angle</div>
+            <div class="angle-deg">180°</div>
+            <div class="angle-meaning">A perfectly straight line! Like the clock at 6:00. 🕕</div>
+          </div>
+
+          <!-- 360° -->
+          <div class="angle-card">
+            <svg viewBox="0 0 120 120" aria-label="360 degree turn">
+              <circle cx="60" cy="100" r="40" fill="rgba(255,87,34,0.2)" stroke="#FF5722" stroke-width="3"/>
+              <path d="M60,60 a40,40 0 0,1 28.3,28.3" fill="none" stroke="#E65100" stroke-width="4" stroke-linecap="round"/>
+              <polygon points="82,126 93,124 87,134" fill="#E65100"/>
+              <circle cx="60" cy="100" r="4" fill="#1565C0"/>
+              <text x="60" y="118" text-anchor="middle" font-size="14" font-weight="800" fill="#BF360C" font-family="'Fredoka', system-ui, sans-serif">360°</text>
+            </svg>
+            <div class="angle-name">Full Turn</div>
+            <div class="angle-deg">360°</div>
+            <div class="angle-meaning">All the way around! One complete spin. 🔄</div>
+          </div>
+
+          <!-- 720° -->
+          <div class="angle-card">
+            <svg viewBox="0 0 120 120" aria-label="720 degree = two turns">
+              <circle cx="60" cy="100" r="40" fill="rgba(76,175,80,0.2)" stroke="#4CAF50" stroke-width="3"/>
+              <path d="M60,60 a40,40 0 0,1 28.3,28.3" fill="none" stroke="#2E7D32" stroke-width="4" stroke-linecap="round"/>
+              <polygon points="82,126 93,124 87,134" fill="#2E7D32"/>
+              <path d="M60,140 a40,40 0 0,1 -28.3,-11.7" fill="none" stroke="#8BC34A" stroke-width="4" stroke-linecap="round"/>
+              <polygon points="38,126 27,124 33,134" fill="#8BC34A"/>
+              <text x="60" y="99" text-anchor="middle" font-size="14" font-weight="800" fill="#2E7D32" font-family="'Fredoka', system-ui, sans-serif">720°</text>
+              <text x="60" y="114" text-anchor="middle" font-size="10" font-weight="700" fill="#2E7D32" font-family="'Fredoka', system-ui, sans-serif">2 turns!</text>
+            </svg>
+            <div class="angle-name">Two Full Turns</div>
+            <div class="angle-deg">720°</div>
+            <div class="angle-meaning">Two complete spins! Like a skateboard trick. 🛹</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Angle Types -->
+      <section class="shape-section" style="margin:2.5rem 0;">
+        <h3 style="font-size:1.7rem; color:var(--color-primary-dark); margin-bottom:0.5rem; font-weight:800;">🏷️ Angle Family Names</h3>
+        <p style="font-size:1.1rem; color:var(--color-text-light); margin-bottom:1.5rem;">Just like people have first names, angles have family names based on how big their turn is!</p>
+
+        <div class="type-chips">
+          <span class="type-chip">🔶 <strong>Acute</strong> — smaller than 90°</span>
+          <span class="type-chip">🔷 <strong>Right</strong> — exactly 90°</span>
+          <span class="type-chip">🟠 <strong>Obtuse</strong> — between 90° and 180°</span>
+          <span class="type-chip">⚪ <strong>Straight</strong> — exactly 180°</span>
+          <span class="type-chip">🟢 <strong>Reflex</strong> — more than 180°</span>
+          <span class="type-chip">🔄 <strong>Full turn</strong> — exactly 360°</span>
+        </div>
+      </section>
+
+      <!-- Real life -->
+      <section class="shape-section" style="margin:2.5rem 0;">
+        <h3 style="font-size:1.7rem; color:var(--color-primary-dark); margin-bottom:0.5rem; font-weight:800;">🌍 Angles in Real Life</h3>
+        <p style="font-size:1.1rem; color:var(--color-text-light); margin-bottom:1.5rem;">Look around — angles are hiding everywhere. How many can you spot today?</p>
+
+        <div class="reallife-grid">
+          <div class="reallife-card">
+            <span class="emoji">🕒</span>
+            <strong>90° at 3:00!</strong> The clock hands make a right angle at 3 o'clock.
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">🕕</span>
+            <strong>180° at 6:00!</strong> The clock hands form a straight line at 6 o'clock.
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">🍕</span>
+            <strong>45° pizza!</strong> Cut a pizza into 8 equal slices and each slice tip is 45°.
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">📖</span>
+            <strong>Book corner = 90°</strong> Open a book or a door — that perfect L is a right angle.
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">🛹</span>
+            <strong>The 720 trick!</strong> Skateboarders do a 720 = two full spins in the air!
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">🌀</span>
+            <strong>360° spin!</strong> Do one full twirl and you've turned exactly 360°.
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Quiz -->
+      <section class="quiz-section">
+        <h3>🎯 Angle Challenge Time!</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Tap an answer to see if you got it right. There are 8 questions — you've got this, angle hero! 💪</p>
+
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ What is an angle?</p>
+          <div class="angle-quiz-options">
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">The length of a line</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, true)">The turn between two lines that meet</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">The color of a shape</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">The weight of an object</button>
+          </div>
+          <div class="angle-result" id="aq1"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ How many degrees are in a right angle?</p>
+          <div class="angle-quiz-options">
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">45°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, true)">90°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">180°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">360°</button>
+          </div>
+          <div class="angle-result" id="aq2"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ A perfectly straight line is an angle of how many degrees?</p>
+          <div class="angle-quiz-options">
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">90°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, true)">180°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">270°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">360°</button>
+          </div>
+          <div class="angle-result" id="aq3"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ A full turn all the way around is how many degrees?</p>
+          <div class="angle-quiz-options">
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">180°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">90°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, true)">360°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">720°</button>
+          </div>
+          <div class="angle-result" id="aq4"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ A 720° turn is the same as how many full turns?</p>
+          <div class="angle-quiz-options">
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">1</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, true)">2</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">3</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">4</button>
+          </div>
+          <div class="angle-result" id="aq5"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ Which one is an ACUTE angle?</p>
+          <div class="angle-quiz-options">
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">90°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, true)">45°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">180°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">360°</button>
+          </div>
+          <div class="angle-result" id="aq6"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">7️⃣ The corner of a book is what kind of angle?</p>
+          <div class="angle-quiz-options">
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">Acute</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, true)">Right angle</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">Obtuse</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">Straight</button>
+          </div>
+          <div class="angle-result" id="aq7"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">8️⃣ Cut a pizza into 8 equal slices — how many degrees is each slice tip?</p>
+          <div class="angle-quiz-options">
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">90°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, true)">45°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">180°</button>
+            <button class="angle-option" onclick="checkAngleAnswer(this, false)">30°</button>
+          </div>
+          <div class="angle-result" id="aq8"></div>
+        </div>
+      </section>
+
+      <!-- Q&A Section -->
+      <section class="quiz-section">
+        <h3>❓💡 Questions &amp; Answers</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Think about each question first, then press the button to reveal the answer. Explaining it to a friend makes you a real angle master! 🎉</p>
+
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ What is an angle?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa1', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa1">An angle is the amount of <strong>turn</strong> between two lines that meet at a point. The point where they meet is called the <strong>vertex</strong>. 📐</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ Why is 90° called a "right angle"?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa2', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa2">Because it makes a perfect L shape — like the corners of a window, book, or square. It's the "right" (correct/straight) angle we use all the time! 📖</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ How is a 45° angle related to a 90° angle?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa3', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa3">A 45° angle is <strong>half of a right angle</strong>! Fold a right-angle corner in half and you get exactly 45°. 🍕 That's why an 8-slice pizza has 45° slices — 360 ÷ 8 = 45.</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ What does a 180° angle look like?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa4', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa4">A 180° angle is a <strong>perfectly straight line</strong>! Think of the clock hands at 6:00, or two rays pointing in exactly opposite directions. 🕕</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ What is a full turn in degrees?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa5', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa5">A full turn is <strong>360°</strong> — all the way around, like doing one complete twirl or going once around a circle. 🔄</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ What is 720°?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa6', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa6">720° is <strong>two full turns</strong> — 360° + 360°! That's why skateboarders call their double-spin trick "the 720". 🛹</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">7️⃣ What are the names of the angle families?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa7', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa7">From smallest to biggest: <strong>acute</strong> (less than 90°), <strong>right</strong> (exactly 90°), <strong>obtuse</strong> (90°–180°), <strong>straight</strong> (exactly 180°), <strong>reflex</strong> (more than 180°), and <strong>full turn</strong> (360°). 🏷️</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">8️⃣ Why are there 360° in a circle?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa8', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa8">Long ago, people guessed there were about 360 days in a year, and 360 is also a super handy number with lots of divisors. So they chose 360 for a full turn — and we've used it ever since! 🌍</div>
+        </div>
+      </section>
+
+      <!-- Next adventure teaser -->
+      <div class="highlight-box" style="margin-top:2.5rem;">
+        <p>🌟 <strong>Coming next:</strong> In Adventure 3, "Shape Geometry Words", we'll discover the secret vocabulary of shapes — what makes lines <em>perpendicular</em> and <em>parallel</em>, and how right angles 90° help us spot them! Stay curious! 🔍</p>
+      </div>
+
+    </article>
+  </main>
+
+  <!-- App Footer -->
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Interactive Angle Machine ============
+    var slider = document.getElementById('angleSlider');
+    var angleValue = document.getElementById('angleValue');
+    var angleType = document.getElementById('angleType');
+    var angleDesc = document.getElementById('angleDesc');
+    var rotRay = document.getElementById('rotRay');
+    var angleArc = document.getElementById('angleArc');
+    var turnsCircle = document.getElementById('turnsCircle');
+
+    var specials = {
+      45: ['Acute angle', '⭐ Special! Half of a right angle — like one slice of an 8-slice pizza. 🍕'],
+      90: ['Right angle', '⭐ Special! The perfect L — like the corner of a book or square. 📖'],
+      135: ['Obtuse angle', 'Bigger than a right angle (90°) but smaller than a straight line (180°).'],
+      180: ['Straight angle', '⭐ Special! A perfectly straight line — like the clock hands at 6:00. 🕕'],
+      270: ['Reflex angle', 'More than a straight line — a big sweeping turn!'],
+      360: ['Full turn', '⭐ Special! All the way around — one complete twirl! 🔄'],
+      720: ['2 full turns', '⭐ Special! TWO complete turns — like a skateboard 720 trick! 🛹']
+    };
+
+    function angleInfo(a) {
+      var remainder = a % 360;
+      var turns = Math.floor(a / 360);
+      if (a === 0) {
+        return { type: 'Zero angle', desc: 'The arms are lying on top of each other — no turn at all. Start spinning!', turns: turns };
+      }
+      if (specials[a]) {
+        return { type: specials[a][0], desc: specials[a][1], turns: turns };
+      }
+      if (remainder < 90) {
+        return { type: 'Acute angle', desc: 'Smaller than a right angle — a cute, sharp little corner!', turns: turns };
+      }
+      if (remainder < 180) {
+        return { type: 'Obtuse angle', desc: 'Bigger than a right angle but smaller than a straight line.', turns: turns };
+      }
+      if (remainder === 180) {
+        return { type: 'Straight angle', desc: 'A perfectly straight line!', turns: turns };
+      }
+      return { type: 'Reflex angle', desc: 'More than a straight line — a big sweeping turn!', turns: turns };
+    }
+
+    function updateAngle() {
+      var a = parseInt(slider.value, 10);
+      var info = angleInfo(a);
+      var remainder = a % 360;
+      var turns = info.turns;
+
+      // Spin the orange arm (right → top → left → bottom, like a protractor)
+      rotRay.setAttribute('transform', 'rotate(-' + a + ',150,150)');
+
+      // Draw the sweeping arc for the current part of the turn
+      if (remainder > 0) {
+        var rad = remainder * Math.PI / 180;
+        var ex = 150 + 110 * Math.cos(rad);
+        var ey = 150 - 110 * Math.sin(rad);
+        var largeArc = remainder > 180 ? 1 : 0;
+        angleArc.setAttribute('d', 'M260,150 A110,110 0 ' + largeArc + ',0 ' + ex.toFixed(1) + ',' + ey.toFixed(1));
+      } else {
+        angleArc.setAttribute('d', '');
+      }
+
+      // Show the green ring whenever one or more full turns are completed
+      turnsCircle.setAttribute('opacity', turns > 0 ? '1' : '0');
+
+      // Readout label
+      var turnsLabel = '';
+      if (turns > 0) {
+        turnsLabel = ' = ' + turns + (turns === 1 ? ' full turn' : ' full turns');
+        if (remainder > 0) turnsLabel += ' + ' + remainder + '°';
+      }
+      angleValue.textContent = a + '°' + turnsLabel;
+      angleType.textContent = info.type;
+      angleDesc.textContent = info.desc;
+    }
+
+    slider.addEventListener('input', updateAngle);
+    updateAngle();
+
+    // ============ Angle Quiz ============
+    function checkAngleAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.angle-option');
+      var resultDiv = parentCard.querySelector('.angle-result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').indexOf('true') !== -1) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! You really know your angles! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! Remember the superstar degrees: 45°, 90°, 180°, 360°, 720°! 💪';
+      }
+    }
+
+    // ============ Q&A Toggle ============
+    function toggleAnswer(id, btn) {
+      var answer = document.getElementById(id);
+      if (answer.classList.contains('show')) {
+        answer.classList.remove('show');
+        btn.textContent = 'Show Answer 💡';
+      } else {
+        answer.classList.add('show');
+        btn.textContent = 'Hide Answer 🙈';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      gsap.from('.angle-card', {
+        y: 30,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: 'power2.out'
+      });
+    });
+  </script>
+
+</body>
+</html>

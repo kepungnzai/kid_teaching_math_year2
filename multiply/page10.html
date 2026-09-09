@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Fast &amp; Clever Multiply! 🚀</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ "Fast & Clever" Multiply Page Styles ============ */
+    .fs-intro {
+      background: linear-gradient(135deg, #E0F2F1 0%, #FFF8E1 100%);
+      border-left: 6px solid #00897B;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .fs-intro p { margin-bottom: 0.75rem; font-size: 1.15rem; line-height: 1.7; }
+    .fs-intro p:last-child { margin-bottom: 0; }
+    .fs-intro strong { color: #00695C; }
+    .fs-intro .hl { color: #E65100; font-weight: 800; }
+
+    .fs-examples { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin: 0.5rem 0 1rem; }
+    .fs-ex-chip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.6rem 1.25rem; border-radius: 50px; font-weight: 800; font-size: 1.2rem;
+    }
+    .fs-ex-chip.c1 { background: #E0F2F1; color: #00695C; border: 3px solid #80CBC4; }
+    .fs-ex-chip.c2 { background: #E3F2FD; color: #1565C0; border: 3px solid #90CAF9; }
+    .fs-ex-chip.c3 { background: #FFF3E0; color: #E65100; border: 3px solid #FFB74D; }
+
+    .fs-note {
+      background: #FFF8E1; border: 2px dashed #FFCA28; border-radius: var(--radius-md);
+      padding: 0.85rem 1.25rem; margin: 1rem 0;
+    }
+    .fs-note p { font-size: 1.05rem; color: var(--color-text); margin-bottom: 0.3rem; }
+    .fs-note p:last-child { margin-bottom: 0; }
+    .fs-note strong { color: #E65100; }
+
+    /* Method section card */
+    .fs-method {
+      border: 3px solid #26A69A; border-radius: var(--radius-lg); background: #fff;
+      box-shadow: var(--shadow-md); padding: 1.75rem 1.5rem; margin: 2.25rem 0;
+    }
+    .fs-method-head {
+      display: flex; align-items: center; gap: 0.7rem; font-size: 1.5rem; font-weight: 800;
+      color: #00695C; margin-bottom: 0.5rem; flex-wrap: wrap;
+    }
+    .fs-method-head .fs-tag {
+      font-size: 0.8rem; background: #E0F2F1; color: #00695C; border-radius: 50px;
+      padding: 0.25rem 0.8rem; font-weight: 700;
+    }
+    .fs-method .fs-summary { color: var(--color-text-light); font-size: 1.05rem; margin-bottom: 0.9rem; }
+
+    /* Wizard stage */
+    .fs-stage {
+      background: linear-gradient(180deg, #E0F7FA 0%, #E0F2F1 100%);
+      border: 3px solid #4DB6AC; border-radius: 20px; margin: 0.75rem auto 0.25rem;
+      max-width: 640px; padding: 1rem 1.1rem; position: relative; min-height: 210px;
+      box-shadow: inset 0 0 30px rgba(77,182,172,0.15);
+    }
+    .fs-stage .fs-stage-label {
+      text-align: center; color: #00695C; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.6rem;
+    }
+    .fs-overlay { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    .fs-row { display: flex; justify-content: center; align-items: center; gap: 0.35rem; flex-wrap: wrap; margin: 0.35rem 0; }
+  /* Chips */
+    .fs-chip {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 54px; height: 54px; padding: 0 0.6rem; border-radius: 14px;
+      font-size: 1.8rem; font-weight: 800; box-shadow: 0 4px 10px rgba(0,0,0,0.10);
+      border: 3px solid rgba(0,0,0,0.06);
+    }
+    .fs-op { min-width: 34px; height: 54px; background: transparent; box-shadow: none; border: none; color: #37474F; font-size: 1.7rem; }
+    .fs-chip.fc-teal   { background: #B2DFDB; color: #004D40; }
+    .fs-chip.fc-blue   { background: #BBDEFB; color: #0D47A1; }
+    .fs-chip.fc-green  { background: #C8E6C9; color: #1B5E20; }
+    .fs-chip.fc-orange { background: #FFE0B2; color: #E65100; }
+    .fs-chip.fc-purple { background: #E1BEE7; color: #4A148C; }
+    .fs-chip.fc-gray   { background: #ECEFF1; color: #37474F; }
+    .fs-chip.fc-ans    { background: linear-gradient(135deg, #26A69A, #00897B); color: #fff; }
+
+    /* Part mini-cards (split method) */
+    .fs-part { display: flex; align-items: center; gap: 0.5rem; background: #fff; border-radius: 14px; padding: 0.5rem 0.8rem; box-shadow: var(--shadow-sm); }
+    .fs-part .fs-label { font-size: 0.9rem; color: #37474F; font-weight: 800; padding: 0.35rem 0.55rem; background: #E0F7FA; border-radius: 8px; }
+    .fs-part .fs-arrow { font-size: 1.4rem; color: #00897B; font-weight: 800; }
+    .fs-part .fs-val { min-width: 58px; height: 50px; }
+
+    /* Slots (eleven / cross method result) */
+    .fs-slot {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 54px; height: 54px; border-radius: 14px;
+      border: 3px dashed #90A4AE; background: rgba(255,255,255,0.6);
+      font-size: 1.8rem; font-weight: 800; color: #37474F;
+    }
+
+    /* Cross digit grid */
+    .fs-grid2 { display: grid; grid-template-columns: repeat(2, auto); gap: 0.4rem; align-items: center; justify-content: center; }
+
+    /* Status / message */
+    .fs-status {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap;
+      margin: 1rem 0; min-height: 3.4rem; padding: 0.85rem 1.1rem; background: #FFF8E1;
+      border-radius: 16px; border: 2px dashed #FFCA28; font-size: 1.12rem; text-align: center;
+      color: var(--color-text); font-weight: 600;
+    }
+    .fs-status .fs-counter {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 58px;
+      background: #00897B; color: #fff; border-radius: 12px; font-size: 1.6rem; font-weight: 800;
+      padding: 0 0.5rem; box-shadow: 0 3px 10px rgba(0,137,123,0.35);
+    }
+  /* Controls */
+    .fs-picker { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin: 0.4rem 0 1.1rem; }
+    .fs-pb-btn {
+      padding: 0.55rem 1.35rem; font-size: 1.1rem; font-weight: 800; border: 3px solid #80CBC4;
+      background: white; color: #00695C; border-radius: 50px; cursor: pointer; transition: all 0.2s ease;
+    }
+    .fs-pb-btn:hover:not(:disabled) { transform: translateY(-3px); background: #E0F2F1; }
+    .fs-pb-btn.active { background: linear-gradient(135deg, #26A69A, #00897B); border-color: #00695C; color: white; box-shadow: 0 4px 12px rgba(0,137,123,0.35); }
+    .fs-pb-btn.rand { border-color: #FFB74D; color: #E65100; }
+
+    .fs-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 0.4rem; }
+    .fs-btn { padding: 0.7rem 1.6rem; font-size: 1.05rem; font-weight: 800; border: none; border-radius: 50px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--shadow-sm); }
+    .fs-btn.accent { background: linear-gradient(135deg, #26A69A, #00897B); color: white; }
+    .fs-btn.ghost { background: #E0F2F1; color: #004D40; border: 2px solid #80CBC4; }
+    .fs-btn.outline { background: white; color: #E65100; border: 2px solid #FFB74D; }
+    .fs-btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.05); }
+    .fs-btn:disabled { opacity: 0.55; cursor: default; transform: none !important; }
+
+    /* Race comparison */
+    .fs-race { border: 3px solid #26A69A; border-radius: var(--radius-lg); background: #fff; padding: 1.5rem 1.75rem; margin: 2rem 0; box-shadow: var(--shadow-md); }
+    .fs-race h4 { font-size: 1.35rem; color: #00695C; margin-bottom: 0.4rem; font-weight: 800; }
+    .fs-race .fs-race-sub { color: var(--color-text-light); margin-bottom: 1.25rem; font-size: 1rem; }
+    .fs-track { display: flex; align-items: center; gap: 0.9rem; margin: 0.8rem 0; flex-wrap: wrap; }
+    .fs-track .fs-track-name { min-width: 150px; font-weight: 800; font-size: 1.05rem; }
+    .fs-track .fs-segs { display: flex; gap: 6px; flex: 1; }
+    .fs-seg { height: 40px; flex: 1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: #fff; }
+    .fs-seg.old { background: linear-gradient(135deg, #B39DDB, #7E57C2); }
+    .fs-seg.fast { background: linear-gradient(135deg, #4DB6AC, #00897B); }
+    .fs-seg.win { background: linear-gradient(135deg, #FFB74D, #FB8C00) !important; }
+    .fs-track .fs-seg-cnt { min-width: 70px; text-align: right; font-weight: 800; font-size: 1rem; }
+
+    /* Bonus cards */
+    .fs-bonus { display: flex; flex-wrap: wrap; gap: 1.25rem; margin: 1.5rem 0; }
+    .fs-bcard { flex: 1 1 300px; border: 3px solid #90CAF9; background: #E3F2FD; border-radius: var(--radius-lg); padding: 1.25rem; }
+    .fs-bcard h4 { color: #1565C0; font-size: 1.2rem; margin-bottom: 0.6rem; }
+    .fs-bcard p { font-size: 1rem; color: var(--color-text-light); margin-bottom: 0.9rem; }
+    .fs-bstage { background: #fff; border-radius: 14px; padding: 0.9rem; min-height: 84px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 0.3rem; }
+    .fs-tagchip { display: inline-flex; align-items: center; padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 800; font-size: 0.85rem; background: #FFF3E0; color: #E65100; border: 2px solid #FFB74D; }
+
+    /* Quiz tiles */
+    .fs-quiz-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+    .fs-option { padding: 0.85rem 1rem; font-size: 1.05rem; font-weight: 700; background: white; border: 2px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease; color: var(--color-text); }
+    .fs-option:hover:not(:disabled) { transform: translateY(-3px); border-color: #26A69A; box-shadow: var(--shadow-sm); }
+    .fs-option.correct { background: #C8E6C9 !important; border-color: #2E7D32 !important; animation: popIn 0.4s ease; }
+    .fs-option.wrong { background: #FFCDD2 !important; border-color: #C62828 !important; }
+    .fs-result { margin-top: 0.6rem; padding: 0.55rem 1rem; border-radius: var(--radius-sm); font-weight: 700; display: none; }
+    .fs-result.show { display: block; animation: popIn 0.4s ease; }
+    .fs-result.correct-result { background: #C8E6C9; color: #14532D; }
+    .fs-result.wrong-result { background: #FFCDD2; color: #9b111e; }
+
+    @media (max-width: 640px) {
+      .fs-chip { min-width: 44px; height: 46px; font-size: 1.5rem; }
+      .fs-op { min-width: 26px; height: 46px; font-size: 1.4rem; }
+      .fs-slot { min-width: 44px; height: 46px; font-size: 1.5rem; }
+      .fs-track .fs-track-name { min-width: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="page2.html">Multiply by 3</a></li>
+        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page4.html">Growth</a></li>
+        <li><a href="page5.html">Rate of Change</a></li>
+        <li><a href="page5b.html">Ratio</a></li>
+        <li><a href="page5c.html">💎 Diamond Game</a></li>
+        <li><a href="page6.html">Shapes</a></li>
+        <li><a href="page9.html">Old-School Multiply</a></li>
+        <li><a href="page9b.html">🧮 Simulator</a></li>
+        <li><a href="page10.html" class="active">Fast Multiply</a></li>
+        <li><a href="page7.html">Mean</a></li>
+        <li><a href="page11.html">➗ Division</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>🚀 Fast &amp; Clever Multiply — Is There a Quicker Way?</h2>
+
+      <!-- Intro -->
+      <div class="fs-intro">
+        <p><strong>Great question!</strong> The old-school workbook way is <strong>very reliable</strong> — it works for giant numbers. But for the numbers kids meet every day (like <strong>20 × 11</strong>, <strong>13 × 3</strong> or <strong>20 × 21</strong>), there are <span class="hl">lightning-fast tricks</span> that skip the carries, the zero-placeholder and the messy second row!</p>
+        <p>Math whizzes use just <strong>3 clever tricks</strong>: <strong>Split It ✂️</strong>, the <strong>×11 Sandwich 🥪</strong>, and the <strong>Criss-Cross ✖</strong>. Each one turns a big scary sum into tiny easy facts you already know!</p>
+        <p>Watch each trick animate step by step, then try them yourself in the quiz. 🎮</p>
+      </div>
+
+      <!-- ============ RACE: Old vs Fast ============ -->
+      <div class="fs-race">
+        <h4>🏁 Same problem. Old way vs Fast way.</h4>
+        <p class="fs-race-sub">Both give <strong>20 × 11 = 220</strong>. But the old-school wizard on page&nbsp;9 uses <strong>5 moves</strong>, while the fast Split trick needs just <strong>3</strong>. Press <strong>▶ Race!</strong> to see them go:</p>
+
+        <div class="fs-track">
+          <span class="fs-track-name">🧮 Old-School</span>
+          <div class="fs-segs">
+            <div class="fs-seg old">1&times;20</div>
+            <div class="fs-seg old">pad 0</div>
+            <div class="fs-seg old">10&times;20</div>
+            <div class="fs-seg old">+ rows</div>
+            <div class="fs-seg old">answer</div>
+          </div>
+          <span class="fs-seg-cnt" id="fsRaceCntOld">5</span>
+        </div>
+
+        <div class="fs-track">
+          <span class="fs-track-name">🚀 Fast Split</span>
+          <div class="fs-segs">
+            <div class="fs-seg fast">20&times;10</div>
+            <div class="fs-seg fast">+ 20</div>
+            <div class="fs-seg fast">= 220</div>
+          </div>
+          <span class="fs-seg-cnt" id="fsRaceCntFast">3</span>
+        </div>
+
+        <div class="fs-controls">
+          <button type="button" class="fs-btn accent" id="fsRacePlay">▶ Race!</button>
+          <button type="button" class="fs-btn outline" id="fsRaceReset">↺ Reset</button>
+        </div>
+      </div>
+
+      <!-- ============ TRICK 1: SPLIT IT ============ -->
+      <section>
+        <div class="fs-method">
+          <div class="fs-method-head">🧩 Trick 1 — Split It! <span class="fs-tag">Distributive Rule ✂️</span></div>
+          <p class="fs-summary">Break the tricky number into <strong>friendly parts</strong> (10s and 1s), multiply each part, then add. It's the SAME answer — just 3 easy moves instead of 5!</p>
+
+          <div class="thinking-steps">
+            <h4>🧠 The Split recipe (only 3 small steps!)</h4>
+            <div class="step"><span class="step-number">1</span><span class="step-text"><strong>Split</strong> the trickier number into friendlier parts. 11 → <strong>10 + 1</strong>, 21 → <strong>20 + 1</strong>.</span></div>
+            <div class="step"><span class="step-number">2</span><span class="step-text"><strong>Multiply</strong> each part: 20 × 10 = 200 and 20 × 1 = 20. Multiplying by 10 and 1 is a piece of cake! 🍰</span></div>
+            <div class="step"><span class="step-number">3</span><span class="step-text"><strong>Add</strong> the easy answers: 200 + 20 = <strong>220</strong>! 🎉</span></div>
+          </div>
+
+          <div class="fs-picker" id="fsSplitPicker">
+            <button type="button" class="fs-pb-btn" data-problem="0">20 × 11</button>
+            <button type="button" class="fs-pb-btn" data-problem="1">13 × 3</button>
+            <button type="button" class="fs-pb-btn" data-problem="2">20 × 21</button>
+            <button type="button" class="fs-pb-btn" data-problem="3">12 × 4</button>
+            <button type="button" class="fs-pb-btn" data-problem="4">22 × 5</button>
+            <button type="button" class="fs-pb-btn rand" id="fsSplitRandom">🎲 Random!</button>
+          </div>
+
+          <div class="fs-stage" id="fsSplitStage">
+            <div class="fs-stage-label">✍️ Split the number, then multiply the friendly parts</div>
+            <div class="fs-row" id="fsSplitRows"></div>
+            <svg class="fs-overlay" id="fsSplitSvg" aria-hidden="true"></svg>
+          </div>
+
+          <div class="fs-status">
+            <span id="fsSplitMsg">Press ▶ Play to watch the Split trick!</span>
+            <span class="fs-counter" id="fsSplitCnt" style="display:none">0</span>
+          </div>
+
+          <div class="fs-controls">
+            <button type="button" class="fs-btn accent" id="fsSplitPlay">▶ Play</button>
+            <button type="button" class="fs-btn ghost" id="fsSplitNext">⏭ Next Step</button>
+            <button type="button" class="fs-btn outline" id="fsSplitReset">↺ Reset</button>
+          </div>
+        </div>
+      </section>
+<!-- ============ TRICK 2: THE x11 SANDWICH ============ -->
+      <section>
+        <div class="fs-method">
+          <div class="fs-method-head">🥪 Trick 2 — The &times;11 Sandwich! <span class="fs-tag">Magical 11 🪄</span></div>
+          <p class="fs-summary">The number <strong>11</strong> is special: any 2-digit number &times; 11 = <strong>copy the left digit</strong>, then <strong>their sum in the middle</strong>, then <strong>copy the right digit</strong>. Like a sandwich! 🥪</p>
+
+          <div class="thinking-steps">
+            <h4>🧠 The &times;11 recipe (no multiplication at all!)</h4>
+            <div class="step"><span class="step-number">1</span><span class="step-text">Take <strong>23 × 11</strong>. Write the <strong>left digit (2)</strong> on the outside — it's the hundreds!</span></div>
+            <div class="step"><span class="step-number">2</span><span class="step-text">Put <strong>2 + 3 = 5</strong> in the middle — that's the tens!</span></div>
+            <div class="step"><span class="step-number">3</span><span class="step-text">Copy the <strong>right digit (3)</strong> on the outside — that's the ones. Read it: <strong>2-5-3 = 253</strong>! 🤯</span></div>
+          </div>
+
+          <div class="fs-picker" id="fsElevenPicker">
+            <button type="button" class="fs-pb-btn" data-problem="0">11 x 11</button>
+            <button type="button" class="fs-pb-btn" data-problem="1">23 x 11</button>
+            <button type="button" class="fs-pb-btn" data-problem="2">30 x 11</button>
+            <button type="button" class="fs-pb-btn" data-problem="3">42 x 11</button>
+            <button type="button" class="fs-pb-btn rand" id="fsElevenRandom">🎲 Random!</button>
+          </div>
+
+          <div class="fs-stage" id="fsElevenStage">
+            <div class="fs-stage-label">🥪 Open the sandwich: outside digits, sum in the middle!</div>
+            <div class="fs-row" id="fsElevenRows"></div>
+            <svg class="fs-overlay" id="fsElevenSvg" aria-hidden="true"></svg>
+          </div>
+
+          <div class="fs-status">
+            <span id="fsElevenMsg">Press ▶ Play to watch the sandwich! 🥪</span>
+            <span class="fs-counter" id="fsElevenCnt" style="display:none">0</span>
+          </div>
+
+          <div class="fs-controls">
+            <button type="button" class="fs-btn accent" id="fsElevenPlay">▶ Play</button>
+            <button type="button" class="fs-btn ghost" id="fsElevenNext">⏭ Next Step</button>
+            <button type="button" class="fs-btn outline" id="fsElevenReset">↺ Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="fs-note">
+        <p>💡 What if the two digits add to more than 9? Like <strong>59 × 11</strong>: 5, then 5+9 = 14, so <strong>carry the 1</strong> → 5+1 = 6, then 9! So 59 × 11 = <strong>649</strong>. Only the middle digit stays as-is when the sum is under 10.</p>
+      </div>
+<!-- ============ TRICK 3: CRISS-CROSS ============ -->
+      <section>
+        <div class="fs-method">
+          <div class="fs-method-head">✖ Trick 3 — Criss-Cross! <span class="fs-tag">The PRO move 💪</span></div>
+          <p class="fs-summary">For <strong>two 2-digit numbers</strong>, the old-school way multiplies twice and adds rows. Criss-Cross needs only <strong>3 tiny multiplications</strong> — ones, cross, tens — and no carries or zero-placeholders!</p>
+
+          <div class="thinking-steps">
+            <h4>🧠 The Criss-Cross recipe for 12 × 13</h4>
+            <div class="step"><span class="step-number">1</span><span class="step-text"><strong>Ones first:</strong> 2 × 3 = <strong>6</strong>. This is the ones digit of the answer.</span></div>
+            <div class="step"><span class="step-number">2</span><span class="step-text"><strong>Criss-cross the middle:</strong> 1×3 + 2×1 = 3 + 2 = <strong>5</strong>. This is the tens digit.</span></div>
+            <div class="step"><span class="step-number">3</span><span class="step-text"><strong>Tens connect:</strong> 1 × 1 = <strong>1</strong>. This is the hundreds digit. Put them together: <strong>1-5-6 = 156</strong>! 🎉</span></div>
+          </div>
+
+          <div class="fs-picker" id="fsCrossPicker">
+            <button type="button" class="fs-pb-btn" data-problem="0">12 x 13</button>
+            <button type="button" class="fs-pb-btn" data-problem="1">11 x 11</button>
+            <button type="button" class="fs-pb-btn" data-problem="2">21 x 13</button>
+            <button type="button" class="fs-pb-btn" data-problem="3">12 x 24</button>
+            <button type="button" class="fs-pb-btn rand" id="fsCrossRandom">🎲 Random!</button>
+          </div>
+
+          <div class="fs-stage" id="fsCrossStage">
+            <div class="fs-stage-label">✖ Watch the digits criss and cross!</div>
+            <div class="fs-row" id="fsCrossRows"></div>
+            <svg class="fs-overlay" id="fsCrossSvg" aria-hidden="true"></svg>
+          </div>
+
+          <div class="fs-status">
+            <span id="fsCrossMsg">Press ▶ Play to watch the criss-cross!</span>
+            <span class="fs-counter" id="fsCrossCnt" style="display:none">0</span>
+          </div>
+
+          <div class="fs-controls">
+            <button type="button" class="fs-btn accent" id="fsCrossPlay">▶ Play</button>
+            <button type="button" class="fs-btn ghost" id="fsCrossNext">⏭ Next Step</button>
+            <button type="button" class="fs-btn outline" id="fsCrossReset">↺ Reset</button>
+          </div>
+        </div>
+      </section>
+<!-- ============ BONUS TRICKS ============ -->
+      <section>
+        <h3>✨ Two Bonus Rocket Tricks!</h3>
+        <div class="fs-bonus">
+          <!-- Doubling & halving -->
+          <div class="fs-bcard">
+            <h4>🔁 Double &amp; Halve</h4>
+            <p>When one number is even, <strong>halve it</strong> and <strong>double the other</strong> — the answer stays the same! 25 × 8 becomes 50 × 4, then 100 × 2. Easy!</p>
+            <div class="fs-bstage" id="fsDbStage">
+              <span class="fs-chip fc-blue" id="fsDbA">25</span>
+              <span class="fs-op">×</span>
+              <span class="fs-chip fc-orange" id="fsDbB">8</span>
+              <span class="fs-op">=</span>
+              <span class="fs-chip fc-gray" id="fsDbQ">?</span>
+              <span class="fs-tagchip" id="fsDbTag" style="display:none">halve ÷2 / double ×2</span>
+            </div>
+            <div class="fs-controls"><button type="button" class="fs-btn accent" id="fsDbPlay">▶ Double &amp; Halve</button></div>
+          </div>
+
+          <!-- Round & compensate -->
+          <div class="fs-bcard">
+            <h4>🪄 Round &amp; Compensate</h4>
+            <p>Round 19 up to the friendly 20, multiply, then <strong>take back</strong> the 1 you added. 19 × 14 = (20 × 14) − 14 = 280 − 14 = <strong>266</strong>!</p>
+            <div class="fs-bstage" id="fsCpStage">
+              <span class="fs-chip fc-blue" id="fsCpA">19</span>
+              <span class="fs-op">×</span>
+              <span class="fs-chip fc-orange" id="fsCpB">14</span>
+              <span class="fs-op">=</span>
+              <span class="fs-chip fc-gray" id="fsCpQ">?</span>
+              <span class="fs-tagchip" id="fsCpTag" style="display:none">+1 then −14</span>
+            </div>
+            <div class="fs-controls"><button type="button" class="fs-btn accent" id="fsCpPlay">▶ Round &amp; Fix</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ QUIZ ============ -->
+      <section>
+        <div class="quiz-section">
+          <h3>🎯 Quick Check — Are You a Speed Wizard?</h3>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q1. Use the Split trick: <strong>20 × 11</strong> = ? (20 × 10 + 20 × 1)</div>
+            <div class="fs-quiz-options">
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq1', true)">220</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq1', false)">2200</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq1', false)">31</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq1', false)">211</button>
+            </div>
+            <div id="fsq1result" class="fs-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q2. Use the &times;11 sandwich trick: <strong>23 × 11</strong> = ? (copy 2, middle 2+3=5, copy 3)</div>
+            <div class="fs-quiz-options">
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq2', false)">46</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq2', false)">235</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq2', true)">253</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq2', false)">2530</button>
+            </div>
+            <div id="fsq2result" class="fs-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q3. Use Criss-Cross: <strong>12 × 13</strong> = ? (ones 2×3=6, cross 1×3+2×1=5, tens 1×1=1)</div>
+            <div class="fs-quiz-options">
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq3', true)">156</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq3', false)">126</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq3', false)">163</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq3', false)">15</button>
+            </div>
+            <div id="fsq3result" class="fs-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q4. Bonus — Double &amp; Halve: <strong>25 × 8</strong> = ? (halve 8, double 25…)</div>
+            <div class="fs-quiz-options">
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq4', false)">80</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq4', false)">258</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq4', false)">208</button>
+              <button class="fs-option" onclick="checkFsAnswer(this, 'fsq4', true)">200</button>
+            </div>
+            <div id="fsq4result" class="fs-result"></div>
+          </div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+<script>
+    // ============ Fast & Clever Multiply — Animation Engine ============
+    (function () {
+      'use strict';
+
+      // ---------- tiny element helpers ----------
+      function mk(tag, cls, text) {
+        var el = document.createElement(tag);
+        if (cls) el.className = cls;
+        if (text !== undefined) el.textContent = text;
+        return el;
+      }
+      function chip(text, cls) { return mk('span', 'fs-chip ' + (cls || 'fc-gray'), text); }
+      function opEl(text) { return mk('span', 'fs-op', text); }
+      function slot(text) { return mk('span', 'fs-slot', text); }
+
+      // ---------- link drawer: animated SVG path from element A to B ----------
+      function addLink(stage, svg, a, b, color) {
+        var sa = stage.getBoundingClientRect();
+        function c(el) {
+          var r = el.getBoundingClientRect();
+          return { x: r.left - sa.left + r.width / 2, y: r.top - sa.top + r.height / 2 };
+        }
+        var p1 = c(a), p2 = c(b);
+        var mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'M' + p1.x + ',' + p1.y + ' Q' + mx + ',' + my + ' ' + p2.x + ',' + p2.y);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', color);
+        path.setAttribute('stroke-width', 4);
+        path.setAttribute('stroke-linecap', 'round');
+        path.style.opacity = 0;
+        svg.appendChild(path);
+        return path;
+      }
+      function drawLinks(plan, s, tl) {
+        var list = plan.links ? plan.links[s] : null;
+        if (!list || !plan.stage || !plan.svg) return;
+        list.forEach(function (L) {
+          var path = addLink(plan.stage, plan.svg, L.a, L.b, L.color);
+          var len = path.getTotalLength ? path.getTotalLength() : 220;
+          path.style.strokeDasharray = len;
+          path.style.strokeDashoffset = len;
+          tl.to(path, { opacity: 1, strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' }, tl.duration);
+          if (L.a.classList) tl.fromTo(L.a, { scale: 1 }, { scale: 1.25, repeat: 2, yoyo: true, duration: 0.14 }, tl.duration);
+          if (L.b.classList) tl.fromTo(L.b, { scale: 1 }, { scale: 1.25, repeat: 2, yoyo: true, duration: 0.14 }, tl.duration);
+        });
+      }
+      function redrawStaticLinks(plan, s) {
+        if (!plan.stage || !plan.svg) return;
+        for (var i = 0; i <= s; i++) {
+          var list = plan.links ? plan.links[i] : null;
+          if (!list) continue;
+          list.forEach(function (L) {
+            var p = addLink(plan.stage, plan.svg, L.a, L.b, L.color);
+            p.style.opacity = 1;
+            p.style.strokeDasharray = 'none';
+          });
+        }
+      }
+      // ---------- reusable step-by-step wizard ----------
+      function makeWizard(cfg) {
+        var stage = cfg.stage, svg = cfg.svg;
+        var msgEl = cfg.msg, cntEl = cfg.cnt;
+        var playBtn = cfg.play, nextBtn = cfg.next, resetBtn = cfg.reset;
+        var randomBtn = cfg.random, picker = cfg.picker;
+
+        var curIdx = 0, plan = null, step = -1, busy = false;
+
+        function updateButtons() {
+          playBtn.disabled = busy;
+          resetBtn.disabled = busy;
+          nextBtn.disabled = busy || !plan || step >= plan.total - 1;
+        }
+
+        function reveal(s, tl) {
+          var groups = plan.groups;
+          for (var g = 0; g < groups.length; g++) {
+            if (groups[g].at === s) {
+              tl.to(groups[g].els, { autoAlpha: 1, scale: 1, duration: 0.4, ease: 'back.out(2)', stagger: 0.12 }, tl.duration);
+            }
+          }
+          drawLinks(plan, s, tl);
+          var st = plan.steps[s];
+          tl.call(function () { msgEl.innerHTML = st.msg; }, [], tl.duration);
+          if (st.cnt > 0) {
+            tl.call(function () { cntEl.style.display = 'inline-flex'; cntEl.textContent = '0'; }, [], tl.duration);
+            var c = { v: 0 };
+            tl.to(c, { v: st.cnt, duration: 0.9, ease: 'power1.inOut', onUpdate: function () { cntEl.textContent = Math.round(c.v); } }, tl.duration);
+          } else {
+            tl.call(function () { cntEl.style.display = 'none'; }, [], tl.duration);
+          }
+          if (cfg.stepFx) cfg.stepFx(plan, s, tl);
+        }
+
+        function applyState(s) {
+          busy = true; updateButtons();
+          var tl = gsap.timeline({ onComplete: function () { busy = false; step = s; updateButtons(); } });
+          reveal(s, tl);
+        }
+
+        function playAll() {
+          if (busy) return;
+          if (step >= plan.total - 1) setState(0);
+          busy = true; updateButtons();
+          var tl = gsap.timeline({ onComplete: function () { busy = false; step = plan.total - 1; updateButtons(); } });
+          for (var s2 = step + 1; s2 < plan.total; s2++) reveal(s2, tl);
+        }
+
+        function setState(s) {
+          var groups = plan.groups;
+          for (var g = 0; g < groups.length; g++) {
+            var show = groups[g].at <= s;
+            groups[g].els.forEach(function (e) {
+              if (show) gsap.set(e, { autoAlpha: 1, scale: 1 });
+              else gsap.set(e, { autoAlpha: 0, scale: 0.3 });
+            });
+          }
+          svg.innerHTML = '';
+          redrawStaticLinks(plan, s);
+          var st = plan.steps[s];
+          msgEl.innerHTML = st.msg;
+          if (st.cnt > 0) { cntEl.textContent = st.cnt; cntEl.style.display = 'inline-flex'; }
+          else cntEl.style.display = 'none';
+          if (cfg.setFx) cfg.setFx(plan, s);
+        }
+
+        function selectProblem(idx) {
+          Array.prototype.forEach.call(picker.querySelectorAll('.fs-pb-btn'), function (b) {
+            b.classList.toggle('active', parseInt(b.getAttribute('data-problem'), 10) === idx);
+          });
+          plan = cfg.build(idx, stage, svg);
+          plan.stage = stage;
+          plan.svg = svg;
+          plan.links = plan.links || {};
+          step = -1; busy = false;
+          setState(0);
+          updateButtons();
+        }
+
+        playBtn.addEventListener('click', playAll);
+        nextBtn.addEventListener('click', function () {
+          if (busy || !plan || step >= plan.total - 1) return;
+          applyState(step + 1);
+        });
+        resetBtn.addEventListener('click', function () { if (busy) return; setState(0); step = -1; updateButtons(); });
+        picker.addEventListener('click', function (e) {
+          var btn = e.target.closest('.fs-pb-btn');
+          if (!btn || busy) return;
+          var idx = parseInt(btn.getAttribute('data-problem'), 10);
+          if (isNaN(idx)) return;
+          curIdx = idx;
+          selectProblem(idx);
+        });
+        if (randomBtn) randomBtn.addEventListener('click', function () {
+          if (busy) return;
+          var picks = [];
+          for (var i = 0; i < cfg.problems.length; i++) if (i !== curIdx) picks.push(i);
+          curIdx = picks[Math.floor(Math.random() * picks.length)];
+          selectProblem(curIdx);
+        });
+
+        selectProblem(0);
+      }
+      // ================= TRICK 1: SPLIT IT =================
+      var splitProblems = [
+        { a: 20, b: 11, s: 'b' },
+        { a: 13, b: 3,  s: 'a' },
+        { a: 20, b: 21, s: 'b' },
+        { a: 12, b: 4,  s: 'a' },
+        { a: 22, b: 5,  s: 'a' }
+      ];
+      makeWizard({
+        problems: splitProblems,
+        stage: document.getElementById('fsSplitStage'),
+        svg: document.getElementById('fsSplitSvg'),
+        picker: document.getElementById('fsSplitPicker'),
+        msg: document.getElementById('fsSplitMsg'),
+        cnt: document.getElementById('fsSplitCnt'),
+        play: document.getElementById('fsSplitPlay'),
+        next: document.getElementById('fsSplitNext'),
+        reset: document.getElementById('fsSplitReset'),
+        random: document.getElementById('fsSplitRandom'),
+        build: function (idx) {
+          var P = splitProblems[idx];
+          var a = P.a, b = P.b;
+          var splitA = (P.s === 'a');
+          var big = splitA ? a : b;
+          var mult = splitA ? b : a;
+          var p1 = Math.floor(big / 10) * 10, p2 = big % 10;
+          var r1 = mult * p1, r2 = mult * p2, ans = r1 + r2;
+          var rows = document.getElementById('fsSplitRows');
+          rows.innerHTML = '';
+          var groups = [];
+
+          var row0 = mk('div', 'fs-row');
+          var cA = chip(String(a), 'fc-blue');
+          var cB = chip(String(b), 'fc-orange');
+          var cQ = chip('?', 'fc-gray');
+          row0.appendChild(cA); row0.appendChild(opEl('×'));
+          row0.appendChild(cB); row0.appendChild(opEl('=')); row0.appendChild(cQ);
+          rows.appendChild(row0);
+          groups.push({ els: [cA, row0.children[1], cB, row0.children[3], cQ], at: 0 });
+
+          function partCard(labelText, valText) {
+            var card = mk('div', 'fs-part');
+            var lab = mk('span', 'fs-label', labelText);
+            var arr = mk('span', 'fs-arrow', '→');
+            var val = chip(valText, 'fc-teal');
+            val.classList.add('fs-val');
+            card.appendChild(lab); card.appendChild(arr); card.appendChild(val);
+            return { card: card, lab: lab, arr: arr, val: val };
+          }
+          var c1 = partCard(mult + ' × ' + p1, String(r1));
+          var c2 = partCard(mult + ' × ' + p2, String(r2));
+          var row1 = mk('div', 'fs-row');
+          var opPlus1 = opEl('+');
+          row1.appendChild(c1.card); row1.appendChild(opPlus1); row1.appendChild(c2.card);
+          rows.appendChild(row1);
+          groups.push({ els: [c1.card, opPlus1, c2.card], at: 1 });
+          groups.push({ els: [c1.val, c2.val], at: 2 });
+
+          var row2 = mk('div', 'fs-row');
+          var cR1 = chip(String(r1), 'fc-teal');
+          var cR2 = chip(String(r2), 'fc-teal');
+          var cAns = chip(String(ans), 'fc-ans');
+          row2.appendChild(cR1); row2.appendChild(opEl('+'));
+          row2.appendChild(cR2); row2.appendChild(opEl('=')); row2.appendChild(cAns);
+          rows.appendChild(row2);
+          groups.push({ els: [cR1, row2.children[1], cR2, row2.children[3], cAns], at: 3 });
+
+          var which = splitA ? 'the <strong>' + a + '</strong>' : 'the <strong>' + b + '</strong>';
+          var splitDesc = (splitA ? a : b) + ' = ' + p1 + ' + ' + p2;
+          return {
+            groups: groups, links: {}, total: 4,
+            steps: [
+              { msg: 'Step 1 — ✏️ Write <strong>' + a + ' × ' + b + '</strong>. We\'ll SPLIT the trickier number into friendly parts!', cnt: 0 },
+              { msg: 'Step 2 — ✂️ Split! ' + which + ' → <strong>' + splitDesc + '</strong>. Each part is a friendlier fact!', cnt: 0 },
+              { msg: 'Step 3 — ✖️ Multiply each part: <strong>' + mult + ' × ' + p1 + ' = ' + r1 + '</strong> and <strong>' + mult + ' × ' + p2 + ' = ' + r2 + '</strong>.', cnt: 0 },
+              { msg: 'Step 4 — ➕ Add the parts: <strong>' + r1 + ' + ' + r2 + ' = ' + ans + '</strong>! Only 3 little facts — no columns, no carries! 🎉', cnt: ans }
+            ]
+          };
+        }
+      });
+      // ================= TRICK 2: THE x11 SANDWICH =================
+      var elevenProblems = [
+        { t: 1, u: 1 },
+        { t: 2, u: 3 },
+        { t: 3, u: 0 },
+        { t: 4, u: 2 }
+      ];
+      makeWizard({
+        problems: elevenProblems,
+        stage: document.getElementById('fsElevenStage'),
+        svg: document.getElementById('fsElevenSvg'),
+        picker: document.getElementById('fsElevenPicker'),
+        msg: document.getElementById('fsElevenMsg'),
+        cnt: document.getElementById('fsElevenCnt'),
+        play: document.getElementById('fsElevenPlay'),
+        next: document.getElementById('fsElevenNext'),
+        reset: document.getElementById('fsElevenReset'),
+        random: document.getElementById('fsElevenRandom'),
+        build: function (idx) {
+          var P = elevenProblems[idx];
+          var t = P.t, u = P.u;
+          var mid = t + u;
+          var ans = (t * 10 + u) * 11;
+          var rows = document.getElementById('fsElevenRows');
+          rows.innerHTML = '';
+          var groups = [];
+
+          var row0 = mk('div', 'fs-row');
+          var cT = chip(String(t), 'fc-blue');
+          var cU = chip(String(u), 'fc-green');
+          var c11a = chip('1', 'fc-gray');
+          var c11b = chip('1', 'fc-gray');
+          var cQ = chip('?', 'fc-gray');
+          row0.appendChild(cT); row0.appendChild(cU);
+          row0.appendChild(opEl('×'));
+          row0.appendChild(c11a); row0.appendChild(c11b);
+          row0.appendChild(opEl('=')); row0.appendChild(cQ);
+          rows.appendChild(row0);
+          groups.push({ els: [cT, cU, c11a, c11b, row0.children[5], cQ], at: 0 });
+
+          var row1 = mk('div', 'fs-row');
+          var slotH = slot('?'), slotM = slot('?'), slotU = slot('?');
+          slotH.style.borderColor = '#42A5F5';
+          slotM.style.borderColor = '#FFA726';
+          slotU.style.borderColor = '#66BB6A';
+          row1.appendChild(slotH); row1.appendChild(slotM); row1.appendChild(slotU);
+          rows.appendChild(row1);
+          groups.push({ els: [slotH, slotM, slotU], at: 0 });
+
+          var row2 = mk('div', 'fs-row');
+          var cAns = chip(String(ans), 'fc-ans');
+          row2.appendChild(opEl('=')); row2.appendChild(cAns);
+          rows.appendChild(row2);
+          groups.push({ els: [cAns], at: 4 });
+
+          return {
+            groups: groups, links: {
+              1: [{ a: cT, b: slotH, color: '#42A5F5' }],
+              2: [{ a: cT, b: slotM, color: '#FFA726' }, { a: cU, b: slotM, color: '#FFA726' }],
+              3: [{ a: cU, b: slotU, color: '#66BB6A' }]
+            },
+            slotH: slotH, slotM: slotM, slotU: slotU, t: t, u: u, mid: mid, ans: ans,
+            total: 5,
+            steps: [
+              { msg: 'Step 1 — ✏️ <strong>' + (t * 10 + u) + ' × 11</strong>. The sandwich has only 3 slots to fill! 🥪', cnt: 0 },
+              { msg: 'Step 2 — Copy the LEFT digit <strong>' + t + '</strong> into slot 1 (hundreds).', cnt: 0 },
+              { msg: 'Step 3 — The MIDDLE is the two digits ADDED: <strong>' + t + ' + ' + u + ' = ' + mid + '</strong> (tens).', cnt: 0 },
+              { msg: 'Step 4 — Copy the RIGHT digit <strong>' + u + '</strong> into slot 3 (ones).', cnt: 0 },
+              { msg: 'Step 5 — Read the sandwich: <strong>' + t + ' - ' + mid + ' - ' + u + ' = ' + ans + '</strong>! No long columns at all! 🪄', cnt: ans }
+            ]
+          };
+        },
+        stepFx: function (plan, s, tl) {
+          if (s === 1) tl.call(function () { plan.slotH.textContent = plan.t; }, [], tl.duration);
+          if (s === 2) tl.call(function () { plan.slotM.textContent = plan.mid; }, [], tl.duration);
+          if (s === 3) tl.call(function () { plan.slotU.textContent = plan.u; }, [], tl.duration);
+        },
+        setFx: function (plan, s) {
+          plan.slotH.textContent = (s >= 1) ? plan.t : '?';
+          plan.slotM.textContent = (s >= 2) ? plan.mid : '?';
+          plan.slotU.textContent = (s >= 3) ? plan.u : '?';
+        }
+      });
+      // ================= TRICK 3: CRISS-CROSS =================
+      var crossProblems = [
+        { a: 12, b: 13 },
+        { a: 11, b: 11 },
+        { a: 21, b: 13 },
+        { a: 12, b: 24 }
+      ];
+      makeWizard({
+        problems: crossProblems,
+        stage: document.getElementById('fsCrossStage'),
+        svg: document.getElementById('fsCrossSvg'),
+        picker: document.getElementById('fsCrossPicker'),
+        msg: document.getElementById('fsCrossMsg'),
+        cnt: document.getElementById('fsCrossCnt'),
+        play: document.getElementById('fsCrossPlay'),
+        next: document.getElementById('fsCrossNext'),
+        reset: document.getElementById('fsCrossReset'),
+        random: document.getElementById('fsCrossRandom'),
+        build: function (idx) {
+          var P = crossProblems[idx];
+          var a = P.a, b = P.b;
+          var aT = Math.floor(a / 10), aU = a % 10;
+          var bT = Math.floor(b / 10), bU = b % 10;
+          var ones = aU * bU;
+          var mid = aT * bU + aU * bT;
+          var tens = aT * bT;
+          var ans = a * b;
+          var rows = document.getElementById('fsCrossRows');
+          rows.innerHTML = '';
+          var groups = [];
+          var links = {};
+
+          function dg(label, v) {
+            var g = mk('div', 'fs-grid2');
+            var lab = mk('div', 'fs-chip fc-gray', label);
+            lab.style.minWidth = '90px'; lab.style.height = '40px'; lab.style.fontSize = '1.15rem';
+            var val = chip(String(v), 'fc-gray');
+            g.appendChild(lab); g.appendChild(val);
+            return { g: g, lab: lab, val: val };
+          }
+          var cellT1 = chip(String(aT), 'fc-blue');
+          var cellU1 = chip(String(aU), 'fc-green');
+          var cellT2 = chip(String(bT), 'fc-blue');
+          var cellU2 = chip(String(bU), 'fc-green');
+
+          // first step: ones
+          var g1 = dg(aU + ' × ' + bU + ' → ones', ones);
+          groups.push({ els: [g1.g], at: 1 });
+          links[1] = [{ a: cellU1, b: cellU2, color: '#66BB6A' }];
+
+          // second step: cross
+          var g2 = dg('cross → tens', mid);
+          groups.push({ els: [g2.g], at: 2 });
+          links[2] = [{ a: cellU1, b: cellT2, color: '#FFA726' }, { a: cellT1, b: cellU2, color: '#FFA726' }];
+
+          // third step: tens
+          var g3 = dg(aT + ' × ' + bT + ' → hundreds', tens);
+          groups.push({ els: [g3.g], at: 3 });
+          links[3] = [{ a: cellT1, b: cellT2, color: '#42A5F5' }];
+
+          var grid = mk('div', 'fs-grid2');
+          grid.appendChild(cellT1); grid.appendChild(cellT2);
+          grid.appendChild(cellU1); grid.appendChild(cellU2);
+          var row0 = mk('div', 'fs-row');
+          row0.appendChild(grid); row0.appendChild(opEl('=')); row0.appendChild(chip('?', 'fc-gray'));
+          rows.appendChild(row0);
+          groups.push({ els: [cellT1, cellT2, cellU1, cellU2, row0.children[1], row0.children[2]], at: 0 });
+
+          var row1 = mk('div', 'fs-row');
+          row1.appendChild(g1.g); row1.appendChild(opEl('+')); row1.appendChild(g2.g); row1.appendChild(opEl('+')); row1.appendChild(g3.g);
+          rows.appendChild(row1);
+
+          var row2 = mk('div', 'fs-row');
+          var cAns = chip(String(ans), 'fc-ans');
+          row2.appendChild(opEl('=')); row2.appendChild(cAns);
+          rows.appendChild(row2);
+          groups.push({ els: [cAns], at: 4 });
+
+          return {
+            groups: groups, links: links, ans: ans, total: 5,
+            steps: [
+              { msg: 'Step 1 — ✏️ <strong>' + a + ' × ' + b + '</strong>. Split into digits: ' + aT + '-' + aU + ' and ' + bT + '-' + bU + '.', cnt: 0 },
+              { msg: 'Step 2 — ✖️ ONES first: ' + aU + ' × ' + bU + ' = <strong>' + ones + '</strong> → the ones digit.', cnt: 0 },
+              { msg: 'Step 3 — ✖️ CRISS-CROSS the middle: ' + aT + '×' + bU + ' + ' + aU + '×' + bT + ' = ' + (aT * bU) + ' + ' + (aU * bT) + ' = <strong>' + mid + '</strong> → the tens digit.', cnt: 0 },
+              { msg: 'Step 4 — ✖️ TENS connect: ' + aT + ' × ' + bT + ' = <strong>' + tens + '</strong> → the hundreds digit.', cnt: 0 },
+              { msg: 'Step 5 — Put the digits together: <strong>' + ones + ' + ' + (mid * 10) + ' + ' + (tens * 100) + ' = ' + ans + '</strong>! 🎉', cnt: ans }
+            ]
+          };
+        }
+      });
+      // ================= RACE: OLD vs FAST =================
+      (function () {
+        var oldSegs = Array.prototype.slice.call(document.querySelectorAll('.fs-race .old'));
+        var fastSegs = Array.prototype.slice.call(document.querySelectorAll('.fs-race .fast'));
+        var cntOld = document.getElementById('fsRaceCntOld');
+        var cntFast = document.getElementById('fsRaceCntFast');
+        var play = document.getElementById('fsRacePlay');
+        var reset = document.getElementById('fsRaceReset');
+        var running = false;
+
+        function clearAll() {
+          oldSegs.concat(fastSegs).forEach(function (s) { gsap.set(s, { opacity: 0.25 }); s.classList.remove('win'); });
+          cntOld.textContent = '5 moves'; cntFast.textContent = '3 moves';
+        }
+        clearAll();
+
+        play.addEventListener('click', function () {
+          if (running) return;
+          running = true;
+          play.disabled = true; reset.disabled = true;
+          oldSegs.concat(fastSegs).forEach(function (s) { gsap.set(s, { opacity: 0.25 }); s.classList.remove('win'); });
+          cntOld.textContent = '0/5'; cntFast.textContent = '0/3';
+
+          var tl = gsap.timeline({ onComplete: function () { running = false; play.disabled = false; reset.disabled = false; } });
+          var oldDone = 0, fastDone = 0;
+
+          // old-school method: 5 moves, one at a time (slower pace)
+          oldSegs.forEach(function (s, i) {
+            tl.to(s, { opacity: 1, duration: 0.45 }, tl.duration);
+            tl.call(function () { oldDone++; cntOld.textContent = oldDone + '/5'; }, [], tl.duration);
+            if (i < oldSegs.length - 1) tl.to({}, { duration: 0.25 }, tl.duration);
+          });
+
+          // fast method: 3 moves, quicker
+          fastSegs.forEach(function (s) {
+            tl.to(s, { opacity: 1, duration: 0.4 }, tl.duration);
+            tl.call(function () { fastDone++; cntFast.textContent = fastDone + '/3'; }, [], tl.duration);
+          });
+
+          // the fast trick finishes first!
+          tl.call(function () {
+            fastSegs.forEach(function (s) { s.classList.add('win'); });
+            cntFast.textContent = '3 ✓ 🏁';
+          }, [], tl.duration + 0.4);
+          tl.call(function () {
+            oldSegs.forEach(function (s) { s.classList.add('win'); });
+            cntOld.textContent = '5 ✓';
+          }, [], tl.duration + 0.9);
+        });
+
+        reset.addEventListener('click', function () { if (running) return; clearAll(); });
+      })();
+
+      // ================= BONUS: DOUBLE & HALVE =================
+      (function () {
+        var cA = document.getElementById('fsDbA'), cB = document.getElementById('fsDbB');
+        var cQ = document.getElementById('fsDbQ'), tag = document.getElementById('fsDbTag');
+        var btn = document.getElementById('fsDbPlay');
+        var running = false;
+        btn.addEventListener('click', function () {
+          if (running) return;
+          running = true; btn.disabled = true;
+          var tl = gsap.timeline({ onComplete: function () { running = false; btn.disabled = false; } });
+
+          // Step 1: 25 × 8 → 50 × 4  (double 25, halve 8)
+          gsap.set(cA, { scale: 1 });
+          gsap.set(cB, { scale: 1 });
+          tl.call(function () { tag.style.display = 'inline-flex'; tag.textContent = 'halve 8 → 4  •  double 25 → 50'; }, [], tl.duration);
+          tl.to([cA, cB], { scale: 1.25, duration: 0.35, yoyo: true, repeat: 1, ease: 'back.out(2)' }, tl.duration);
+          tl.call(function () { cA.textContent = '50'; cB.textContent = '4'; }, [], tl.duration + 0.35);
+
+          // Step 2: 50 × 4 → 100 × 2
+          tl.call(function () { tag.textContent = 'halve 4 → 2  •  double 50 → 100'; }, [], tl.duration + 0.5);
+          tl.to([cA, cB], { scale: 1.25, duration: 0.35, yoyo: true, repeat: 1, ease: 'back.out(2)' }, tl.duration + 0.5);
+          tl.call(function () { cA.textContent = '100'; cB.textContent = '2'; }, [], tl.duration + 0.85);
+
+          // Answer
+          tl.call(function () { tag.textContent = '100 × 2 = 200 ✓'; cQ.textContent = '200'; }, [], tl.duration + 0.4);
+        });
+      })();
+
+      // ================= BONUS: ROUND & COMPENSATE =================
+      (function () {
+        var cA = document.getElementById('fsCpA'), cB = document.getElementById('fsCpB');
+        var cQ = document.getElementById('fsCpQ'), tag = document.getElementById('fsCpTag');
+        var btn = document.getElementById('fsCpPlay');
+        var running = false;
+        btn.addEventListener('click', function () {
+          if (running) return;
+          running = true; btn.disabled = true;
+          var tl = gsap.timeline({ onComplete: function () { running = false; btn.disabled = false; } });
+
+          // Step 1: 19 × 14 → 20 × 14  (round 19 up by 1)
+          tl.call(function () { cA.textContent = '20'; tag.style.display = 'inline-flex'; tag.textContent = '20 × 14 = 280  (add 1 to 19)'; }, [], tl.duration + 0.2);
+          tl.to(cA, { scale: 1.25, duration: 0.35, yoyo: true, repeat: 1, ease: 'back.out(2)' }, tl.duration);
+
+          // Step 2: compensate by subtracting the extra 14
+          tl.call(function () { tag.textContent = 'now TAKE BACK the extra 14 → 280 − 14'; }, [], tl.duration + 0.8);
+          tl.to(cB, { scale: 1.25, duration: 0.35, yoyo: true, repeat: 1, ease: 'back.out(2)' }, tl.duration);
+
+          // Answer
+          tl.call(function () { tag.textContent = '280 − 14 = 266 ✓'; cQ.textContent = '266'; }, [], tl.duration + 0.8);
+        });
+      })();
+
+      // ================= QUIZ =================
+      window.checkFsAnswer = function (btn, id, correct) {
+        var card = btn.closest('.quiz-card');
+        var opts = card.querySelectorAll('.fs-option');
+        var result = document.getElementById(id + 'result');
+        Array.prototype.forEach.call(opts, function (o) { o.disabled = true; });
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if (!correct) {
+          Array.prototype.forEach.call(opts, function (o) {
+            if (o.getAttribute('onclick').indexOf('true') !== -1) o.classList.add('correct');
+          });
+        }
+        result.classList.add('show');
+        result.classList.remove('correct-result', 'wrong-result');
+        result.classList.add(correct ? 'correct-result' : 'wrong-result');
+        result.textContent = correct ? '✅ Correct! You\'re a speed wizard! 🌟' : '❌ Not quite — check the highlighted answer and try again! 💪';
+      };
+    })();
+</script>
+</body>
+</html>

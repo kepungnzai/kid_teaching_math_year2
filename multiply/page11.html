@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Division! Share the Big Numbers</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Division Page Styles ============ */
+    .dv-intro {
+      background: linear-gradient(135deg, #E0F2F1 0%, #FFF8E1 100%);
+      border-left: 6px solid #00897B;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .dv-intro p { margin-bottom: 0.75rem; font-size: 1.15rem; line-height: 1.7; }
+    .dv-intro p:last-child { margin-bottom: 0; }
+    .dv-intro strong { color: #00695C; }
+    .dv-intro .hl { color: #E65100; font-weight: 800; }
+
+    /* Challenge card */
+    .dv-card { background: white; border: 3px solid #80CBC4; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.75rem 1.5rem; text-align: center; }
+    .dv-card h4 { font-size: 1.4rem; color: #00695C; margin-bottom: 0.6rem; font-weight: 800; }
+    .dv-card p { color: var(--color-text-light); font-size: 1.05rem; margin-bottom: 0.75rem; }
+    .dv-card-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+    .dv-zero { color: #E65100; font-weight: 800; }
+
+    /* Example chips */
+    .dv-examples { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin: 0.5rem 0 1rem; }
+    .dv-ex-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem; border-radius: 50px; font-weight: 800; font-size: 1.2rem; }
+    .dv-ex-chip.c1 { background: #E0F2F1; color: #00695C; border: 3px solid #80CBC4; }
+    .dv-ex-chip.c2 { background: #E3F2FD; color: #1565C0; border: 3px solid #90CAF9; }
+    .dv-ex-chip.c3 { background: #FFF3E0; color: #E65100; border: 3px solid #FFB74D; }
+    .dv-ex-chip.c4 { background: #F3E5F5; color: #6A1B9A; border: 3px solid #CE93D8; }
+
+    .dv-note { background: #FFF8E1; border: 2px dashed #FFCA28; border-radius: var(--radius-md); padding: 0.85rem 1.25rem; margin: 1rem 0; }
+    .dv-note p { font-size: 1.05rem; color: var(--color-text); margin-bottom: 0.3rem; }
+    .dv-note p:last-child { margin-bottom: 0; }
+    .dv-note strong { color: #E65100; }
+
+    /* ============ The Wizards ============ */
+    .dv-wizard { border-radius: var(--radius-lg); padding: 1.75rem 1.5rem 1.5rem; margin: 1.5rem 0 0.5rem; box-shadow: var(--shadow-md); border: 3px solid #00897B; background: #fff; }
+    .dv-w-head { display: flex; align-items: center; justify-content: center; gap: 0.55rem; font-size: 1.35rem; font-weight: 800; margin-bottom: 0.9rem; text-align: center; color: #00695C; }
+    .dv-title-sub { text-align: center; color: var(--color-text-light); font-size: 1rem; margin-bottom: 1rem; }
+
+    /* Problem picker chips */
+    .dv-picker { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin: 0.4rem 0 1.1rem; }
+    .dv-pb-btn { padding: 0.55rem 1.35rem; font-size: 1.1rem; font-weight: 800; border: 3px solid #80CBC4; background: white; color: #00695C; border-radius: 50px; cursor: pointer; transition: all 0.2s ease; }
+    .dv-pb-btn:hover:not(:disabled) { transform: translateY(-3px); background: #E0F2F1; }
+    .dv-pb-btn.active { background: linear-gradient(135deg, #00897B, #00695C); border-color: #00695C; color: white; box-shadow: 0 4px 12px rgba(0, 105, 92, 0.35); transform: scale(1.05); }
+    .dv-pb-btn.rand { border-color: #FFB74D; color: #E65100; }
+
+    /* Stage */
+    .dv-stage { background: linear-gradient(180deg, #E0F2F1 0%, #E8F5E9 100%); border: 3px solid #80CBC4; border-radius: 20px; margin: 0.75rem auto 0.25rem; max-width: 680px; padding: 1.25rem 1.25rem 1rem; position: relative; min-height: 200px; box-shadow: inset 0 0 30px rgba(128, 203, 196, 0.2); }
+    .dv-stage-label { font-size: 0.85rem; color: #00695C; font-weight: 700; text-align: center; margin-bottom: 0.5rem; }
+    .dv-equation { display: flex; align-items: center; justify-content: center; gap: 0.6rem; flex-wrap: wrap; font-size: 1.7rem; font-weight: 800; margin-bottom: 1rem; }
+    .dv-eq-box { display: inline-flex; align-items: center; justify-content: center; min-width: 58px; height: 54px; padding: 0 0.5rem; background: white; border-radius: 12px; border: 3px solid #80CBC4; color: #00695C; box-shadow: var(--shadow-sm); }
+    .dv-eq-ans { border-color: #4CAF50; background: #C8E6C9; color: #14532D; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
+    .dv-eq-sym { color: var(--color-orange); font-size: 1.5rem; }
+
+    /* Counting ladder bubbles */
+    .dv-ladder { display: flex; flex-wrap: wrap; gap: 0.45rem; justify-content: center; }
+    .dv-bubble { display: inline-flex; align-items: center; justify-content: center; min-width: 52px; height: 46px; padding: 0 0.45rem; border-radius: 12px; font-weight: 800; font-size: 1.05rem; background: rgba(0, 0, 0, 0.06); color: transparent; border: 2px dashed #B0BEC5; }
+    .dv-bubble.lit { background: white; border: 3px solid #00897B; color: #00695C; box-shadow: 0 3px 8px rgba(0, 105, 92, 0.25); }
+
+    /* Big-number trick step cards */
+    .dv-big-step { background: white; border: 3px solid #80CBC4; border-radius: 16px; padding: 0.85rem 1.1rem; margin: 0.55rem auto; max-width: 540px; font-size: 1.15rem; font-weight: 700; text-align: center; color: var(--color-text); }
+    .dv-big-step:last-child { border-color: #4CAF50; background: #F1F8E9; }
+
+    /* Status / message box */
+    .dv-status { display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0; min-height: 3.4rem; padding: 0.85rem 1.1rem; background: #FFF8E1; border-radius: 16px; border: 2px dashed #FFCA28; font-size: 1.12rem; text-align: center; color: var(--color-text); font-weight: 600; }
+    .dv-status .dv-counter { display: inline-flex; align-items: center; justify-content: center; min-width: 58px; background: #00897B; color: #fff; border-radius: 12px; font-size: 1.6rem; font-weight: 800; padding: 0 0.5rem; box-shadow: 0 3px 10px rgba(0, 105, 92, 0.35); }
+
+    /* Controls */
+    .dv-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 0.4rem; }
+    .dv-btn { padding: 0.7rem 1.6rem; font-size: 1.05rem; font-weight: 800; border: none; border-radius: 50px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--shadow-sm); }
+    .dv-btn.accent { background: linear-gradient(135deg, #00897B, #00695C); color: white; box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); }
+    .dv-btn.ghost { background: #E0F2F1; color: #00695C; border: 2px solid #80CBC4; }
+    .dv-btn.outline { background: white; color: #E65100; border: 2px solid #FFB74D; }
+    .dv-btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.05); }
+    .dv-btn:disabled { opacity: 0.55; cursor: default; transform: none !important; }
+
+    /* Quiz option tiles (reuse pattern from other pages) */
+    .dv-quiz-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+    .dv-option {
+      padding: 0.85rem 1rem; font-size: 1.05rem; font-weight: 700; background: white;
+      border: 2px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer;
+      transition: all 0.2s ease; color: var(--color-text);
+    }
+    .dv-option:hover:not(:disabled) { transform: translateY(-3px); border-color: #00897B; box-shadow: var(--shadow-sm); }
+    .dv-option.correct { background: #C8E6C9 !important; border-color: #2E7D32 !important; animation: popIn 0.4s ease; }
+    .dv-option.wrong { background: #FFCDD2 !important; border-color: #C62828 !important; }
+
+    .dv-result { margin-top: 0.6rem; padding: 0.55rem 1rem; border-radius: var(--radius-sm); font-weight: 700; display: none; }
+    .dv-result.show { display: block; animation: popIn 0.4s ease; }
+    .dv-result.correct-result { background: #C8E6C9; color: #14532D; }
+    .dv-result.wrong-result { background: #FFCDD2; color: #9b111e; }
+
+    @media (max-width: 640px) {
+      .dv-bubble { min-width: 42px; height: 40px; font-size: 0.9rem; }
+      .dv-eq-box { min-width: 48px; height: 46px; font-size: 1.3rem; }
+      .dv-equation { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="../logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Multiply by 2</a></li>
+        <li><a href="page2.html">Multiply by 3</a></li>
+        <li><a href="page3.html">Multiply by 4</a></li>
+        <li><a href="page4.html">Growth</a></li>
+        <li><a href="page5.html">Rate of Change</a></li>
+        <li><a href="page5b.html">Ratio</a></li>
+        <li><a href="page5c.html">💎 Diamond Game</a></li>
+        <li><a href="page6.html">Shapes</a></li>
+        <li><a href="page9.html">Old-School Multiply</a></li>
+        <li><a href="page9b.html">🧮 Simulator</a></li>
+        <li><a href="page10.html">Fast Multiply</a></li>
+        <li><a href="page11.html" class="active">➗ Division</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <article class="article">
+      <h2>➗ Division — Share the Big Numbers!</h2>
+
+      <!-- Intro -->
+      <div class="dv-intro">
+        <p><strong>Sharing time!</strong> You already know 2 × 5 = 10. But what about <strong>20 ÷ 2</strong>, <strong>50 ÷ 5</strong>, <strong>200 ÷ 4</strong> and <strong>77 ÷ 11</strong>? 🤯</p>
+        <p>Division just means <span class="hl">sharing fairly</span>. 20 ÷ 2 asks: "if we share 20 sweets between 2 friends, how many sweets does each friend get?"</p>
+        <p>And here's the magician's secret: division is <strong>multiplication backwards</strong>! To solve 20 ÷ 2, just ask <span class="hl">2 × ? = 20</span>. ✨</p>
+      </div>
+
+      <!-- Our four problems -->
+      <section>
+        <div class="dv-card">
+          <div class="dv-card-icon">➗</div>
+          <h4>Our four big challenges</h4>
+          <p>We'll solve these by flipping them into multiplications we already know — no calculator needed! 👇</p>
+          <div class="dv-examples">
+            <span class="dv-ex-chip c1">20 ÷ 2 = <strong>10</strong></span>
+            <span class="dv-ex-chip c2">50 ÷ 5 = <strong>10</strong></span>
+            <span class="dv-ex-chip c3">200 ÷ 4 = <strong>50</strong></span>
+            <span class="dv-ex-chip c4">77 ÷ 11 = <strong>7</strong></span>
+          </div>
+          <div class="dv-note">
+            <p>💡 <strong>20 ÷ 2</strong> means "20 sweets, 2 friends". Each friend gets 10 — because 2 × 10 = 20!</p>
+            <p>💡 <strong>77 ÷ 11</strong> means "77 sweets, 11 friends". Each friend gets 7 — because 11 × 7 = 77!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- The division recipe -->
+      <div class="thinking-steps">
+        <h4>🧠 The division recipe (only 3 steps!)</h4>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-text"><strong>Read it as sharing:</strong> 50 ÷ 5 means "share 50 things into 5 equal groups."</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text"><strong>Flip it:</strong> ask "5 × WHAT makes 50?" Count in 5s: 5, 10, 15 … 50. That's <strong>10 jumps</strong>!</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text"><strong>Check it:</strong> multiply back. 5 × 10 = 50 ✓ — division and multiplication are best friends!</span>
+        </div>
+      </div>
+
+      <!-- ============ THE SKIP-COUNTING WIZARD ============ -->
+      <section>
+        <div class="dv-wizard">
+          <div class="dv-w-head">🧙 The Skip-Counting Wizard</div>
+          <p class="dv-title-sub">Pick a problem, press <strong>▶ Play</strong>, and count in equal jumps until you land on the big number!</p>
+
+          <div class="dv-picker" id="dvPicker">
+            <button type="button" class="dv-pb-btn" data-problem="0">20 ÷ 2</button>
+            <button type="button" class="dv-pb-btn" data-problem="1">50 ÷ 5</button>
+            <button type="button" class="dv-pb-btn" data-problem="2">77 ÷ 11</button>
+            <button type="button" class="dv-pb-btn" data-problem="3">36 ÷ 6</button>
+            <button type="button" class="dv-pb-btn" data-problem="4">90 ÷ 9</button>
+            <button type="button" class="dv-pb-btn" data-problem="5">63 ÷ 7</button>
+            <button type="button" class="dv-pb-btn rand" id="dvRandomBtn">🎲 Random!</button>
+          </div>
+
+          <div class="dv-stage">
+            <div class="dv-stage-label">🪜 Counting ladder — every jump adds one more equal group</div>
+            <div class="dv-equation">
+              <span class="dv-eq-box" id="dvEqA">20</span>
+              <span class="dv-eq-sym">÷</span>
+              <span class="dv-eq-box" id="dvEqB">2</span>
+              <span class="dv-eq-sym">=</span>
+              <span class="dv-eq-box dv-eq-ans" id="dvEqAns">?</span>
+            </div>
+            <div class="dv-ladder" id="dvLadder">
+              <!-- bubbles built by JavaScript -->
+            </div>
+          </div>
+
+          <div class="dv-status">
+            <span id="dvMsg">Press ▶ Play to count in 2s!</span>
+            <span class="dv-counter" id="dvCnt" style="display:none">0</span>
+          </div>
+
+          <div class="dv-controls">
+            <button type="button" class="dv-btn accent" id="dvPlayBtn">▶ Play</button>
+            <button type="button" class="dv-btn ghost" id="dvNextBtn">⏭ Next Step</button>
+            <button type="button" class="dv-btn outline" id="dvResetBtn">↺ Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ THE BIG-NUMBER TRICK ============ -->
+      <section>
+        <div class="dv-wizard">
+          <div class="dv-w-head">🦸 The Big-Number Trick</div>
+          <p class="dv-title-sub">200 ÷ 4? Counting in 4s would take forever! Use the <strong>Cover-the-Zero</strong> trick instead. 🪄</p>
+
+          <div class="dv-picker" id="dvBigPicker">
+            <button type="button" class="dv-pb-btn" data-problem="0">200 ÷ 4</button>
+            <button type="button" class="dv-pb-btn" data-problem="1">50 ÷ 5</button>
+            <button type="button" class="dv-pb-btn" data-problem="2">300 ÷ 6</button>
+            <button type="button" class="dv-pb-btn" data-problem="3">400 ÷ 8</button>
+            <button type="button" class="dv-pb-btn rand" id="dvBigRandomBtn">🎲 Random!</button>
+          </div>
+
+          <div class="dv-stage">
+            <div class="dv-stage-label">🪄 Cover the zero → solve the small one → stick the zero back on!</div>
+            <div class="dv-equation">
+              <span class="dv-eq-box" id="dvBigA">200</span>
+              <span class="dv-eq-sym">÷</span>
+              <span class="dv-eq-box" id="dvBigB">4</span>
+              <span class="dv-eq-sym">=</span>
+              <span class="dv-eq-box dv-eq-ans" id="dvBigAns">?</span>
+            </div>
+            <div id="dvBigBox">
+              <!-- trick steps built by JavaScript -->
+            </div>
+          </div>
+
+          <div class="dv-controls">
+            <button type="button" class="dv-btn accent" id="dvBigPlayBtn">▶ Play</button>
+            <button type="button" class="dv-btn ghost" id="dvBigNextBtn">⏭ Next Step</button>
+            <button type="button" class="dv-btn outline" id="dvBigResetBtn">↺ Reset</button>
+          </div>
+        </div>
+
+        <div class="dv-note">
+          <p>💡 But wait — <strong>77 ÷ 11</strong> has no zero to cover! No problem: just <strong>flip it</strong>. Ask "11 × ? = 77". Count in 11s: 11, 22, 33, 44, 55, 66, <strong>77</strong> — that's <strong>7</strong> elevens! The Skip-Counting Wizard up above does exactly this. 🧙</p>
+        </div>
+      </section>
+
+      <!-- ============ QUIZ ============ -->
+      <section>
+        <div class="quiz-section">
+          <h3>🎯 Quick Check — You're the Division Wizard now!</h3>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q1. Share 20 sweets between 2 friends: <strong>20 ÷ 2</strong> = ? (Flip it: 2 × ? = 20)</div>
+            <div class="dv-quiz-options">
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq1', true)">10</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq1', false)">5</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq1', false)">12</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq1', false)">40</button>
+            </div>
+            <div id="dvq1result" class="dv-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q2. Count in 5s until 50: <strong>50 ÷ 5</strong> = ?</div>
+            <div class="dv-quiz-options">
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq2', false)">45</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq2', true)">10</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq2', false)">25</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq2', false)">5</button>
+            </div>
+            <div id="dvq2result" class="dv-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q3. Use the Cover-the-Zero trick: <strong>200 ÷ 4</strong> = ? (Cover the 0 → 20 ÷ 4 = 5 → stick it back!)</div>
+            <div class="dv-quiz-options">
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq3', false)">40</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq3', false)">25</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq3', true)">50</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq3', false)">80</button>
+            </div>
+            <div id="dvq3result" class="dv-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q4. No zero this time — flip it! <strong>77 ÷ 11</strong> = ? (11 × ? = 77)</div>
+            <div class="dv-quiz-options">
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq4', false)">11</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq4', true)">7</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq4', false)">70</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq4', false)">8</button>
+            </div>
+            <div id="dvq4result" class="dv-result"></div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-question">Q5. Super challenge! <strong>400 ÷ 8</strong> = ? (Cover the zero → 40 ÷ 8 = 5 → stick it back!)</div>
+            <div class="dv-quiz-options">
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq5', false)">40</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq5', false)">60</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq5', false)">80</button>
+              <button class="dv-option" onclick="checkDivAnswer(this, 'dvq5', true)">50</button>
+            </div>
+            <div id="dvq5result" class="dv-result"></div>
+          </div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+<script>
+    // ============ Skip-Counting Wizard ============
+    (function () {
+      'use strict';
+
+      var PROBLEMS = [
+        { label: '20 ÷ 2',  a: 20, b: 2 },
+        { label: '50 ÷ 5',  a: 50, b: 5 },
+        { label: '77 ÷ 11', a: 77, b: 11 },
+        { label: '36 ÷ 6',  a: 36, b: 6 },
+        { label: '90 ÷ 9',  a: 90, b: 9 },
+        { label: '63 ÷ 7',  a: 63, b: 7 }
+      ];
+
+      var ladder    = document.getElementById('dvLadder');
+      var eqA       = document.getElementById('dvEqA');
+      var eqB       = document.getElementById('dvEqB');
+      var eqAns     = document.getElementById('dvEqAns');
+      var msgEl     = document.getElementById('dvMsg');
+      var cntEl     = document.getElementById('dvCnt');
+      var playBtn   = document.getElementById('dvPlayBtn');
+      var nextBtn   = document.getElementById('dvNextBtn');
+      var resetBtn  = document.getElementById('dvResetBtn');
+      var randomBtn = document.getElementById('dvRandomBtn');
+      var picker    = document.getElementById('dvPicker');
+
+      var curIdx = 0;
+      var step = 0;
+      var busy = false;
+
+      function totalSteps() { return PROBLEMS[curIdx].a / PROBLEMS[curIdx].b; }
+
+      function buildProblem(idx) {
+        var p = PROBLEMS[idx];
+        ladder.innerHTML = '';
+        eqA.textContent = p.a;
+        eqB.textContent = p.b;
+        eqAns.textContent = '?';
+        for (var i = 1; i <= p.a / p.b; i++) {
+          var d = document.createElement('span');
+          d.className = 'dv-bubble';
+          d.textContent = p.b * i;
+          ladder.appendChild(d);
+        }
+      }
+
+      function msgFor(s) {
+        var p = PROBLEMS[curIdx];
+        var ans = p.a / p.b;
+        if (s === 0) {
+          return 'Press ▶ Play or ⏭ Next Step to count in <b>' + p.b + 's</b> until you reach <b>' + p.a + '</b>!';
+        }
+        if (s < ans) {
+          return '<b>' + s + '</b> lot' + (s === 1 ? '' : 's') + ' of ' + p.b + ' = <b>' + (s * p.b) + '</b>… we need ' + p.a + ', keep counting!';
+        }
+        return '🎉 <b>' + ans + '</b> lots of ' + p.b + ' make <b>' + p.a + '</b>, so <b>' + p.a + ' ÷ ' + p.b + ' = ' + ans + '</b>! Check: ' + p.b + ' × ' + ans + ' = ' + p.a + ' ✓';
+      }
+
+      function updateButtons() {
+        playBtn.disabled = busy;
+        resetBtn.disabled = busy;
+        nextBtn.disabled = busy || step >= totalSteps();
+      }
+
+      function lightBubble(s) {
+        var p = PROBLEMS[curIdx];
+        var ans = p.a / p.b;
+        var bubble = ladder.children[s - 1];
+        if (bubble) {
+          bubble.classList.add('lit');
+          gsap.fromTo(bubble, { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(2)' });
+        }
+        cntEl.textContent = s;
+        cntEl.style.display = 'inline-flex';
+        gsap.fromTo(cntEl, { scale: 1.5 }, { scale: 1, duration: 0.3, ease: 'power2.out' });
+        msgEl.innerHTML = msgFor(s);
+        if (s >= ans) {
+          eqAns.textContent = ans;
+          gsap.fromTo(eqAns, { scale: 1.6, rotation: -6 }, { scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(2)' });
+        }
+      }
+
+      function revealInto(tl, s) {
+        tl.call(function () { lightBubble(s); });
+        tl.to({}, { duration: 0.55 });
+      }
+
+      function clearAll() {
+        Array.prototype.forEach.call(ladder.children, function (b) { b.classList.remove('lit'); });
+        cntEl.style.display = 'none';
+        eqAns.textContent = '?';
+        msgEl.innerHTML = msgFor(0);
+        step = 0;
+        updateButtons();
+      }
+
+      function playAll() {
+        if (busy) return;
+        if (step >= totalSteps()) clearAll();
+        busy = true;
+        updateButtons();
+        var tl = gsap.timeline({ onComplete: function () { busy = false; updateButtons(); } });
+        for (var s = step + 1; s <= totalSteps(); s++) {
+          revealInto(tl, s);
+        }
+        step = totalSteps();
+      }
+
+      playBtn.addEventListener('click', playAll);
+
+      nextBtn.addEventListener('click', function () {
+        if (busy || step >= totalSteps()) return;
+        step += 1;
+        busy = true;
+        updateButtons();
+        var tl = gsap.timeline({ onComplete: function () { busy = false; updateButtons(); } });
+        revealInto(tl, step);
+      });
+
+      resetBtn.addEventListener('click', function () {
+        if (busy) return;
+        clearAll();
+      });
+
+      picker.addEventListener('click', function (e) {
+        var btn = e.target.closest('.dv-pb-btn');
+        if (!btn || busy) return;
+        var idx = parseInt(btn.getAttribute('data-problem'), 10);
+        if (isNaN(idx)) return;
+        curIdx = idx;
+        selectProblem(idx);
+      });
+
+      randomBtn.addEventListener('click', function () {
+        if (busy) return;
+        var picks = [];
+        for (var i = 0; i < PROBLEMS.length; i++) if (i !== curIdx) picks.push(i);
+        curIdx = picks[Math.floor(Math.random() * picks.length)];
+        selectProblem(curIdx);
+      });
+
+      function selectProblem(idx) {
+        Array.prototype.forEach.call(picker.querySelectorAll('.dv-pb-btn'), function (b) {
+          b.classList.toggle('active', parseInt(b.getAttribute('data-problem'), 10) === idx);
+        });
+        buildProblem(idx);
+        clearAll();
+      }
+
+      // ---------- init ----------
+      selectProblem(0);
+    })();
+
+    // ============ Big-Number Trick Player (Cover-the-Zero) ============
+    (function () {
+      'use strict';
+
+      var BIGS = [
+        { label: '200 ÷ 4', a: 200, b: 4, covered: 20, smallAns: 5, ans: 50 },
+        { label: '50 ÷ 5',  a: 50,  b: 5, covered: 5,  smallAns: 1, ans: 10 },
+        { label: '300 ÷ 6', a: 300, b: 6, covered: 30, smallAns: 5, ans: 50 },
+        { label: '400 ÷ 8', a: 400, b: 8, covered: 40, smallAns: 5, ans: 50 }
+      ];
+
+      var bigBox       = document.getElementById('dvBigBox');
+      var bigA         = document.getElementById('dvBigA');
+      var bigB         = document.getElementById('dvBigB');
+      var bigAns       = document.getElementById('dvBigAns');
+      var bigPlayBtn   = document.getElementById('dvBigPlayBtn');
+      var bigNextBtn   = document.getElementById('dvBigNextBtn');
+      var bigResetBtn  = document.getElementById('dvBigResetBtn');
+      var bigRandomBtn = document.getElementById('dvBigRandomBtn');
+      var bigPicker    = document.getElementById('dvBigPicker');
+
+      var bigIdx = 0;
+      var bigStep = 0;
+      var bigBusy = false;
+
+      function buildSteps(p) {
+        return [
+          '🪄 See the <b class="dv-zero">0</b> at the end of <b>' + p.a + '</b>? Cover it with your finger! ' + p.a + ' → <b>' + p.covered + '</b>',
+          'Now the small division is easy: <b>' + p.covered + ' ÷ ' + p.b + ' = ' + p.smallAns + '</b> (because ' + p.b + ' × ' + p.smallAns + ' = ' + p.covered + '!)',
+          'Stick the zero back on the answer: ' + p.smallAns + ' → <b>' + p.ans + '</b> 🎉',
+          '✅ Check it: <b>' + p.b + ' × ' + p.ans + ' = ' + p.a + '</b> — perfect!'
+        ];
+      }
+
+      function updateBigButtons() {
+        bigPlayBtn.disabled = bigBusy;
+        bigResetBtn.disabled = bigBusy;
+        bigNextBtn.disabled = bigBusy || bigStep >= 4;
+      }
+
+      function addStep(s) {
+        var p = BIGS[bigIdx];
+        var card = document.createElement('div');
+        card.className = 'dv-big-step';
+        card.innerHTML = buildSteps(p)[s - 1];
+        bigBox.appendChild(card);
+        gsap.fromTo(card, { y: 24, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' });
+        if (s >= 4) {
+          bigAns.textContent = p.ans;
+          gsap.fromTo(bigAns, { scale: 1.6, rotation: -6 }, { scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(2)' });
+        }
+      }
+
+      function bigRevealInto(tl, s) {
+        tl.call(function () { addStep(s); });
+        tl.to({}, { duration: 0.7 });
+      }
+
+      function bigClear() {
+        bigBox.innerHTML = '';
+        bigAns.textContent = '?';
+        bigStep = 0;
+        updateBigButtons();
+      }
+
+      function buildBigProblem(idx) {
+        var p = BIGS[idx];
+        bigA.textContent = p.a;
+        bigB.textContent = p.b;
+        bigAns.textContent = '?';
+        bigBox.innerHTML = '';
+      }
+
+      bigPlayBtn.addEventListener('click', function () {
+        if (bigBusy) return;
+        if (bigStep >= 4) bigClear();
+        bigBusy = true;
+        updateBigButtons();
+        var tl = gsap.timeline({ onComplete: function () { bigBusy = false; updateBigButtons(); } });
+        for (var s = bigStep + 1; s <= 4; s++) bigRevealInto(tl, s);
+        bigStep = 4;
+      });
+
+      bigNextBtn.addEventListener('click', function () {
+        if (bigBusy || bigStep >= 4) return;
+        bigStep += 1;
+        bigBusy = true;
+        updateBigButtons();
+        var tl = gsap.timeline({ onComplete: function () { bigBusy = false; updateBigButtons(); } });
+        bigRevealInto(tl, bigStep);
+      });
+
+      bigResetBtn.addEventListener('click', function () {
+        if (bigBusy) return;
+        bigClear();
+      });
+
+      bigPicker.addEventListener('click', function (e) {
+        var btn = e.target.closest('.dv-pb-btn');
+        if (!btn || bigBusy) return;
+        var idx = parseInt(btn.getAttribute('data-problem'), 10);
+        if (isNaN(idx)) return;
+        bigIdx = idx;
+        selectBig(idx);
+      });
+
+      bigRandomBtn.addEventListener('click', function () {
+        if (bigBusy) return;
+        var picks = [];
+        for (var i = 0; i < BIGS.length; i++) if (i !== bigIdx) picks.push(i);
+        bigIdx = picks[Math.floor(Math.random() * picks.length)];
+        selectBig(bigIdx);
+      });
+
+      function selectBig(idx) {
+        Array.prototype.forEach.call(bigPicker.querySelectorAll('.dv-pb-btn'), function (b) {
+          b.classList.toggle('active', parseInt(b.getAttribute('data-problem'), 10) === idx);
+        });
+        buildBigProblem(idx);
+        bigClear();
+      }
+
+      // ---------- init ----------
+      selectBig(0);
+    })();
+
+    // ============ Quiz ============
+    function checkDivAnswer(btn, questionId, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.dv-option');
+      var resultDiv = document.getElementById(questionId + 'result');
+
+      Array.prototype.forEach.call(options, function (opt) { opt.disabled = true; });
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        Array.prototype.forEach.call(options, function (opt) {
+          if (opt.getAttribute('onclick').indexOf('true') !== -1) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! Great job! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! The correct answer is highlighted above. Keep trying! 💪';
+      }
+    }
+
+    // ============ GSAP Animations on Load ============
+    document.addEventListener('DOMContentLoaded', function () {
+      var steps = document.querySelectorAll('.thinking-steps .step');
+      if (steps.length > 0) {
+        gsap.from(steps, {
+          x: -30,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.15,
+          ease: 'power2.out'
+        });
+      }
+
+      var chips = document.querySelectorAll('.dv-ex-chip');
+      if (chips.length > 0) {
+        gsap.from(chips, {
+          scale: 0.6,
+          opacity: 0,
+          duration: 0.45,
+          stagger: 0.12,
+          ease: 'back.out(2)'
+        });
+      }
+    });
+</script>
+</body>
+</html>

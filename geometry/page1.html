@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Meet the Shapes!</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* ============ Meet the Shapes Page Specific Styles ============ */
+
+    .shapes-intro {
+      background: linear-gradient(135deg, #E3F2FD 0%, #FFF3E0 100%);
+      border-left: 6px solid var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .shapes-intro p {
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+    .shapes-intro p:last-child { margin-bottom: 0; }
+    .shapes-intro .big-idea {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #1565C0;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+
+    /* Shape gallery */
+    .shape-section {
+      margin: 2.5rem 0;
+    }
+    .shape-section h3 {
+      font-size: 1.7rem;
+      color: var(--color-primary-dark);
+      margin-bottom: 0.5rem;
+      font-weight: 800;
+    }
+    .shape-section > p {
+      font-size: 1.1rem;
+      color: var(--color-text-light);
+      margin-bottom: 1.5rem;
+    }
+    .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.25rem;
+    }
+    .shape-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1rem 1rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--color-border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .shape-card:hover {
+      transform: translateY(-8px) rotate(-1deg);
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary-light);
+    }
+    .shape-card svg {
+      width: 110px;
+      height: 110px;
+      display: block;
+      margin: 0 auto;
+    }
+    .shape-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      margin-top: 0.5rem;
+    }
+    .shape-facts {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+    }
+    .shape-facts .badge {
+      display: inline-block;
+      background: var(--color-primary-light);
+      color: var(--color-primary-dark);
+      border-radius: 50px;
+      padding: 0.15rem 0.7rem;
+      margin: 0.1rem 0.15rem;
+      font-weight: 700;
+    }
+
+    /* Shape words row */
+    .words-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .word-card {
+      background: linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%);
+      border-left: 6px solid var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+    }
+    .word-card h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      margin-bottom: 0.4rem;
+    }
+    .word-card p {
+      font-size: 1rem;
+      color: var(--color-text-light);
+      margin: 0;
+    }
+
+    /* Real life examples */
+    .reallife-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .reallife-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--color-border);
+      transition: transform 0.3s ease;
+    }
+    .reallife-card:hover { transform: translateY(-6px); }
+    .reallife-card .emoji { font-size: 2.6rem; display: block; margin-bottom: 0.5rem; }
+    .reallife-card strong { color: var(--color-primary-dark); }
+
+    /* Interactive quiz (shape-option) */
+    .shape-quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .shape-option {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid var(--color-border);
+      background: white;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .shape-option:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+      transform: scale(1.05);
+    }
+    .shape-option.correct {
+      border-color: var(--color-green);
+      background: #E8F5E9;
+    }
+    .shape-option.wrong {
+      border-color: #F44336;
+      background: #FFEBEE;
+      animation: shake 0.4s ease;
+    }
+    .shape-option:disabled { cursor: default; opacity: 0.7; }
+    .shape-option.correct:disabled { opacity: 1; }
+
+    .shape-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: none;
+    }
+    .shape-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .shape-result.correct-result { background: #E8F5E9; color: #2E7D32; }
+    .shape-result.wrong-result { background: #FFEBEE; color: #C62828; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 768px) {
+      .shape-card svg { width: 90px; height: 90px; }
+      .shape-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html" class="active">Adventure 1</a></li>
+        <li><a href="page2.html">Adventure 2</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content-wrapper">
+    <!-- Back to Home link -->
+    <a href="index.html" class="back-btn">&larr; Back to Home</a>
+
+    <!-- Fun Learning Article -->
+    <article class="article">
+      <h2>🔷 Meet the Shapes! 🔺</h2>
+
+      <div class="shapes-intro">
+        <p><strong>Welcome, shape explorer!</strong> 👋 Shapes are everywhere — in your toys, your house, your lunch, even in this page you are reading right now! 🍕⚽📦</p>
+        <p>In this first adventure, we will take a <strong>big overview</strong> of shapes. We'll meet flat shapes, solid shapes, and learn the special words we use to describe them. Then we'll test what you learned with some fun questions and answers!</p>
+        <p class="big-idea">A shape is the outline or form of something — what you see when you trace around the outside of an object. ✏️</p>
+      </div>
+
+      <!-- 2D Shapes -->
+      <section class="shape-section">
+        <h3>🎨 Flat Shapes (2D)</h3>
+        <p><strong>2D</strong> means <em>two dimensions</em> — length and width. 2D shapes are flat, like a drawing on paper. They have <strong>sides</strong> (straight or curved lines) and <strong>corners</strong> (also called <strong>vertices</strong>).</p>
+
+        <div class="shape-grid">
+          <!-- Circle -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="circle">
+              <circle cx="50" cy="50" r="38" fill="#E3F2FD" stroke="#1E88E5" stroke-width="4"/>
+              <circle cx="50" cy="50" r="4" fill="#FF6F00"/>
+            </svg>
+            <div class="shape-name">Circle</div>
+            <div class="shape-facts"><span class="badge">0 corners</span><span class="badge">curved side</span></div>
+          </div>
+
+          <!-- Triangle -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="triangle">
+              <polygon points="50,12 90,88 10,88" fill="#E3F2FD" stroke="#1E88E5" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+            <div class="shape-name">Triangle</div>
+            <div class="shape-facts"><span class="badge">3 sides</span><span class="badge">3 corners</span></div>
+          </div>
+
+          <!-- Square -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="square">
+              <rect x="14" y="14" width="72" height="72" fill="#E3F2FD" stroke="#1E88E5" stroke-width="4" rx="3"/>
+            </svg>
+            <div class="shape-name">Square</div>
+            <div class="shape-facts"><span class="badge">4 equal sides</span><span class="badge">4 corners</span></div>
+          </div>
+
+          <!-- Rectangle -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="rectangle">
+              <rect x="8" y="30" width="84" height="40" fill="#E3F2FD" stroke="#1E88E5" stroke-width="4" rx="3"/>
+            </svg>
+            <div class="shape-name">Rectangle</div>
+            <div class="shape-facts"><span class="badge">4 sides</span><span class="badge">2 long, 2 short</span></div>
+          </div>
+
+          <!-- Pentagon -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="pentagon">
+              <polygon points="50,12 88,40 73.5,84.4 26.5,84.4 12,39.6" fill="#E3F2FD" stroke="#1E88E5" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+            <div class="shape-name">Pentagon</div>
+            <div class="shape-facts"><span class="badge">5 sides</span><span class="badge">5 corners</span></div>
+          </div>
+
+          <!-- Hexagon -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="hexagon">
+              <polygon points="50,12 84.6,32 84.6,72 50,92 15.4,72 15.4,32" fill="#E3F2FD" stroke="#1E88E5" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+            <div class="shape-name">Hexagon</div>
+            <div class="shape-facts"><span class="badge">6 sides</span><span class="badge">6 corners</span></div>
+          </div>
+
+          <!-- Octagon -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="octagon">
+              <polygon points="50,12 78.3,23.7 90,52 78.3,80.3 50,92 21.7,80.3 10,52 21.7,23.7" fill="#E3F2FD" stroke="#1E88E5" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+            <div class="shape-name">Octagon</div>
+            <div class="shape-facts"><span class="badge">8 sides</span><span class="badge">8 corners</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3D Shapes -->
+      <section class="shape-section">
+        <h3>🧊 Solid Shapes (3D)</h3>
+        <p><strong>3D</strong> means <em>three dimensions</em> — length, width, and <strong>depth</strong> (thickness). 3D shapes are solid, like a box you can hold in your hand. Instead of <em>sides</em> and <em>corners</em>, we talk about their <strong>faces</strong>, <strong>edges</strong>, and <strong>vertices</strong>.</p>
+
+        <div class="shape-grid">
+          <!-- Cube -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="cube">
+              <polygon points="30,55 70,55 70,95 30,95" fill="#E3F2FD" stroke="#1E88E5" stroke-width="3"/>
+              <polygon points="30,55 50,35 90,35 70,55" fill="#BBDEFB" stroke="#1E88E5" stroke-width="3" stroke-linejoin="round"/>
+              <polygon points="70,55 90,35 90,75 70,95" fill="#90CAF9" stroke="#1E88E5" stroke-width="3" stroke-linejoin="round"/>
+            </svg>
+            <div class="shape-name">Cube</div>
+            <div class="shape-facts"><span class="badge">6 faces</span><span class="badge">8 vertices</span></div>
+          </div>
+
+          <!-- Sphere -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="sphere">
+              <defs>
+                <radialGradient id="sphereGrad" cx="35%" cy="30%" r="75%">
+                  <stop offset="0%" stop-color="#90CAF9"/>
+                  <stop offset="60%" stop-color="#42A5F5"/>
+                  <stop offset="100%" stop-color="#1565C0"/>
+                </radialGradient>
+              </defs>
+              <circle cx="50" cy="50" r="40" fill="url(#sphereGrad)"/>
+              <ellipse cx="36" cy="34" rx="12" ry="8" fill="rgba(255,255,255,0.5)"/>
+            </svg>
+            <div class="shape-name">Sphere</div>
+            <div class="shape-facts"><span class="badge">1 curved surface</span><span class="badge">no edges</span></div>
+          </div>
+
+          <!-- Cylinder -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="cylinder">
+              <path d="M15,30 L15,70 A35,12 0 0,0 85,70 L85,30" fill="#BBDEFB" stroke="#1E88E5" stroke-width="3"/>
+              <ellipse cx="50" cy="30" rx="35" ry="12" fill="#90CAF9" stroke="#1E88E5" stroke-width="3"/>
+              <ellipse cx="50" cy="70" rx="35" ry="12" fill="#E3F2FD" stroke="#1E88E5" stroke-width="3"/>
+            </svg>
+            <div class="shape-name">Cylinder</div>
+            <div class="shape-facts"><span class="badge">2 flat faces</span><span class="badge">2 edges</span></div>
+          </div>
+
+          <!-- Cone -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="cone">
+              <ellipse cx="50" cy="76" rx="36" ry="10" fill="#BBDEFB" stroke="#1E88E5" stroke-width="3"/>
+              <polygon points="50,12 86,76 14,76" fill="#E3F2FD" stroke="#1E88E5" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M14,76 A36,10 0 0,0 86,76" fill="#90CAF9" stroke="#1E88E5" stroke-width="3"/>
+            </svg>
+            <div class="shape-name">Cone</div>
+            <div class="shape-facts"><span class="badge">1 flat face</span><span class="badge">1 vertex</span></div>
+          </div>
+
+          <!-- Pyramid -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="pyramid">
+              <polygon points="50,18 12,70 50,52" fill="#BBDEFB" stroke="#1E88E5" stroke-width="3" stroke-linejoin="round"/>
+              <polygon points="50,18 50,52 88,70" fill="#E3F2FD" stroke="#1E88E5" stroke-width="3" stroke-linejoin="round"/>
+              <polygon points="12,70 50,88 88,70" fill="#90CAF9" stroke="#1E88E5" stroke-width="3" stroke-linejoin="round"/>
+            </svg>
+            <div class="shape-name">Pyramid</div>
+            <div class="shape-facts"><span class="badge">5 faces</span><span class="badge">5 vertices</span></div>
+          </div>
+
+          <!-- Rectangular prism -->
+          <div class="shape-card">
+            <svg viewBox="0 0 100 100" aria-label="rectangular prism">
+              <polygon points="20,45 80,45 80,95 20,95" fill="#E3F2FD" stroke="#1E88E5" stroke-width="3"/>
+              <polygon points="20,45 40,25 100,25 80,45" fill="#BBDEFB" stroke="#1E88E5" stroke-width="3" stroke-linejoin="round"/>
+              <polygon points="80,45 100,25 100,75 80,95" fill="#90CAF9" stroke="#1E88E5" stroke-width="3" stroke-linejoin="round"/>
+            </svg>
+            <div class="shape-name">Rectangular Prism</div>
+            <div class="shape-facts"><span class="badge">6 faces</span><span class="badge">8 vertices</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Shape Words -->
+      <section class="shape-section">
+        <h3>🗣️ Words That Describe Shapes</h3>
+        <p>Just like every game has rules, shapes have special names for their parts. Knowing these words makes it easier to talk about shapes — and in <strong>Adventure 3</strong> we'll meet even more amazing words like <em>perpendicular</em> and <em>parallel</em>!</p>
+
+        <div class="words-grid">
+          <div class="word-card">
+            <h4>Side</h4>
+            <p>A straight or curved line that is part of the outline of a shape. A triangle has 3 sides. ✏️</p>
+          </div>
+          <div class="word-card">
+            <h4>Vertex (Corners)</h4>
+            <p>The point where two sides meet. "Vertex" is the math word for corner. Two or more are called <strong>vertices</strong>. 📐</p>
+          </div>
+          <div class="word-card">
+            <h4>Edge</h4>
+            <p>On a 3D shape, an edge is where two faces meet. A cube has 12 edges. 📏</p>
+          </div>
+          <div class="word-card">
+            <h4>Face</h4>
+            <p>A flat surface of a 3D shape. A cube has 6 square faces. 🎲</p>
+          </div>
+          <div class="word-card">
+            <h4>Polygon</h4>
+            <p>A flat shape with straight sides, like a triangle, square, or hexagon. Polygons are closed — no gaps! 🔒</p>
+          </div>
+          <div class="word-card">
+            <h4>Regular vs Irregular</h4>
+            <p>A <strong>regular</strong> shape has all equal sides and equal corners (like a square). An <strong>irregular</strong> shape has sides or corners that are not all the same. ⚖️</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Real life -->
+      <section class="shape-section">
+        <h3>🌍 Shapes in the Real World</h3>
+        <p>Shapes are not just in math books — they are all around us! Can you find these in your home or school today?</p>
+
+        <div class="reallife-grid">
+          <div class="reallife-card">
+            <span class="emoji">⚽</span>
+            <strong>Sphere:</strong> soccer ball, orange, planet Earth
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">🎲</span>
+            <strong>Cube:</strong> dice, rubik's cube, gift box
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">🥫</span>
+            <strong>Cylinder:</strong> soup can, candles, paper towel roll
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">🍦</span>
+            <strong>Cone:</strong> ice-cream cone, party hat, traffic cone
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">📱</span>
+            <strong>Rectangle:</strong> phone screen, book, door
+          </div>
+          <div class="reallife-card">
+            <span class="emoji">🍕</span>
+            <strong>Triangle:</strong> pizza slice, sandwich half, sail
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Quiz -->
+      <section class="quiz-section">
+        <h3>🎯 Shape Challenge Time!</h3>
+        <p class="quiz-intro-text" style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Tap an answer to see if you got it right. There are 6 questions — good luck, shape hero! 💪</p>
+
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ How many sides does a triangle have?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">2</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, true)">3</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">4</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">5</button>
+          </div>
+          <div class="shape-result" id="sq1"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ Which shape has 6 sides?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Pentagon</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Octagon</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, true)">Hexagon</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Square</button>
+          </div>
+          <div class="shape-result" id="sq2"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ A soccer ball is a great example of which 3D shape?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Cube</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Cone</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, true)">Sphere</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Pyramid</button>
+          </div>
+          <div class="shape-result" id="sq3"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ How many vertices (corners) does a cube have?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">4</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">6</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, true)">8</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">12</button>
+          </div>
+          <div class="shape-result" id="sq4"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ Which one is a 2D (flat) shape?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Cube</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Sphere</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, true)">Hexagon</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">Cylinder</button>
+          </div>
+          <div class="shape-result" id="sq5"></div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ How many faces does a cube have?</p>
+          <div class="shape-quiz-options">
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">3</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">5</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, true)">6</button>
+            <button class="shape-option" onclick="checkShapeAnswer(this, false)">8</button>
+          </div>
+          <div class="shape-result" id="sq6"></div>
+        </div>
+      </section>
+
+      <!-- Q&A Section -->
+      <section class="quiz-section">
+        <h3>❓💡 Questions &amp; Answers</h3>
+        <p style="font-size:1.05rem; color:var(--color-text-light); margin-bottom:1.5rem;">Think about each question first, then press the button to reveal the answer. Sharing the answers with a friend makes it even more fun! 🎉</p>
+
+        <div class="quiz-card">
+          <p class="quiz-question">1️⃣ What is a shape?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa1', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa1">A shape is the outline or form of something — what you see when you trace around the outside of an object with a pencil. ✏️</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">2️⃣ What is the difference between a 2D shape and a 3D shape?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa2', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa2"><strong>2D shapes are flat</strong> — they only have length and width, like a drawing on paper. <strong>3D shapes are solid</strong> — they also have depth, so you can pick them up and hold them! 🙌</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">3️⃣ How many sides and corners does a square have?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa3', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa3">A square has <strong>4 sides and 4 corners</strong> (vertices). All 4 sides are exactly the same length! 🔲</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">4️⃣ What do we call a shape with 5 sides?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa4', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa4">That is a <strong>pentagon</strong>! "Penta" means 5 in Greek — that's why the famous Pentagon building in the USA has 5 sides. 🏛️</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">5️⃣ Is a circle a polygon?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa5', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa5"><strong>No!</strong> A polygon must have straight sides that join together. A circle is made of one smooth curved line, so it is not a polygon. ⭕</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">6️⃣ What are the 3 main parts of a 3D shape?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa6', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa6">The three parts are <strong>faces</strong> (the flat surfaces), <strong>edges</strong> (where two faces meet), and <strong>vertices</strong> (the corners where edges meet). 🧊</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">7️⃣ Why is a cube sometimes called a "3D square"?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa7', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa7">Because every one of a cube's <strong>6 faces is a perfect square</strong>, and the cube has length, width, and depth — just like a square, but with height! 🎲</div>
+        </div>
+
+        <div class="quiz-card">
+          <p class="quiz-question">8️⃣ Can you name 3 real-life things shaped like a cone?</p>
+          <button class="btn-answer" onclick="toggleAnswer('qa8', this)">Show Answer 💡</button>
+          <div class="quiz-answer" id="qa8">An <strong>ice-cream cone</strong> 🍦, a <strong>party hat</strong> 🎉, and a <strong>traffic cone</strong> 🚧 are all cones. Great job if you found even more!</div>
+        </div>
+      </section>
+
+      <!-- Next adventure teaser -->
+      <div class="highlight-box" style="margin-top:2.5rem;">
+        <p>🌟 <strong>Coming next:</strong> In Adventure 2, "Angle Adventures", we'll discover what an angle is and explore the magic degrees — 45°, 90°, 180°, 360°, and even 720°! Then in Adventure 3 we'll unlock the secret words of shapes. Stay curious! 🔍</p>
+      </div>
+
+    </article>
+  </main>
+
+  <!-- App Footer -->
+  <footer>
+    <p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p>
+  </footer>
+
+  <script>
+    // ============ Shape Quiz ============
+    function checkShapeAnswer(btn, isCorrect) {
+      var parentCard = btn.closest('.quiz-card');
+      var options = parentCard.querySelectorAll('.shape-option');
+      var resultDiv = parentCard.querySelector('.shape-result');
+
+      options.forEach(function(opt) { opt.disabled = true; });
+
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      if (!isCorrect) {
+        options.forEach(function(opt) {
+          if (opt.getAttribute('onclick').indexOf('true') !== -1) {
+            opt.classList.add('correct');
+          }
+        });
+      }
+
+      resultDiv.classList.add('show');
+      if (isCorrect) {
+        resultDiv.classList.add('correct-result');
+        resultDiv.classList.remove('wrong-result');
+        resultDiv.textContent = '✅ Correct! You really know your shapes! 🌟';
+      } else {
+        resultDiv.classList.add('wrong-result');
+        resultDiv.classList.remove('correct-result');
+        resultDiv.textContent = '❌ Not quite! Look at the shape cards above — the correct answer is highlighted! 💪';
+      }
+    }
+
+    // ============ Q&A Toggle ============
+    function toggleAnswer(id, btn) {
+      var answer = document.getElementById(id);
+      if (answer.classList.contains('show')) {
+        answer.classList.remove('show');
+        btn.textContent = 'Show Answer 💡';
+      } else {
+        answer.classList.add('show');
+        btn.textContent = 'Hide Answer 🙈';
+      }
+    }
+
+    // ============ On Load ============
+    document.addEventListener('DOMContentLoaded', function() {
+      gsap.from('.shape-card', {
+        y: 30,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: 'power2.out'
+      });
+    });
+  </script>
+
+</body>
+</html>
