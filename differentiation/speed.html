@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidRead - Module 2: Speed = Slope!</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--ac:#1565C0;--acbg:#E3F2FD;--acdk:#0D47A1}
+.hero{padding:3.5rem 1.5rem 2rem}.hero h1{font-size:2.3rem}
+.badge{display:inline-block;background:var(--acbg);color:var(--acdk);font-weight:800;padding:.3rem 1rem;border-radius:20px;font-size:.9rem;margin-bottom:.8rem}
+.wrap{max-width:920px;margin:0 auto;padding:0 1.5rem 3rem}
+.intro{background:linear-gradient(135deg,var(--acbg),#fff);border-left:6px solid var(--ac);border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;font-size:1.08rem;line-height:1.7}
+.demo{background:#fff;border:3px solid var(--ac);border-radius:20px;padding:1.4rem;margin:1.8rem 0;box-shadow:0 10px 15px -3px rgba(0,0,0,.06)}
+.demo h2{color:var(--acdk);margin-bottom:.4rem}.demo p{color:#4A5568;margin-bottom:.8rem}
+canvas.cvb{width:100%;max-width:640px;height:300px;display:block;margin:.8rem auto;background:#FCFCFF;border:2px solid #E2E8F0;border-radius:12px}
+.ctrls{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center;margin:.8rem 0}
+.ctrls label{font-weight:700;color:var(--acdk)}.ctrls input[type=range]{width:140px}
+.big-eq{text-align:center;font-size:1.5rem;font-weight:800;color:var(--acdk);background:var(--acbg);border-radius:12px;padding:.7rem;margin:.8rem 0}
+.big-eq .ans{background:var(--ac);color:#fff;border-radius:8px;padding:.05rem .8rem}
+.ex{background:#FFF8E1;border:2px dashed #FF8F00;border-radius:14px;padding:.9rem 1.2rem;margin:1rem 0;font-size:1.03rem;line-height:1.65}
+.q{background:#F5F7FA;border-radius:16px;padding:1.1rem 1.3rem;margin:1.1rem 0;border:2px solid #E2E8F0}
+.opts{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0}
+.opt{font-family:inherit;font-weight:700;font-size:1.02rem;padding:.45rem 1rem;border-radius:12px;border:3px solid #C5CAE9;background:#fff;cursor:pointer}
+.opt:hover{background:#E8EAF6}.opt.right{background:#C8E6C9!important;border-color:#2E7D32!important}.opt.wrong{background:#FFCDD2!important;border-color:#C62828!important}.opt:disabled{cursor:default}
+.fb{font-weight:700;margin-top:.4rem;min-height:1.5em}.fb.ok{color:#2E7D32}.fb.no{color:#C62828}
+.nav2{display:flex;justify-content:space-between;gap:1rem;margin:2.2rem 0 1rem;flex-wrap:wrap}
+.word{background:var(--acbg);border-radius:8px;padding:.05rem .55rem;font-weight:800;color:var(--acdk)}
+table.t{border-collapse:collapse;margin:.8rem auto;font-size:1.05rem}table.t th,table.t td{border:2px solid #C5CAE9;padding:.4rem .9rem;text-align:center}table.t th{background:var(--acbg);color:var(--acdk)}
+.meter{height:22px;background:#ECEFF1;border-radius:12px;overflow:hidden;margin:.5rem 0}.meter>div{height:100%;background:linear-gradient(90deg,#66BB6A,#FFA000,#E53935);width:0%}
+.center{text-align:center}.kid{font-size:1.05rem;color:#4A5568}
+</style>
+</head>
+<body>
+<header><a href="index.html" class="logo-container"><img src="logo.png" alt="KidRead Logo" class="logo-img"><h1 class="logo-text">Kid<span>Read</span></h1></a>
+<nav><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="slope.html">1 Steepness</a></li><li><a href="speed.html" class="active">2 Speed</a></li><li><a href="power-rule.html">3 Power Rule</a></li><li><a href="area.html">4 Area</a></li><li><a href="bridge.html">5 Big Link</a></li></ul></nav></header>
+<main><section class="hero"><div class="badge">MODULE 2 OF 5 • SPEED 🏎️</div>
+<h1>Speed <span>= Slope!</span></h1>
+<p>Your Module 1 superpower, driving a race car — and your first big calculus word!</p></section>
+<div class="wrap">
+<div class="intro">🏎️ Watch a race car: after 1 hour it is 60&nbsp;km away, after 2 hours 120&nbsp;km, after 3 hours 180&nbsp;km… Plot those dots on a graph and join them — you get a sloping line!<br><br>Its steepness (rise ÷ run) = <strong>distance ÷ time = SPEED</strong> 🚗💨. Speed is just a slope in disguise! And a speedometer showing <em>how fast RIGHT NOW</em> is called a <span class="word">derivative</span> — your first real calculus word! 🎓</div>
+<div class="demo"><h2>🎮 Demo 1: Race the Car!</h2>
+<p>Pick a speed, press GO, and watch the distance dots line up into a slope. Steeper line = faster car!</p>
+<canvas id="race" class="cvb" width="640" height="300"></canvas>
+<div class="ctrls"><label>🏎️ Speed:</label><input type="range" id="spd" min="20" max="120" step="10" value="60"><b id="spdv" style="color:var(--acdk)">60 km/h</b>
+<button class="opt" id="go">GO! 🏁</button><button class="opt" id="rs">Reset</button></div>
+<div class="big-eq">Slope = <span id="d">0</span> km ÷ <span id="t">0</span> h = <span class="ans" id="s">?</span> km/h</div>
+<p class="center kid" id="msg">Press GO to start the race! 🏁</p></div>
+<div class="ex">📖 <strong>Read the graph:</strong> the car drove 120 km in 2 hours. Slope = 120 ÷ 2 = <strong>60 km/h</strong> — exactly the speed! Try 100 km/h: after 2 hours the dot is at 200 km, and 200 ÷ 2 = <strong>100</strong>. <strong>The slope of a distance graph IS the speed.</strong> 🚗💨</div>
+<div class="demo"><h2>🛞 Demo 2: The Speedometer (derivative!)</h2>
+<p>A trip with traffic: fast highway, slow town, lunch stop 🍔. Drag the time slider — the speedometer shows the slope <em>RIGHT NOW</em>. That "right now" slope is the <strong>derivative</strong>!</p>
+<canvas id="trip" class="cvb" width="640" height="300"></canvas>
+<div class="ctrls"><label>⏰ Time: <span id="tv">0</span> h</label><input type="range" id="tm" min="0" max="40" value="0"></div>
+<div class="big-eq">⏱️ Speedometer: <span class="ans" id="now">0 km/h</span> &nbsp;<span id="zone" style="font-size:1rem"></span></div>
+<p class="center kid">Flat line = parked (0 km/h). Steep line = zooming! The speedometer is a slope-detector. 🔍</p></div>
+<div class="demo"><h2>🧠 Quiz Time! (3 stars ⭐⭐⭐)</h2>
+<p>Score: <strong><span id="sc">0</span> / 3</strong></p>
+<div class="q"><p><strong>Q1.</strong> A bike travels 30 km in 2 hours. Its speed (slope) = ?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f1')">30 + 2 = 32</button><button class="opt" onclick="mk(this,true,'f1')">30 ÷ 2 = 15 km/h ⭐</button><button class="opt" onclick="mk(this,false,'f1')">30 × 2 = 60</button></div><div class="fb" id="f1"></div></div>
+<div class="q"><p><strong>Q2.</strong> 🔴 Red drives 100 km in 1 h, 🔵 Blue drives 100 km in 2 h. Whose graph is STEEPER?</p><div class="opts"><button class="opt" onclick="mk(this,true,'f2')">🔴 Red (100 km/h!)</button><button class="opt" onclick="mk(this,false,'f2')">🔵 Blue</button><button class="opt" onclick="mk(this,false,'f2')">Same</button></div><div class="fb" id="f2"></div></div>
+<div class="q"><p><strong>Q3.</strong> The speedometer at one instant shows the…</p><div class="opts"><button class="opt" onclick="mk(this,false,'f3')">Whole trip average</button><button class="opt" onclick="mk(this,false,'f3')">Fuel price ⛽</button><button class="opt" onclick="mk(this,true,'f3')">Slope RIGHT NOW = derivative! 🎓</button></div><div class="fb" id="f3"></div></div>
+<div class="fb center" id="win" style="font-size:1.2rem"></div></div>
+<div class="ex">🎓 <strong>Calculus word #1:</strong> <strong>derivative</strong> = the slope at one instant. Written <strong>dy/dx</strong> or <strong>f′(x)</strong>. Next: slopes of CURVES + the magic Power Rule! ✨</div>
+<div class="nav2"><a href="slope.html" class="btn">← Module 1</a><a href="power-rule.html" class="btn btn-primary">Next: Power Rule! ✨ →</a></div>
+<script>
+(function(){var c=document.getElementById('race'),x=c.getContext('2d');
+var S=document.getElementById('spd'),t=0,run=false,tm=null;
+function PX(h){return 60+h/5*550;}function PY(d){return 258-d/300*228;}
+function draw(){var v=+S.value;document.getElementById('spdv').textContent=v+' km/h';
+x.clearRect(0,0,640,300);x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=6;g++){x.beginPath();x.moveTo(60,30+g*38);x.lineTo(610,30+g*38);x.stroke();}
+x.fillStyle='#4A5568';x.font='bold 13px Fredoka,sans-serif';
+x.fillText('300 km',4,66);x.fillText('150 km',4,150);x.fillText('0',28,262);
+for(var h=0;h<=5;h++)x.fillText(h+'h',55+h*110,280);
+var ct=Math.min(t,5),cd=Math.min(v*t,300);
+x.strokeStyle='#1565C0';x.lineWidth=5;x.lineCap='round';x.beginPath();x.moveTo(60,258);x.lineTo(PX(ct),PY(cd));x.stroke();
+x.fillStyle='#1565C0';for(var k=0;k<=Math.floor(ct);k++){x.beginPath();x.arc(PX(k),PY(Math.min(v*k,300)),6,0,7);x.fill();}
+if(t>0){x.font='38px serif';x.fillText('🏎️',PX(ct)-20,PY(cd)-8);
+document.getElementById('d').textContent=Math.round(cd);
+document.getElementById('t').textContent=(Math.round(ct*10)/10);
+document.getElementById('s').textContent=v+' km/h';
+document.getElementById('msg').textContent=cd>=300?'🏁 Finished 300 km! Slope = speed = '+v+' km/h!':('Driving… '+Math.round(cd)+' km in '+(Math.round(ct*10)/10)+' h');}}
+S.addEventListener('input',function(){if(!run)draw();});
+document.getElementById('go').onclick=function(){if(run)return;run=true;t=0;clearInterval(tm);tm=setInterval(function(){t+=0.2;if(t>=5||(+S.value)*t>=300){clearInterval(tm);run=false;}draw();},120);};
+document.getElementById('rs').onclick=function(){clearInterval(tm);run=false;t=0;document.getElementById('d').textContent='0';document.getElementById('t').textContent='0';document.getElementById('s').textContent='?';document.getElementById('msg').textContent='Press GO to start the race! 🏁';draw();};
+draw();})();
+</script>
+<script>
+(function(){var c=document.getElementById('trip'),x=c.getContext('2d');var T=document.getElementById('tm');
+var pts=[[0,0],[1,100],[2,180],[3,180],[4,260]];
+function at(h){for(var i=0;i<4;i++){var a=pts[i],b=pts[i+1];if(h<=b[0]||i===3){var sl=(b[1]-a[1])/(b[0]-a[0]);return{km:a[1]+sl*(h-a[0]),sl:sl,seg:i};}}return{km:260,sl:0,seg:3};}
+function PX(h){return 60+h/4*540;}function PY(d){return 258-d/300*228;}
+function draw(){var h=+T.value/10;document.getElementById('tv').textContent=h.toFixed(1);
+x.clearRect(0,0,640,300);x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=6;g++){x.beginPath();x.moveTo(60,30+g*38);x.lineTo(600,30+g*38);x.stroke();}
+x.fillStyle='#4A5568';x.font='bold 13px Fredoka,sans-serif';x.fillText('300',12,66);x.fillText('150',12,150);x.fillText('0',32,262);
+for(var q=0;q<=4;q++)x.fillText(q+'h',55+q*135,280);
+var cols=['#1E88E5','#7B1FA2','#9E9E9E','#E65100'];
+for(var i=0;i<4;i++){x.strokeStyle=cols[i];x.lineWidth=6;x.lineCap='round';x.beginPath();x.moveTo(PX(pts[i][0]),PY(pts[i][1]));x.lineTo(PX(pts[i+1][0]),PY(pts[i+1][1]));x.stroke();}
+var r=at(h);x.font='32px serif';x.fillText('🚗',PX(h)-16,PY(r.km)-8);
+x.fillStyle='#C62828';x.beginPath();x.arc(PX(h),PY(r.km),7,0,7);x.fill();
+var lbl=['🛣️ Highway zoom!','🏘️ Town — slow down!','🍔 Lunch stop — parked!','🛣️ Highway again!'][r.seg];
+document.getElementById('now').textContent=r.sl+' km/h';document.getElementById('zone').textContent=lbl;}
+T.addEventListener('input',draw);draw();})();
+var score=0,done={};
+function mk(b,ok,id){var btns=b.parentElement.querySelectorAll('.opt');btns.forEach(function(o){o.disabled=true;});var f=document.getElementById(id);
+if(ok){b.classList.add('right');f.textContent='✅ Correct! Speed = distance ÷ time = slope!';f.className='fb ok';if(!done[id]){done[id]=1;score++;document.getElementById('sc').textContent=score;}}
+else{b.classList.add('wrong');f.textContent='❌ Try again! Hint: speed = distance ÷ time.';f.className='fb no';}
+if(score>=3){document.getElementById('win').textContent='🎉 3/3! Speed Superstar! Next: the Power-Rule Machine! ✨';document.getElementById('win').className='fb center ok';}}
+</script>
+</div></main>
+<footer><p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p></footer>
+</body></html>

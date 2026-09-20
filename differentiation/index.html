@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KidRead - Speedway Calculus: Slopes & Areas!</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .calc-badge{display:inline-block;background:#EDE7F6;color:#4527A0;font-weight:800;padding:.35rem 1rem;border-radius:20px;font-size:.95rem;margin-bottom:1rem}
+    .path-bar{display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:1.5rem 0 0;font-weight:700;color:#4A5568}
+    .path-bar .step{background:#EDE7F6;color:#4527A0;border-radius:12px;padding:.3rem .9rem}
+    .path-bar .arrow{color:#FF5722;font-size:1.3rem}
+    .hero-emoji{font-size:3.5rem;animation:bounce 2s infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    .card-icon.purple{background:#EDE7F6}.card-icon.pink{background:#FCE4EC}.card-icon.teal{background:#E0F7FA}.card-icon.amber{background:#FFF8E1}.card-icon.indigo{background:#E8EAF6}
+    .level-tag{display:inline-block;font-size:.8rem;font-weight:800;padding:.15rem .7rem;border-radius:10px;margin-bottom:.5rem}
+    .lvl1{background:#E8F5E9;color:#2E7D32}.lvl2{background:#E3F2FD;color:#1565C0}.lvl3{background:#FFF3E0;color:#E65100}.lvl4{background:#FCE4EC;color:#C2185B}.lvl5{background:#EDE7F6;color:#4527A0}
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo-container">
+      <img src="logo.png" alt="KidRead Logo" class="logo-img">
+      <h1 class="logo-text">Kid<span>Read</span></h1>
+    </a>
+    <nav><ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="slope.html">1 Steepness</a></li>
+      <li><a href="speed.html">2 Speed</a></li>
+      <li><a href="power-rule.html">3 Power Rule</a></li>
+      <li><a href="area.html">4 Area</a></li>
+      <li><a href="bridge.html">5 Big Link</a></li>
+    </ul></nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="hero-emoji">🏎️⛰️</div>
+      <div class="calc-badge">NEW COURSE • AGES 8–12 • NO SCARY WORDS... AT FIRST 😉</div>
+      <h1>Speedway Calculus: <span>Slopes &amp; Areas!</span></h1>
+      <p>How steep is that ski hill? How fast is that race car? How much pizza is under a curve? 🍕<br>
+      Answer those three questions and you have secretly learned <strong>differentiation</strong> and <strong>integration</strong> — the two biggest ideas in calculus!</p>
+      <a href="slope.html" class="btn btn-primary">Start Module 1! 🚀</a>
+      <div class="path-bar">
+        <span class="step">1 ⛰️ Steepness</span><span class="arrow">→</span>
+        <span class="step">2 🏎️ Speed</span><span class="arrow">→</span>
+        <span class="step">3 ✨ Power Rule</span><span class="arrow">→</span>
+        <span class="step">4 🍕 Area</span><span class="arrow">→</span>
+        <span class="step">5 🌉 Big Link</span>
+      </div>
+    </section>
+    <section class="section section-gray">
+      <div class="section-container">
+        <h2 class="section-title">Pick your <span>adventure</span>!</h2>
+        <div class="cards-grid">
+          <div class="card"><div class="card-icon purple">⛰️</div><span class="level-tag lvl1">MODULE 1 • EASY</span><h3>How Steep Is It?</h3><p>Ski hills, stairs and slides! Measure steepness with Rise ÷ Run. Steepness is the secret seed of differentiation.</p><a href="slope.html" class="card-btn">Start Exploring →</a></div>
+          <div class="card"><div class="card-icon pink">🏎️</div><span class="level-tag lvl2">MODULE 2 • EASY+</span><h3>Speed = Slope!</h3><p>Drive a race car and discover speed is just the slope of a distance graph. You just met the derivative!</p><a href="speed.html" class="card-btn">Start Driving →</a></div>
+          <div class="card"><div class="card-icon amber">✨</div><span class="level-tag lvl3">MODULE 3 • MEDIUM</span><h3>The Power-Rule Machine</h3><p>Feed the hungry machine x², x³, x⁴… and discover the 1-line magic trick that differentiates any power!</p><a href="power-rule.html" class="card-btn">Feed the Machine →</a></div>
+          <div class="card"><div class="card-icon teal">🍕</div><span class="level-tag lvl4">MODULE 4 • MEDIUM</span><h3>Area = Integration!</h3><p>Count pizza squares under a line, meet rectangle robots, and learn that area under a curve is integration.</p><a href="area.html" class="card-btn">Count Squares →</a></div>
+          <div class="card"><div class="card-icon indigo">🌉</div><span class="level-tag lvl5">MODULE 5 • FINALE</span><h3>The Big Link 🌉</h3><p>Slope and area are OPPOSITES that undo each other! Prove it, pass the quiz, and earn your Calculus Star! ⭐</p><a href="bridge.html" class="card-btn">Cross the Bridge →</a></div>
+        </div>
+        <div class="explanation-box" style="margin-top:2.5rem">
+          <p>👨‍👩‍👧 <strong>For parents &amp; teachers:</strong> this course teaches calculus as <em>steepness</em> (differentiation) and <em>accumulated area</em> (integration) through play first, symbols second. Each module takes ~15 minutes and ends with a self-marking quiz. Suggested order: 1 → 2 → 3 → 4 → 5.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer><p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p></footer>
+</body>
+</html>

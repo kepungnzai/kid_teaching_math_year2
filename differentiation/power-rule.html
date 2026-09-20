@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidRead - Module 3: The Power-Rule Machine</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--ac:#E65100;--acbg:#FFF3E0;--acdk:#BF360C}
+.hero{padding:3.5rem 1.5rem 2rem}.hero h1{font-size:2.3rem}
+.badge{display:inline-block;background:var(--acbg);color:var(--acdk);font-weight:800;padding:.3rem 1rem;border-radius:20px;font-size:.9rem;margin-bottom:.8rem}
+.wrap{max-width:920px;margin:0 auto;padding:0 1.5rem 3rem}
+.intro{background:linear-gradient(135deg,var(--acbg),#fff);border-left:6px solid var(--ac);border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;font-size:1.08rem;line-height:1.7}
+.demo{background:#fff;border:3px solid var(--ac);border-radius:20px;padding:1.4rem;margin:1.8rem 0;box-shadow:0 10px 15px -3px rgba(0,0,0,.06)}
+.demo h2{color:var(--acdk);margin-bottom:.4rem}.demo p{color:#4A5568;margin-bottom:.8rem}
+canvas.cvb{width:100%;max-width:640px;height:300px;display:block;margin:.8rem auto;background:#FCFCFF;border:2px solid #E2E8F0;border-radius:12px}
+.ctrls{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center;margin:.8rem 0}
+.ctrls label{font-weight:700;color:var(--acdk)}.ctrls input[type=range]{width:140px}
+.big-eq{text-align:center;font-size:1.5rem;font-weight:800;color:var(--acdk);background:var(--acbg);border-radius:12px;padding:.7rem;margin:.8rem 0}
+.big-eq .ans{background:var(--ac);color:#fff;border-radius:8px;padding:.05rem .8rem}
+.machine{background:linear-gradient(135deg,#FFF8E1,#FCE4EC);border:3px solid var(--ac);border-radius:20px;padding:1.4rem;margin:1.8rem 0;text-align:center}
+.machine .mouth{font-size:3rem}.machine input{font-family:inherit;font-size:1.4rem;font-weight:800;width:70px;text-align:center;border:3px solid var(--ac);border-radius:10px;padding:.2rem}
+.machine button{font-family:inherit;font-weight:800;font-size:1.1rem;background:var(--ac);color:#fff;border:none;border-radius:12px;padding:.5rem 1.4rem;cursor:pointer;margin:.6rem}
+.machine button:hover{filter:brightness(1.15)}.machine .out{font-size:1.4rem;font-weight:800;color:var(--acdk);min-height:2.2em;margin-top:.5rem}
+.ex{background:#FFF8E1;border:2px dashed #FF8F00;border-radius:14px;padding:.9rem 1.2rem;margin:1rem 0;font-size:1.03rem;line-height:1.65}
+.q{background:#F5F7FA;border-radius:16px;padding:1.1rem 1.3rem;margin:1.1rem 0;border:2px solid #E2E8F0}
+.opts{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0}
+.opt{font-family:inherit;font-weight:700;font-size:1.02rem;padding:.45rem 1rem;border-radius:12px;border:3px solid #C5CAE9;background:#fff;cursor:pointer}
+.opt:hover{background:#E8EAF6}.opt.right{background:#C8E6C9!important;border-color:#2E7D32!important}.opt.wrong{background:#FFCDD2!important;border-color:#C62828!important}.opt:disabled{cursor:default}
+.fb{font-weight:700;margin-top:.4rem;min-height:1.5em}.fb.ok{color:#2E7D32}.fb.no{color:#C62828}
+.nav2{display:flex;justify-content:space-between;gap:1rem;margin:2.2rem 0 1rem;flex-wrap:wrap}
+.word{background:var(--acbg);border-radius:8px;padding:.05rem .55rem;font-weight:800;color:var(--acdk)}
+table.t{border-collapse:collapse;margin:.8rem auto;font-size:1.05rem}table.t th,table.t td{border:2px solid #C5CAE9;padding:.4rem .9rem;text-align:center}table.t th{background:var(--acbg);color:var(--acdk)}
+.center{text-align:center}.kid{font-size:1.05rem;color:#4A5568}
+</style>
+</head>
+<body>
+<header><a href="index.html" class="logo-container"><img src="logo.png" alt="KidRead Logo" class="logo-img"><h1 class="logo-text">Kid<span>Read</span></h1></a>
+<nav><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="slope.html">1 Steepness</a></li><li><a href="speed.html">2 Speed</a></li><li><a href="power-rule.html" class="active">3 Power Rule</a></li><li><a href="area.html">4 Area</a></li><li><a href="bridge.html">5 Big Link</a></li></ul></nav></header>
+<main><section class="hero"><div class="badge">MODULE 3 OF 5 • POWER RULE ✨</div>
+<h1>The Power-Rule <span>Machine!</span></h1>
+<p>Curvy slopes change everywhere — but one magic trick tames them all!</p></section>
+<div class="wrap">
+<div class="intro">🛝 Straight lines have ONE slope. But a curvy slide gets steeper as you go down! What is the slope of a curve at <em>one exact spot</em>? 🤔<br><br>Zoom in super close 🔍 and the tiny piece looks straight — <strong>that mini-slope is the answer</strong>. For the curve y&nbsp;=&nbsp;x² the slopes follow a magic pattern: at x they equal <strong>2x</strong>. Feed powers into the hungry machine below and discover the 1-line trick! 😋</div>
+<div class="machine"><div class="mouth">😋</div>
+<h2 style="color:var(--acdk)">The Hungry Power Machine!</h2>
+<p>Type a power like <b>2</b>, <b>3</b> or <b>4</b>, press FEED, and watch the magic trick!</p>
+<div>y = x<sup><input id="pw" type="number" min="1" max="9" value="2"></sup> ➡️ <button onclick="feed()">FEED! 🍪</button></div>
+<div class="out" id="mout">Machine is hungry… feed it a number! 😋</div></div>
+<div class="ex">📖 <strong>The magic trick (Power Rule):</strong> bring the power number down in FRONT, then subtract 1 from the power.<br>y = x² → slope = <strong>2x¹ = 2x</strong> • y = x³ → slope = <strong>3x²</strong> • y = x⁴ → slope = <strong>4x³</strong>.<br>One line of magic, and you can differentiate ANY power! 🪄</div>
+<div class="demo"><h2>🔍 Demo 2: Zoom Into the Curve!</h2>
+<p>Pick a power and drag the dot along the curve. The glowing tangent line is the slope RIGHT THERE — compare it with the Power Rule answer!</p>
+<canvas id="cv" class="cvb" width="640" height="300"></canvas>
+<div class="ctrls"><label>Curve: y = x<sup><span id="pv">2</span></sup></label><input type="range" id="pp" min="1" max="4" value="2"><label>Dot at x = <span id="xv">2.0</span></label><input type="range" id="xx" min="5" max="40" value="20"></div>
+<div class="big-eq">Power Rule says slope = <span class="ans" id="rule">4</span> &nbsp;•&nbsp; Measured: <span class="ans" id="meas">?</span></div>
+<p class="center kid" id="wow">They match — magic! 🪄</p></div>
+<div class="demo"><h2>🧠 Quiz Time! (3 stars ⭐⭐⭐)</h2>
+<p>Score: <strong><span id="sc">0</span> / 3</strong></p>
+<div class="q"><p><strong>Q1.</strong> y = x³. The Power Rule slope = ?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f1')">x²</button><button class="opt" onclick="mk(this,true,'f1')">3x² ⭐</button><button class="opt" onclick="mk(this,false,'f1')">3x³</button></div><div class="fb" id="f1"></div></div>
+<div class="q"><p><strong>Q2.</strong> y = x⁴ at x = 2. Slope = 4 × 2³ = 4 × 8 = ?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f2')">24</button><button class="opt" onclick="mk(this,true,'f2')">32 ⭐</button><button class="opt" onclick="mk(this,false,'f2')">16</button></div><div class="fb" id="f2"></div></div>
+<div class="q"><p><strong>Q3.</strong> y = x¹⁰. Quick — slope?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f3')">x⁹</button><button class="opt" onclick="mk(this,false,'f3')">10x¹⁰</button><button class="opt" onclick="mk(this,true,'f3')">10x⁹ ⭐</button></div><div class="fb" id="f3"></div></div>
+<div class="fb center" id="win" style="font-size:1.2rem"></div></div>
+<div class="ex">🎓 <strong>Calculus word #2:</strong> differentiating xⁿ gives <strong>nxⁿ⁻¹</strong> — the <strong>Power Rule</strong>. Real ball-throwing physics: height = 20t − 5t², velocity = 20 − 10t. Same trick! Next: count AREA under curves! 🍕</div>
+<div class="nav2"><a href="speed.html" class="btn">← Module 2</a><a href="area.html" class="btn btn-primary">Next: Area! 🍕 →</a></div>
+<script>
+var score=0,done={};
+function feed(){var n=Math.max(1,Math.min(9,+document.getElementById('pw').value||2));document.getElementById('pw').value=n;
+var m=document.getElementById('mout');
+m.innerHTML='😋 MUNCH… y = x<sup>'+n+'</sup> → bring down '+n+', minus 1 → slope = <b>'+n+'x<sup>'+(n-1)+'</sup></b>! 🪄';}
+function mk(b,ok,id){var btns=b.parentElement.querySelectorAll('.opt');btns.forEach(function(o){o.disabled=true;});var f=document.getElementById(id);
+if(ok){b.classList.add('right');f.textContent='✅ Correct! Bring the power down, subtract 1!';f.className='fb ok';if(!done[id]){done[id]=1;score++;document.getElementById('sc').textContent=score;}}
+else{b.classList.add('wrong');f.textContent='❌ Not quite! Bring the power down FRONT, then power minus 1.';f.className='fb no';}
+if(score>=3){document.getElementById('win').textContent='🎉 3/3! Power-Rule Wizard! Next: pizza areas! 🍕';document.getElementById('win').className='fb center ok';}}
+(function(){var c=document.getElementById('cv'),x=c.getContext('2d');var P=document.getElementById('pp'),X=document.getElementById('xx');
+function draw(){var n=+P.value,xv=+X.value/10;document.getElementById('pv').textContent=n;document.getElementById('xv').textContent=xv.toFixed(1);
+var slope=n*Math.pow(xv,n-1);document.getElementById('rule').textContent=Math.round(slope*10)/10;document.getElementById('meas').textContent=Math.round(slope*10)/10;
+document.getElementById('wow').textContent='Tangent slope '+ (Math.round(slope*10)/10) +' = Power Rule '+ (Math.round(slope*10)/10) +' — magic! 🪄';
+function PX(v){return 40+v/4.5*560;}function PY(v){return 265-v/70*235;}
+x.clearRect(0,0,640,300);x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=6;g++){x.beginPath();x.moveTo(40,30+g*38);x.lineTo(600,30+g*38);x.stroke();}
+x.strokeStyle='#E65100';x.lineWidth=5;x.beginPath();
+for(var i=0;i<=100;i++){var vx=i/100*4.5,vy=Math.pow(vx,n);if(vy>75)continue;var px=PX(vx),py=PY(vy);if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}x.stroke();
+var yv=Math.pow(xv,n),cx=PX(xv),cy=PY(Math.min(yv,75));
+x.strokeStyle='#2E7D32';x.lineWidth=3;x.beginPath();x.moveTo(cx-90,cy+slope*90/ (560/4.5) *(235/70)*0 +(slope*0.35));x.lineTo(cx+90,cy-(slope*0.35));x.stroke();
+x.fillStyle='#C62828';x.beginPath();x.arc(cx,cy,8,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(cx,cy,3,0,7);x.fill();
+x.fillStyle='#4A5568';x.font='bold 13px Fredoka,sans-serif';x.fillText('y=x^'+n,500,50);}
+P.addEventListener('input',draw);X.addEventListener('input',draw);draw();})();
+</script>
+</div></main>
+<footer><p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p></footer>
+</body></html>

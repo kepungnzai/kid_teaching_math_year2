@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidRead - Module 1: How Steep Is It?</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--ac:#2E7D32;--acbg:#E8F5E9;--acdk:#1B5E20}
+.hero{padding:3.5rem 1.5rem 2rem}.hero h1{font-size:2.3rem}
+.badge{display:inline-block;background:var(--acbg);color:var(--acdk);font-weight:800;padding:.3rem 1rem;border-radius:20px;font-size:.9rem;margin-bottom:.8rem}
+.wrap{max-width:920px;margin:0 auto;padding:0 1.5rem 3rem}
+.intro{background:linear-gradient(135deg,var(--acbg),#fff);border-left:6px solid var(--ac);border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;font-size:1.08rem;line-height:1.7}
+.demo{background:#fff;border:3px solid var(--ac);border-radius:20px;padding:1.4rem;margin:1.8rem 0;box-shadow:0 10px 15px -3px rgba(0,0,0,.06)}
+.demo h2{color:var(--acdk);margin-bottom:.4rem}.demo p{color:#4A5568;margin-bottom:.8rem}
+canvas.cvb{width:100%;max-width:640px;height:300px;display:block;margin:.8rem auto;background:#FCFCFF;border:2px solid #E2E8F0;border-radius:12px}
+.ctrls{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center;margin:.8rem 0}
+.ctrls label{font-weight:700;color:var(--acdk)}.ctrls input[type=range]{width:140px}
+.big-eq{text-align:center;font-size:1.5rem;font-weight:800;color:var(--acdk);background:var(--acbg);border-radius:12px;padding:.7rem;margin:.8rem 0}
+.big-eq .ans{background:var(--ac);color:#fff;border-radius:8px;padding:.05rem .8rem}
+.ex{background:#FFF8E1;border:2px dashed #FF8F00;border-radius:14px;padding:.9rem 1.2rem;margin:1rem 0;font-size:1.03rem;line-height:1.65}
+.q{background:#F5F7FA;border-radius:16px;padding:1.1rem 1.3rem;margin:1.1rem 0;border:2px solid #E2E8F0}
+.opts{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0}
+.opt{font-family:inherit;font-weight:700;font-size:1.02rem;padding:.45rem 1rem;border-radius:12px;border:3px solid #C5CAE9;background:#fff;cursor:pointer}
+.opt:hover{background:#E8EAF6}.opt.right{background:#C8E6C9!important;border-color:#2E7D32!important}.opt.wrong{background:#FFCDD2!important;border-color:#C62828!important}.opt:disabled{cursor:default}
+.fb{font-weight:700;margin-top:.4rem;min-height:1.5em}.fb.ok{color:#2E7D32}.fb.no{color:#C62828}
+.nav2{display:flex;justify-content:space-between;gap:1rem;margin:2.2rem 0 1rem;flex-wrap:wrap}
+.word{background:var(--acbg);border-radius:8px;padding:.05rem .55rem;font-weight:800;color:var(--acdk)}
+table.t{border-collapse:collapse;margin:.8rem auto;font-size:1.05rem}table.t th,table.t td{border:2px solid #C5CAE9;padding:.4rem .9rem;text-align:center}table.t th{background:var(--acbg);color:var(--acdk)}
+.meter{height:22px;background:#ECEFF1;border-radius:12px;overflow:hidden;margin:.5rem 0}.meter>div{height:100%;background:linear-gradient(90deg,#66BB6A,#FFA000,#E53935);width:0%}
+.center{text-align:center}.kid{font-size:1.05rem;color:#4A5568}
+    .eq3{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin:.7rem 0}
+    .eq3card{background:#F5F7FA;border:3px solid #C5CAE9;border-radius:12px;padding:.5rem 1rem;font-size:1.05rem;text-align:center;min-width:150px}
+    .ans3{color:#fff;border-radius:8px;padding:.05rem .7rem;font-weight:800}
+    .diffline{background:#EDE7F6;border:2px dashed #4527A0;border-radius:12px;padding:.6rem 1rem;margin:.7rem 0;font-size:1.02rem;text-align:center}
+    .speedo{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin:.7rem 0}
+    .spd{background:#F5F7FA;border:3px solid #C5CAE9;border-radius:12px;padding:.4rem .9rem;font-size:1.0rem;text-align:center;min-width:140px}
+    .spd b{font-size:1.25rem}
+    .spd.hot{border-color:#E53935;background:#FFEBEE}
+</style>
+</head>
+<body>
+<header><a href="index.html" class="logo-container"><img src="logo.png" alt="KidRead Logo" class="logo-img"><h1 class="logo-text">Kid<span>Read</span></h1></a>
+<nav><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="slope.html" class="active">1 Steepness</a></li><li><a href="speed.html">2 Speed</a></li><li><a href="power-rule.html">3 Power Rule</a></li><li><a href="area.html">4 Area</a></li><li><a href="bridge.html">5 Big Link</a></li></ul></nav></header>
+<main><section class="hero"><div class="badge">MODULE 1 OF 5 • STEEPNESS ⛰️</div>
+<h1>How Steep <span>Is It?</span></h1>
+<p>The secret seed of differentiation — measured with one tiny division!</p></section>
+<div class="wrap">
+<div class="intro">⛷️ Meet <strong>Sasha the skier!</strong> On this page we learn to <em>tell her story</em> — the story of her motion down a mountain. First (Demo 1) we learn the one tool every story needs: measuring <strong>steepness = Drop ÷ Distance</strong> ⬇️➡️. Then (Demo 2) we follow Sasha down 3 chapters — steep (slope <strong>2.0</strong>), gentle (<strong>0.5</strong>), super-steep (<strong>3.0</strong>) — and narrate what she feels, moment by moment.<br><br>Telling that motion story — <em>"how fast is she going at THIS exact spot?"</em> — is called <span class="word">differentiation</span>, the first half of calculus! ❄️📖 Then two NEW stories with twists: a bouncing ball that STOPS mid-air ⚽🎈 and a rocket that keeps going FASTER 🚀!</div>
+<div class="demo"><h2>🎮 Demo 1: How Steep Is One Hill?</h2>
+<p>Every story needs a measuring tool! Drag the sliders to build ONE hill and read its steepness: <strong>Drop ÷ Distance</strong>. Green = gentle 🐰, red = scary! 😱</p>
+<canvas id="hillB" class="cvb" width="640" height="300"></canvas>
+<div class="ctrls"><label>⬇️ Drop: <span id="rvB">3</span> m</label><input type="range" id="riseB" min="1" max="9" value="3"><label>➡️ Distance: <span id="nvB">6</span> m</label><input type="range" id="runB" min="1" max="12" value="6"></div>
+<div class="big-eq">Steepness = <span id="reB">3</span> ÷ <span id="neB">6</span> = <span class="ans" id="seB">0.5</span></div>
+<div class="meter"><div id="barB"></div></div>
+<p class="center kid" id="verdictB">🐰 Gentle — like Sasha's middle chapter (0.5)!</p></div>
+<div class="ex">📖 <strong>Your measuring tool:</strong> drop 3 m over 6 m → 3 ÷ 6 = <strong>0.5</strong> (gentle cruise 🐰). Drop 6 m over 3 m → 6 ÷ 3 = <strong>2.0</strong> (fast! 🟠). Drop 6 m over 2 m → 6 ÷ 2 = <strong>3.0</strong> (SCARY 😱). One tool measures every chapter of Sasha's story!</div>
+<div class="demo"><h2>📖🎮 Demo 2: Sasha's Story — Tell Her Journey!</h2>
+<p><strong>Differentiation is storytelling!</strong> ⛷️ Sasha slides down ONE mountain with 3 chapters — each 6 m long. Press <strong>SKI! ⛷️</strong> and narrate her journey: what does she feel in each chapter?</p>
+<canvas id="ski" class="cvb" width="640" height="320" style="height:320px"></canvas>
+<div class="ctrls"><button class="opt" id="skiGo">SKI! ⛷️</button><button class="opt" id="skiReset">Reset</button><button class="opt" id="tA">🟠 2.0</button><button class="opt" id="tB">🐰 0.5</button><button class="opt" id="tC">😱 3.0</button></div>
+<div class="speedo"><div class="spd" id="sp0" style="border-color:#FF9800"><b>📖 Ch.1 🟠 2.0</b><br>drop 12 ÷ 6<br>Sasha feels: <b id="sv0">—</b></div><div class="spd" id="sp1" style="border-color:#4CAF50"><b>📖 Ch.2 🐰 0.5</b><br>drop 3 ÷ 6<br>Sasha feels: <b id="sv1">—</b></div><div class="spd" id="sp2" style="border-color:#E53935"><b>📖 Ch.3 😱 3.0</b><br>drop 18 ÷ 6<br>Sasha feels: <b id="sv2">—</b></div></div>
+<div class="diffline">🔍 <strong>Differentiation tells her story:</strong> right now Sasha feels <strong><span id="nowS">press SKI to begin her journey!</span></strong> &nbsp;<span id="nowW"></span></div>
+<p class="center kid">🏆 Chapter 3 (3.0) is <strong>6× steeper</strong> than Chapter 2 (0.5) — that's why her story goes <em>wheee… phew… AAAAARGH!</em> Same 6 m of track, totally different feelings!</p></div>
+<div class="ex">📖 <strong>Tell her story in 3 chapters:</strong> 📖 <strong>Chapter 1 (steep, 2.0):</strong> Sasha drops 12 m in 6 m — <em>"Wheee, flying at 20 m/s!"</em> 🚀 📖 <strong>Chapter 2 (gentle, 0.5):</strong> only 3 m down in 6 m — <em>"Phew, cruising at 5 m/s, time for cocoa…"</em> 🐰☕ 📖 <strong>Chapter 3 (super-steep, 3.0):</strong> 18 m down in 6 m — <em>"AAAAH, 30 m/s, hold on!!"</em> 😱 <strong>Differentiation = telling what each moment feels like.</strong> 🔍 But wait — HOW do you know what she feels at any spot? That's Demo 3's job! 👇</div>
+<div class="demo"><h2>📖🎮 Demo 3: YOU Are the Storyteller!</h2>
+<p>Differentiation is a <strong>job</strong> — the storyteller's job! Drag the slider to take Sasha to <strong>ANY spot</strong> on her journey. Your job: look at the tiny slope right under her skis and tell what she feels <em>right there, right now</em>.</p>
+<canvas id="tell" class="cvb" width="640" height="300" style="height:300px"></canvas>
+<div class="ctrls"><label>📍 Sasha is at: <span id="tellM">3</span> m</label><input type="range" id="tellR" min="0" max="18" step="0.5" value="3"><button class="opt" id="tellC1">📖 Ch.1</button><button class="opt" id="tellC2">📖 Ch.2</button><button class="opt" id="tellC3">📖 Ch.3</button></div>
+<div class="diffline">📖 You (the differentiator!) say: <strong><span id="tellStory">—</span></strong></div>
+<div class="speedo"><div class="spd" id="tl0" style="border-color:#FF9800"><b>🚀 Ch.1</b><br>slope 2.0 → 20 m/s<br><i>"Wheee!"</i></div><div class="spd" id="tl1" style="border-color:#4CAF50"><b>☕ Ch.2</b><br>slope 0.5 → 5 m/s<br><i>"Phew…"</i></div><div class="spd" id="tl2" style="border-color:#E53935"><b>😱 Ch.3</b><br>slope 3.0 → 30 m/s<br><i>"Hold on!!"</i></div></div>
+<p class="center kid">💡 Notice: you never needed the WHOLE mountain — only the <strong>tiny slope under her skis</strong>! That "slope right here" is called the <strong>derivative</strong>. Telling it at <em>every</em> spot = <strong>differentiation</strong>! 🔍📖</p></div>
+<div class="ex">🌀 <strong>New stories, new twists!</strong> Sasha's feelings changed in big chapters. But a bouncing ball's feelings change <em>every blink</em> — and sometimes it STOPS! And a rocket's slope keeps GROWING the whole flight! Same storytelling tool — wilder stories! 👇</div>
+<div class="demo"><h2>⚽🎮 Demo 4: Bobo the Bouncing Ball!</h2>
+<p>Meet <strong>Bobo</strong>! He bounces 3 times — HIGH, medium, tiny. Drag the <strong>time slider ⏱️</strong> and tell HIS story: zooming up? floating at the top? whizzing down? Watch the black <strong>tangent stick</strong> — that stick IS the slope right HERE, right NOW!</p>
+<canvas id="bounce" class="cvb" width="640" height="300" style="height:300px"></canvas>
+<div class="ctrls"><label>⏱️ Time: <span id="boM">1</span> s</label><input type="range" id="boR" min="0" max="12" step="0.25" value="1"><button class="opt" id="boUp">⏫ Going up</button><button class="opt" id="boTop">🎈 The top!</button><button class="opt" id="boDown">⏬ Falling</button></div>
+<div class="diffline">📖 You (the differentiator!) say: <strong><span id="boStory">—</span></strong></div>
+<div class="speedo"><div class="spd" id="buUp" style="border-color:#2E7D32"><b>⏫ UP</b><br>slope &gt; 0<br><i>"Zooming up!"</i></div><div class="spd" id="buTop" style="border-color:#FF8F00"><b>🎈 TOP</b><br>slope = 0<br><i>"Floating…"</i></div><div class="spd" id="buDown" style="border-color:#E53935"><b>⏬ DOWN</b><br>slope &lt; 0<br><i>"Whizzing down!"</i></div></div>
+<p class="center kid">🤯 BIG discovery: at the very top Bobo <strong>STOPS</strong> — slope = <strong>ZERO</strong>! Slopes can be positive (up ⏫), zero (paused! 🎈), even negative (down ⏬). A good storyteller tells ALL of them! 📖</p></div>
+<div class="demo"><h2>🚀🎮 Demo 5: Rocky the Rocket!</h2>
+<p><strong>Rocky doesn't cruise — he ACCELERATES!</strong> His distance curve bends UP like a skate ramp: the slope itself keeps growing! Press <strong>LAUNCH! 🚀</strong> or drag the time slider, and tell his story: sleepy liftoff 🐢 → speedy climb 🙂 → MEGA ZOOM! 🚀</p>
+<canvas id="rocket" class="cvb" width="640" height="300" style="height:300px"></canvas>
+<div class="ctrls"><button class="opt" id="roGo">LAUNCH! 🚀</button><button class="opt" id="roReset">Reset</button><label>⏱️ T+ <span id="roM">2</span> s</label><input type="range" id="roR" min="0" max="10" step="0.25" value="2"></div>
+<div class="diffline">📖 You (the differentiator!) say: <strong><span id="roStory">—</span></strong></div>
+<div class="speedo"><div class="spd" id="rl0" style="border-color:#78909C"><b>🐢 Liftoff</b><br>speed ~0<br><i>"3… 2… 1…"</i></div><div class="spd" id="rl1" style="border-color:#1E88E5"><b>🙂 Climbing</b><br>faster every sec<br><i>"Here we go!"</i></div><div class="spd" id="rl2" style="border-color:#E53935"><b>🚀 ZOOM</b><br>100 m/s!!<br><i>"WAAAAH!"</i></div></div>
+<p class="center kid">💡 Whoa — the slope has its OWN story: it <strong>grows</strong>! Noticing the slope itself changing is called the <strong>second derivative</strong> (acceleration). Same storytelling, one level deeper! Next module: race cars! 🏎️</p></div>
+<div class="demo"><h2>🧠 Quiz Time! (5 stars to win ⭐⭐⭐⭐⭐)</h2>
+<p>Score: <strong><span id="sc">0</span> / 5</strong></p>
+<div class="q"><p><strong>Q1.</strong> A hill rises 6 m over a run of 3 m. Steepness = ?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f1')">2 ÷ 6</button><button class="opt" onclick="mk(this,true,'f1')">6 ÷ 3 = 2</button><button class="opt" onclick="mk(this,false,'f1')">6 + 3 = 9</button></div><div class="fb" id="f1"></div></div>
+<div class="q"><p><strong>Q2.</strong> Which ramp is GENTLER (smaller steepness)?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f2')">Rise 8, Run 2</button><button class="opt" onclick="mk(this,true,'f2')">Rise 2, Run 8 ⭐ gentle!</button><button class="opt" onclick="mk(this,false,'f2')">Rise 4, Run 4</button></div><div class="fb" id="f2"></div></div>
+<div class="q"><p><strong>Q3.</strong> 📖 Sasha is at the 9-metre mark of her journey. You, the storyteller, say…?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f3')">"Wheee, flying!" (Chapter 1)</button><button class="opt" onclick="mk(this,true,'f3')">"Phew, cocoa time…" (Chapter 2 ⭐)</button><button class="opt" onclick="mk(this,false,'f3')">"Hold on!!" (Chapter 3)</button></div><div class="fb" id="f3"></div></div>
+<div class="q"><p><strong>Q4.</strong> ⚽ At the VERY TOP of a bounce, Bobo's slope is…?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f4')">Big and positive (zooming!)</button><button class="opt" onclick="mk(this,true,'f4')">ZERO — floating! ⭐🎈</button><button class="opt" onclick="mk(this,false,'f4')">Big and negative (falling!)</button></div><div class="fb" id="f4"></div></div>
+<div class="q"><p><strong>Q5.</strong> 🚀 When is Rocky the rocket FASTEST?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f5')">At liftoff (T+0)</button><button class="opt" onclick="mk(this,false,'f5')">Halfway (T+5)</button><button class="opt" onclick="mk(this,true,'f5')">At the end (T+10) — steepest slope! ⭐</button></div><div class="fb" id="f5"></div></div>
+<div class="fb center" id="win" style="font-size:1.2rem"></div></div>
+<div class="ex">🎓 <strong>Secret vocabulary — DIFFERENTIATION = storytelling:</strong> telling Sasha's journey — <em>"Chapter 1 she shouts 'Wheee!' (20 m/s), Chapter 2 she sips cocoa (5 m/s), Chapter 3 she screams 'Hold on!' (30 m/s)"</em> — IS differentiation! Each chapter's feeling (the slope: 2.0, 0.5, 3.0) is called the <strong>derivative</strong>, written <strong>dy/dx</strong> or <strong>f′(x)</strong>. Plus two twists: Bobo's slope can be <strong>ZERO</strong> (floating at the top! 🎈) or <strong>negative</strong> (falling ⏬!), and Rocky's slope keeps <strong>GROWING</strong> (acceleration — the second derivative! 🚀). Next: the same storytelling in a race car! 🏎️</div>
+<div class="nav2"><a href="index.html" class="btn">← Home</a><a href="speed.html" class="btn btn-primary">Next: Speed = Slope! 🏎️ →</a></div>
+<script>
+(function(){var c=document.getElementById('ski'),x=c.getContext('2d');
+var S=[{d:12,L:6,s:2.0,col:'#FF9800',em:'🟠',nm:'steep',feel:'WHEEE! Flying!',quote:'"Wheee, I\'m flying!"',on:true},
+{d:3,L:6,s:0.5,col:'#4CAF50',em:'🐰',nm:'gentle',feel:'Phew… cruising',quote:'"Phew, cocoa time…"',on:true},
+{d:18,L:6,s:3.0,col:'#E53935',em:'😱',nm:'super-steep',feel:'AAAAH! Hold on!!',quote:'"AAAAH, hold on!!"',on:true}];
+var sx=27,sy=7.4,ox=60,oy=36;
+function PX(m){return ox+m*sx;}function PY(h){return oy+(33-h)*sy;}
+function draw(prog){
+x.clearRect(0,0,640,320);
+x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=12;g++){x.beginPath();x.moveTo(50+g*45,14);x.lineTo(50+g*45,292);x.stroke();}
+for(var q=0;q<=4;q++){x.beginPath();x.moveTo(40,14+q*69);x.lineTo(610,14+q*69);x.stroke();}
+var m=0,h=33;
+x.lineWidth=9;x.lineCap='round';x.lineJoin='round';
+S.forEach(function(s,i){
+var m2=m+s.L,h2=h-s.d;
+if(s.on){x.strokeStyle=s.col;x.beginPath();x.moveTo(PX(m),PY(h));x.lineTo(PX(m2),PY(h2));x.stroke();
+x.fillStyle='#1A202C';x.font='bold 13px Fredoka,sans-serif';
+x.fillText('📖 Ch.'+(i+1)+' '+s.em+' '+s.s.toFixed(1)+' ('+s.d+'÷'+s.L+')',(PX(m)+PX(m2))/2-38,(PY(h)+PY(h2))/2-10);}
+x.strokeStyle='#CBD5E0';x.lineWidth=2;x.setLineDash([5,4]);
+x.beginPath();x.moveTo(PX(m),PY(h2));x.lineTo(PX(m2),PY(h2));x.stroke();
+x.beginPath();x.moveTo(PX(m2),PY(h));x.lineTo(PX(m2),PY(h2));x.stroke();x.setLineDash([]);x.lineWidth=9;
+m=m2;h=h2;});
+x.font='26px serif';x.fillText('🏁',PX(0)-36,PY(33)+8);x.fillText('🏠',PX(18)-12,PY(0)+26);
+x.fillStyle='#4A5568';x.font='bold 13px Fredoka,sans-serif';x.fillText('Sasha\'s journey → (m, 6 m per chapter)',330,312);
+if(prog==null){document.getElementById('nowS').textContent='press SKI to begin her journey!';document.getElementById('nowW').textContent='';
+for(var k=0;k<3;k++){document.getElementById('sv'+k).textContent='—';document.getElementById('sp'+k).classList.remove('hot');}
+return;}
+var total=18,mm=prog*total,acc=0,ci=0;
+for(var j=0;j<3;j++){if(mm<=acc+S[j].L||j===2){ci=j;break;}acc+=S[j].L;}
+var sm=acc,f=mm-sm,hh=33;for(var z=0;z<ci;z++)hh-=S[z].d;hh-=S[ci].s*f;
+x.font='34px serif';x.fillText('⛷️',PX(mm)-18,PY(hh)-14);
+x.fillStyle='#C62828';x.beginPath();x.arc(PX(mm),PY(hh),5,0,7);x.fill();
+for(var b=0;b<3;b++){var done=mm>acc2(b)+S[b].L-0.001,here=b===ci;
+document.getElementById('sv'+b).textContent=done?'✅ '+S[b].feel+' ('+(S[b].s*10)+' m/s)':(here?'👉 '+S[b].feel+' NOW!':'—');
+document.getElementById('sp'+b).classList.toggle('hot',here);}
+function acc2(i){var a=0;for(var w=0;w<i;w++)a+=S[w].L;return a;}
+document.getElementById('nowS').textContent=S[ci].feel+' — '+S[ci].quote+' ('+(S[ci].s*10)+' m/s)';
+document.getElementById('nowW').textContent='— Chapter '+(ci+1)+' (slope '+S[ci].s.toFixed(1)+') '+S[ci].em;}
+var tm=null,run=false,p=0;
+function step(){var seg=p*18,acc=0,sp=2;for(var j=0;j<3;j++){if(seg<=acc+S[j].L||j===2){sp=S[j].s;break;}acc+=S[j].L;}
+p+=0.0022*sp;if(p>=1){p=1;clearInterval(tm);run=false;document.getElementById('skiGo').textContent='SKI AGAIN! ⛷️';}
+draw(p);}
+document.getElementById('skiGo').onclick=function(){if(run)return;if(p>=1)p=0;run=true;this.textContent='SKIING… ⛷️💨';clearInterval(tm);tm=setInterval(step,40);};
+document.getElementById('skiReset').onclick=function(){clearInterval(tm);run=false;p=0;document.getElementById('skiGo').textContent='SKI! ⛷️';draw(null);};
+[['tA',0],['tB',1],['tC',2]].forEach(function(pp){
+document.getElementById(pp[0]).onclick=function(){S[pp[1]].on=!S[pp[1]].on;this.classList.toggle('off',!S[pp[1]].on);draw(run?p:null);};});
+draw(null);})();
+(function(){var c=document.getElementById('hillB'),x=c.getContext('2d');
+var R=document.getElementById('riseB'),N=document.getElementById('runB');
+function draw(){var r=+R.value,n=+N.value,s=r/n;
+document.getElementById('rvB').textContent=r;document.getElementById('nvB').textContent=n;
+document.getElementById('reB').textContent=r;document.getElementById('neB').textContent=n;
+document.getElementById('seB').textContent=(Math.round(s*100)/100);
+document.getElementById('barB').style.width=Math.min(100,s/3*100)+'%';
+document.getElementById('verdictB').textContent=s<0.5?'🐰 Gentle — like Sasha\'s Chapter 2 cruise (0.5)!':s<2?'🙂 Between cruise (0.5) and fly (2.0)!':s<3?'🚀 Flying — like Sasha\'s Chapter 1 (2.0)!':s===3?'😱 Tied with Sasha\'s Chapter 3 (3.0)! EPIC!':'🔥 NEW RECORD! Steeper than anything Sasha skied!';
+x.clearRect(0,0,640,300);
+x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=12;g++){x.beginPath();x.moveTo(60+g*45,20);x.lineTo(60+g*45,250);x.stroke();x.beginPath();x.moveTo(40,20+g*19);x.lineTo(610,20+g*19);x.stroke();}
+var ox=70,oy=250,sc=Math.min(430/Math.max(n,1),200/Math.max(r,1),46);
+var px=ox+n*sc,py=oy-r*sc;
+x.strokeStyle='#CBD5E0';x.lineWidth=3;x.setLineDash([6,5]);
+x.beginPath();x.moveTo(ox,oy);x.lineTo(px,oy);x.stroke();
+x.beginPath();x.moveTo(px,oy);x.lineTo(px,py);x.stroke();x.setLineDash([]);
+var col=s<0.5?'#4CAF50':s<1?'#1E88E5':s<1.6?'#FF9800':'#E53935';
+x.strokeStyle=col;x.lineWidth=9;x.lineCap='round';
+x.beginPath();x.moveTo(ox,oy);x.lineTo(px,py);x.stroke();
+x.fillStyle='#1A202C';x.font='bold 20px Fredoka,sans-serif';
+x.fillText('⬆️ '+r+' m',px+12,oy-(oy-py)/2);x.fillText('➡️ '+n+' m',(ox+px)/2-30,oy+30);
+x.font='44px serif';x.fillText('⛷️',px-26,py-8);
+x.font='30px serif';x.fillText('🚩',ox-22,oy+8);}
+R.addEventListener('input',draw);N.addEventListener('input',draw);draw();})();
+(function(){var c=document.getElementById('tell'),x=c.getContext('2d');
+var S=[{d:12,L:6,s:2.0,col:'#FF9800',feel:'WHEEE! Flying!',q:'"Wheee, I\'m flying!" (20 m/s)'},
+{d:3,L:6,s:0.5,col:'#4CAF50',feel:'Phew… cruising',q:'"Phew, cocoa time…" (5 m/s)'},
+{d:18,L:6,s:3.0,col:'#E53935',feel:'AAAAH! Hold on!!',q:'"AAAAH, hold on!!" (30 m/s)'}];
+var R=document.getElementById('tellR');
+function mh(m){var acc=0,h=33;for(var j=0;j<3;j++){if(m<=acc+S[j].L){h-=S[j].s*(m-acc);break;}h-=S[j].d;acc+=S[j].L;}return h;}
+function ch(m){if(m<6)return 0;if(m<12)return 1;return 2;}
+function draw(){var m=+R.value;document.getElementById('tellM').textContent=m;
+var ci=ch(Math.min(m,17.99)),h=mh(m);
+x.clearRect(0,0,640,300);
+x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=12;g++){x.beginPath();x.moveTo(50+g*45,14);x.lineTo(50+g*45,270);x.stroke();}
+for(var q=0;q<=4;q++){x.beginPath();x.moveTo(40,14+q*64);x.lineTo(610,14+q*64);x.stroke();}
+var sx=27,ox=60,oy=30,sy=6.8;
+function PX(mm){return ox+mm*sx;}function PY(hh){return oy+(33-hh)*sy;}
+var a=0,hh=33;x.lineWidth=8;x.lineCap='round';x.lineJoin='round';
+S.forEach(function(s,i){var a2=a+s.L,h2=hh-s.d;
+x.strokeStyle=i===ci?s.col:'#E0E0E0';x.beginPath();x.moveTo(PX(a),PY(hh));x.lineTo(PX(a2),PY(h2));x.stroke();
+if(i===ci){x.strokeStyle=s.col;x.globalAlpha=0.25;x.lineWidth=16;x.beginPath();x.moveTo(PX(a),PY(hh));x.lineTo(PX(a2),PY(h2));x.stroke();x.globalAlpha=1;x.lineWidth=8;}
+a=a2;hh=h2;});
+var H=mh(Math.min(m,18));
+x.font='30px serif';x.fillText('⛷️',PX(Math.min(m,18))-16,PY(H)-10);
+x.font='bold 13px Fredoka,sans-serif';x.fillStyle='#4527A0';
+x.fillText('🔍 magnifier: slope right HERE = '+S[ci].s.toFixed(1),PX(Math.min(m,18))-110,PY(H)-42);
+x.strokeStyle='#4527A0';x.lineWidth=2;x.setLineDash([4,3]);
+x.beginPath();x.arc(PX(Math.min(m,18)),PY(H),20,0,7);x.stroke();x.setLineDash([]);
+x.font='26px serif';x.fillText('🏁',PX(0)-36,PY(33)+8);x.fillText('🏠',PX(18)-12,PY(0)+26);
+document.getElementById('tellStory').textContent='At '+m+' m (Chapter '+(ci+1)+'): '+S[ci].q+' — slope '+S[ci].s.toFixed(1)+'!';
+for(var b=0;b<3;b++)document.getElementById('tl'+b).classList.toggle('hot',b===ci);}
+R.addEventListener('input',draw);
+document.getElementById('tellC1').onclick=function(){R.value=3;draw();};
+document.getElementById('tellC2').onclick=function(){R.value=9;draw();};
+document.getElementById('tellC3').onclick=function(){R.value=15;draw();};
+draw();})();
+(function(){var c=document.getElementById('bounce'),x=c.getContext('2d');
+var R=document.getElementById('boR');
+var Bs=[{t0:0,dur:4,h:9,col:'#E53935',em:'🔴'},{t0:4,dur:4,h:5.5,col:'#1E88E5',em:'🔵'},{t0:8,dur:4,h:2.5,col:'#8E24AA',em:'🟣'}];
+function hh(t){for(var i=0;i<3;i++){var b=Bs[i];if(t>=b.t0&&t<=b.t0+b.dur){var f=(t-b.t0)/b.dur;return b.h*4*f*(1-f);}}return 0;}
+function vv(t){for(var i=0;i<3;i++){var b=Bs[i];if(t>=b.t0&&t<=b.t0+b.dur){var f=(t-b.t0)/b.dur;return b.h*4*(1-2*f)/b.dur;}}return 0;}
+function draw(){var t=+R.value;document.getElementById('boM').textContent=t;
+var H=hh(t),V=vv(t),ox=56,oy=252,sx=(640-100)/12,sy=230/9.5;
+function PX(tt){return ox+tt*sx;}function PY(h2){return oy-h2*sy;}
+x.clearRect(0,0,640,300);
+x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=12;g++){x.beginPath();x.moveTo(PX(g),20);x.lineTo(PX(g),252);x.stroke();}
+for(var q=0;q<=4;q++){x.beginPath();x.moveTo(44,20+q*58);x.lineTo(610,20+q*58);x.stroke();}
+x.strokeStyle='#90A4AE';x.lineWidth=3;x.beginPath();x.moveTo(44,252);x.lineTo(610,252);x.stroke();
+Bs.forEach(function(b){x.strokeStyle=b.col;x.lineWidth=5;x.lineCap='round';x.beginPath();
+for(var tt=b.t0;tt<=b.t0+b.dur+0.001;tt+=0.1){var px=PX(tt),py=PY(hh(tt));if(tt===b.t0)x.moveTo(px,py);else x.lineTo(px,py);}x.stroke();
+x.font='13px serif';x.fillText(b.em+' bounce '+(Bs.indexOf(b)+1),PX(b.t0+b.dur/2)-30,PY(hh(b.t0+b.dur/2))-24);});
+var px=PX(Math.min(t,12)),py=PY(Math.max(H,0.12));
+x.strokeStyle='#1A202C';x.lineWidth=4;x.beginPath();
+x.moveTo(px-26,py-V*2.6);x.lineTo(px+26,py+V*2.6);x.stroke();
+x.fillStyle='#1A202C';x.font='bold 12px Fredoka,sans-serif';x.fillText('slope-stick',px-28,py-26);
+var cols=['#E53935','#FF9800','#1E88E5','#8E24AA','#4CAF50','#E91E63','#00ACC1'];
+x.fillStyle=cols[Math.floor(t)%cols.length];
+x.beginPath();x.arc(px,py-13,13,0,7);x.fill();
+x.fillStyle='#fff';x.font='bold 11px sans-serif';x.fillText('BOBO',px-14,py-9);
+x.fillStyle='#4A5568';x.font='bold 13px Fredoka,sans-serif';x.fillText('time → (s)',320,292);x.fillText('height (m)',6,30);
+var st,card;
+if(Math.abs(V)<0.9){st='At '+t+' s: "Floating… weightless!" 🎈 — slope ≈ ZERO!';card='Top';}
+else if(V>0){st='At '+t+' s: "Zooming UP at '+V.toFixed(1)+' m/s!" ⏫ — slope POSITIVE!';card='Up';}
+else{st='At '+t+' s: "Whizzing DOWN at '+V.toFixed(1)+' m/s!" ⏬ — slope NEGATIVE!';card='Down';}
+document.getElementById('boStory').textContent=st;
+document.getElementById('buUp').classList.toggle('hot',card==='Up');
+document.getElementById('buTop').classList.toggle('hot',card==='Top');
+document.getElementById('buDown').classList.toggle('hot',card==='Down');}
+R.addEventListener('input',draw);
+document.getElementById('boUp').onclick=function(){R.value=(+R.value<4?1:(+R.value<8?5:9));draw();};
+document.getElementById('boTop').onclick=function(){R.value=(+R.value<4?2:(+R.value<8?6:10));draw();};
+document.getElementById('boDown').onclick=function(){R.value=(+R.value<4?3:(+R.value<8?7:11));draw();};
+draw();})();
+(function(){var c=document.getElementById('rocket'),x=c.getContext('2d');
+var R=document.getElementById('roR');var tm=null,run=false;
+function dd(t){return t*t;}function vv(t){return 2*t;}
+function draw(){var t=+R.value;document.getElementById('roM').textContent=t;
+var D=dd(t),V=vv(t),ox=60,oy=252,sx=(640-110)/10,sy=222/100;
+function PX(tt){return ox+tt*sx;}function PY(d2){return oy-d2*sy;}
+x.clearRect(0,0,640,300);
+x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=10;g++){x.beginPath();x.moveTo(PX(g),20);x.lineTo(PX(g),252);x.stroke();}
+for(var q=0;q<=4;q++){x.beginPath();x.moveTo(44,20+q*58);x.lineTo(610,20+q*58);x.stroke();}
+var grd=x.createLinearGradient(60,0,610,0);grd.addColorStop(0,'#78909C');grd.addColorStop(0.6,'#1E88E5');grd.addColorStop(1,'#E53935');
+x.strokeStyle=grd;x.lineWidth=6;x.lineCap='round';x.beginPath();
+for(var tt=0;tt<=10.001;tt+=0.1){var px=PX(tt),py=PY(dd(tt));if(tt===0)x.moveTo(px,py);else x.lineTo(px,py);}x.stroke();
+x.font='bold 13px Fredoka,sans-serif';x.fillStyle='#4A5568';
+x.fillText('🐢 flat = slow (slope ~0)',PX(1)-30,PY(dd(1))+34);
+x.fillText('🚀 steep = ZOOM (slope 20!)',PX(7.5)-30,PY(dd(7.5))-18);
+var t2=Math.min(t,10),px=PX(t2),py=PY(dd(t2));
+x.strokeStyle='#1A202C';x.lineWidth=4;x.beginPath();
+x.moveTo(px-24,py+V*1.1);x.lineTo(px+24,py-V*1.1);x.stroke();
+x.font='26px serif';x.fillText('🚀',px-26,py+6);
+for(var f=0;f<5;f++){x.fillStyle='rgba(255,111,0,'+(0.5-f*0.09)+')';x.beginPath();x.arc(px-14-f*7,py+10+f*3,7-f,0,7);x.fill();}
+x.fillStyle='#4A5568';x.font='bold 13px Fredoka,sans-serif';x.fillText('time → (s, T+)',320,292);x.fillText('distance (m)',2,30);
+var st,card;
+if(t<3){st='T+'+t+' s: "3… 2… 1… barely moving, '+V.toFixed(0)+' m/s" 🐢 — slope tiny!';card=0;}
+else if(t<7){st='T+'+t+' s: "Here we go! '+V.toFixed(0)+' m/s and growing!" 🙂 — slope growing!';card=1;}
+else{st='T+'+t+' s: "WAAAAH! '+V.toFixed(0)+' m/s!!" 🚀 — slope HUGE!';card=2;}
+document.getElementById('roStory').textContent=st;
+for(var b=0;b<3;b++)document.getElementById('rl'+b).classList.toggle('hot',b===card);}
+R.addEventListener('input',function(){if(run){clearInterval(tm);run=false;document.getElementById('roGo').textContent='LAUNCH! 🚀';}draw();});
+document.getElementById('roGo').onclick=function(){if(run)return;if(+R.value>=10)R.value=0;run=true;this.textContent='FLYING… 🚀💨';var self=this;clearInterval(tm);tm=setInterval(function(){var v=+R.value+0.25;if(v>=10){v=10;clearInterval(tm);run=false;self.textContent='FLY AGAIN! 🚀';}R.value=v;draw();},120);};
+document.getElementById('roReset').onclick=function(){clearInterval(tm);run=false;R.value=0;document.getElementById('roGo').textContent='LAUNCH! 🚀';draw();};
+draw();})();
+var score=0,done={};
+function mk(b,ok,id){var box=b.parentElement;var btns=box.querySelectorAll('.opt');btns.forEach(function(o){o.disabled=true;});var f=document.getElementById(id);
+if(ok){b.classList.add('right');f.textContent='✅ Correct! Rise ÷ Run — you nailed it!';f.className='fb ok';if(!done[id]){done[id]=1;score++;document.getElementById('sc').textContent=score;}}
+else{b.classList.add('wrong');f.textContent='❌ Oops! Remember: Steepness = Rise ÷ Run (up ÷ along).';f.className='fb no';}
+if(score>=5){document.getElementById('win').textContent='🎉🎉 5/5! You are a Master Storyteller — a true differentiator! 📖🏆 Next: race cars! 🏎️';document.getElementById('win').className='fb center ok';}}
+</script>
+</div></main>
+<footer><p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p></footer>
+</body></html>

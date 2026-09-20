@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidRead - Module 5: The Big Link!</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--ac:#4527A0;--acbg:#EDE7F6;--acdk:#311B92}
+.hero{padding:3.5rem 1.5rem 2rem}.hero h1{font-size:2.3rem}
+.badge{display:inline-block;background:var(--acbg);color:var(--acdk);font-weight:800;padding:.3rem 1rem;border-radius:20px;font-size:.9rem;margin-bottom:.8rem}
+.wrap{max-width:920px;margin:0 auto;padding:0 1.5rem 3rem}
+.intro{background:linear-gradient(135deg,var(--acbg),#fff);border-left:6px solid var(--ac);border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;font-size:1.08rem;line-height:1.7}
+.demo{background:#fff;border:3px solid var(--ac);border-radius:20px;padding:1.4rem;margin:1.8rem 0;box-shadow:0 10px 15px -3px rgba(0,0,0,.06)}
+.demo h2{color:var(--acdk);margin-bottom:.4rem}.demo p{color:#4A5568;margin-bottom:.8rem}
+canvas.cvb{width:100%;max-width:640px;height:300px;display:block;margin:.8rem auto;background:#FCFCFF;border:2px solid #E2E8F0;border-radius:12px}
+.ctrls{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center;margin:.8rem 0}
+.ctrls label{font-weight:700;color:var(--acdk)}.ctrls input[type=range]{width:140px}
+.big-eq{text-align:center;font-size:1.4rem;font-weight:800;color:var(--acdk);background:var(--acbg);border-radius:12px;padding:.7rem;margin:.8rem 0}
+.big-eq .ans{background:var(--ac);color:#fff;border-radius:8px;padding:.05rem .8rem}
+.ex{background:#FFF8E1;border:2px dashed #FF8F00;border-radius:14px;padding:.9rem 1.2rem;margin:1rem 0;font-size:1.03rem;line-height:1.65}
+.q{background:#F5F7FA;border-radius:16px;padding:1.1rem 1.3rem;margin:1.1rem 0;border:2px solid #E2E8F0}
+.opts{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0}
+.opt{font-family:inherit;font-weight:700;font-size:1.02rem;padding:.45rem 1rem;border-radius:12px;border:3px solid #C5CAE9;background:#fff;cursor:pointer}
+.opt:hover{background:#E8EAF6}.opt.right{background:#C8E6C9!important;border-color:#2E7D32!important}.opt.wrong{background:#FFCDD2!important;border-color:#C62828!important}.opt:disabled{cursor:default}
+.fb{font-weight:700;margin-top:.4rem;min-height:1.5em}.fb.ok{color:#2E7D32}.fb.no{color:#C62828}
+.nav2{display:flex;justify-content:space-between;gap:1rem;margin:2.2rem 0 1rem;flex-wrap:wrap}
+.word{background:var(--acbg);border-radius:8px;padding:.05rem .55rem;font-weight:800;color:var(--acdk)}
+table.t{border-collapse:collapse;margin:.8rem auto;font-size:1.05rem}table.t th,table.t td{border:2px solid #C5CAE9;padding:.4rem .9rem;text-align:center}table.t th{background:var(--acbg);color:var(--acdk)}
+.cert{display:none;background:linear-gradient(135deg,#FFFDE7,#EDE7F6);border:4px solid #FFC107;border-radius:20px;padding:2rem;text-align:center;margin:1.5rem 0}
+.cert.show{display:block;animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.05)}100%{transform:scale(1)}}
+.cert .star{font-size:4rem}.cert h2{color:var(--acdk);font-size:2rem;margin:.5rem 0}
+.gloss{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1rem 0}
+.gloss div{background:#fff;border:2px solid var(--ac);border-radius:12px;padding:.7rem .9rem;font-size:.98rem}
+.gloss b{color:var(--acdk)}
+@media(max-width:640px){.gloss{grid-template-columns:1fr}}
+.center{text-align:center}.kid{font-size:1.05rem;color:#4A5568}
+</style>
+</head>
+<body>
+<header><a href="index.html" class="logo-container"><img src="logo.png" alt="KidRead Logo" class="logo-img"><h1 class="logo-text">Kid<span>Read</span></h1></a>
+<nav><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="slope.html">1 Steepness</a></li><li><a href="speed.html">2 Speed</a></li><li><a href="power-rule.html">3 Power Rule</a></li><li><a href="area.html">4 Area</a></li><li><a href="bridge.html" class="active">5 Big Link</a></li></ul></nav></header>
+<main><section class="hero"><div class="badge">MODULE 5 OF 5 • FINALE 🌉</div>
+<h1>The Big <span>Link! 🌉</span></h1>
+<p>Slope and area UNDO each other — prove it and earn your Calculus Star! ⭐</p></section>
+<div class="wrap">
+<div class="intro">🌉 Final mission! <strong>Slope</strong> chops a trip into tiny moment-speeds (Modules 1–3). <strong>Area</strong> glues tiny speeds back into a whole trip (Module 4). They <strong>UNDO each other</strong> — like zipping and unzipping a jacket! 🧥<br><br>Grown-up mathematicians call this the <span class="word">Fundamental Theorem of Calculus</span>. Prove it in the demo, pass the 5-star quiz, and graduate! 🎓</div>
+<div class="demo"><h2>🎮 Demo: Chop it, Glue it, Get it Back!</h2>
+<p>A car drives at 60 km/h for 3 hours. <strong>Chop</strong> (slope/derivative): distance line → speed line. <strong>Glue</strong> (area/integral): speed area → back to 180 km!</p>
+<canvas id="bd" class="cvb" width="640" height="300"></canvas>
+<div class="ctrls"><button class="opt" id="s1">1️⃣ Trip line</button><button class="opt" id="s2">2️⃣ Chop → speed!</button><button class="opt" id="s3">3️⃣ Glue → area!</button></div>
+<div class="big-eq" id="bt">Total trip: 60 km/h × 3 h = <span class="ans">180 km</span> 🎉</div>
+<p class="center kid">Slope chopped it apart, area glued it back. They UNDO each other — the Fundamental Theorem! 🌉</p></div>
+<div class="ex">📖 <strong>The Big Link, in one sentence:</strong> adding up all the tiny speeds (area/integral) rebuilds the whole trip that chopping (slope/derivative) took apart. Symbolically: if distance = D, speed = D′, then D = ∫D′. Zip ↔ unzip! 🧥</div>
+<div class="demo"><h2>🧠 Final Quiz — Earn Your ⭐ Calculus Star! ⭐</h2>
+<p>Score: <strong><span id="sc">0</span> / 5</strong></p>
+<div class="q"><p><strong>Q1.</strong> Hill: rise 8 m, run 4 m. Steepness?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f1')">0.5</button><button class="opt" onclick="mk(this,true,'f1')">8 ÷ 4 = 2 ⭐</button><button class="opt" onclick="mk(this,false,'f1')">12</button></div><div class="fb" id="f1"></div></div>
+<div class="q"><p><strong>Q2.</strong> Distance graph slope = …</p><div class="opts"><button class="opt" onclick="mk(this,true,'f2')">Speed! 🏎️</button><button class="opt" onclick="mk(this,false,'f2')">Fuel ⛽</button><button class="opt" onclick="mk(this,false,'f2')">Weight ⚖️</button></div><div class="fb" id="f2"></div></div>
+<div class="q"><p><strong>Q3.</strong> y = x⁵ → slope = ?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f3')">5x⁵</button><button class="opt" onclick="mk(this,false,'f3')">x⁴</button><button class="opt" onclick="mk(this,true,'f3')">5x⁴ ⭐</button></div><div class="fb" id="f3"></div></div>
+<div class="q"><p><strong>Q4.</strong> Area under y = 2 from x = 0 to 5 = ?</p><div class="opts"><button class="opt" onclick="mk(this,true,'f4')">2 × 5 = 10 ⭐</button><button class="opt" onclick="mk(this,false,'f4')">7</button><button class="opt" onclick="mk(this,false,'f4')">2 ÷ 5</button></div><div class="fb" id="f4"></div></div>
+<div class="q"><p><strong>Q5.</strong> Slope and area are…</p><div class="opts"><button class="opt" onclick="mk(this,false,'f5')">Unrelated</button><button class="opt" onclick="mk(this,true,'f5')">Opposites that UNDO each other! 🌉</button><button class="opt" onclick="mk(this,false,'f5')">The same thing</button></div><div class="fb" id="f5"></div></div>
+<div class="cert" id="cert"><div class="star">⭐🎓⭐</div><h2>Calculus Star!</h2>
+<p>This certifies that <strong id="cname">Super Mathematician</strong><br>completed Speedway Calculus: Slopes &amp; Areas!<br>⛰️ Steepness • 🏎️ Speed • ✨ Power Rule • 🍕 Area • 🌉 Big Link</p>
+<p><input id="nm" placeholder="Type your name!" style="font-family:inherit;font-size:1.1rem;padding:.4rem 1rem;border-radius:10px;border:3px solid #4527A0;text-align:center"> <button class="opt" onclick="document.getElementById('cname').textContent=document.getElementById('nm').value||'Super Mathematician'">Set name ✏️</button></p></div>
+</div>
+<div class="demo"><h2>📚 Your Calculus Dictionary</h2>
+<div class="gloss">
+<div><b>Steepness (slope)</b> = rise ÷ run. The seed of everything! ⛰️</div>
+<div><b>Derivative</b> = slope at one instant (speedometer!). Written dy/dx. 🏎️</div>
+<div><b>Power Rule</b> = xⁿ → nxⁿ⁻¹. The 1-line magic trick! ✨</div>
+<div><b>Integral</b> = area under a curve. The ∫ sign = S for Sum. 🍕</div>
+<div><b>Integration</b> = the adding-up process (robots!). 🤖</div>
+<div><b>Fundamental Theorem</b> = slope &amp; area undo each other! 🌉</div>
+</div></div>
+<div class="nav2"><a href="area.html" class="btn">← Module 4</a><a href="index.html" class="btn btn-primary">🏠 Home — You did it! 🎉</a></div>
+<script>
+var score=0,done={};
+function mk(b,ok,id){var btns=b.parentElement.querySelectorAll('.opt');btns.forEach(function(o){o.disabled=true;});var f=document.getElementById(id);
+if(ok){b.classList.add('right');f.textContent='✅ Correct! Brilliant!';f.className='fb ok';if(!done[id]){done[id]=1;score++;document.getElementById('sc').textContent=score;}}
+else{b.classList.add('wrong');f.textContent='❌ Not quite — re-read the question and try the next one!';f.className='fb no';}
+if(score>=5){document.getElementById('cert').classList.add('show');document.getElementById('cert').scrollIntoView({behavior:'smooth',block:'center'});}}
+(function(){var c=document.getElementById('bd'),x=c.getContext('2d');var mode=3;
+function PX(h){return 60+h/3.4*560;}function PY(d){return 262-d/200*232;}
+function draw(){x.clearRect(0,0,640,300);x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=6;g++){x.beginPath();x.moveTo(60,30+g*38);x.lineTo(620,30+g*38);x.stroke();}
+x.fillStyle='#4A5568';x.font='bold 13px Fredoka,sans-serif';x.fillText('180',12,120);x.fillText('90',18,190);x.fillText('0',32,266);
+for(var q=0;q<=3;q++)x.fillText(q+'h',55+q*187,284);
+var msgs={1:'Trip line: distance grows 60 km every hour 📈',2:'CHOP! Slope = 180 ÷ 3 = 60 km/h — the speed! ✂️',3:'GLUE! Area = 60 × 3 = 180 km — trip rebuilt! 🎉'};
+if(mode===1){x.strokeStyle='#4527A0';x.lineWidth=6;x.lineCap='round';x.beginPath();x.moveTo(PX(0),PY(0));x.lineTo(PX(3),PY(180));x.stroke();
+x.font='34px serif';x.fillText('🏎️',PX(3)-20,PY(180)-10);}
+else{x.fillStyle='rgba(69,39,160,0.25)';x.fillRect(PX(0),PY(60),PX(3)-PX(0),PY(0)-PY(60));
+x.strokeStyle='#4527A0';x.lineWidth=5;x.beginPath();x.moveTo(PX(0),PY(60));x.lineTo(PX(3),PY(60));x.stroke();
+x.fillStyle='#4527A0';x.font='bold 16px Fredoka,sans-serif';x.fillText('60 km/h × 3 h = 180 km',PX(0.5),PY(60)-12);}
+document.getElementById('bt').innerHTML=msgs[mode];}
+document.getElementById('s1').onclick=function(){mode=1;draw();};
+document.getElementById('s2').onclick=function(){mode=2;draw();};
+document.getElementById('s3').onclick=function(){mode=3;draw();};
+draw();})();
+</script>
+</div></main>
+<footer><p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p></footer>
+</body></html>

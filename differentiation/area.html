@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidRead - Module 4: Area = Integration!</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--ac:#00838F;--acbg:#E0F7FA;--acdk:#006064}
+.hero{padding:3.5rem 1.5rem 2rem}.hero h1{font-size:2.3rem}
+.badge{display:inline-block;background:var(--acbg);color:var(--acdk);font-weight:800;padding:.3rem 1rem;border-radius:20px;font-size:.9rem;margin-bottom:.8rem}
+.wrap{max-width:920px;margin:0 auto;padding:0 1.5rem 3rem}
+.intro{background:linear-gradient(135deg,var(--acbg),#fff);border-left:6px solid var(--ac);border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;font-size:1.08rem;line-height:1.7}
+.demo{background:#fff;border:3px solid var(--ac);border-radius:20px;padding:1.4rem;margin:1.8rem 0;box-shadow:0 10px 15px -3px rgba(0,0,0,.06)}
+.demo h2{color:var(--acdk);margin-bottom:.4rem}.demo p{color:#4A5568;margin-bottom:.8rem}
+canvas.cvb{width:100%;max-width:640px;height:300px;display:block;margin:.8rem auto;background:#FCFCFF;border:2px solid #E2E8F0;border-radius:12px}
+.ctrls{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center;margin:.8rem 0}
+.ctrls label{font-weight:700;color:var(--acdk)}.ctrls input[type=range]{width:140px}
+.big-eq{text-align:center;font-size:1.5rem;font-weight:800;color:var(--acdk);background:var(--acbg);border-radius:12px;padding:.7rem;margin:.8rem 0}
+.big-eq .ans{background:var(--ac);color:#fff;border-radius:8px;padding:.05rem .8rem}
+.ex{background:#FFF8E1;border:2px dashed #FF8F00;border-radius:14px;padding:.9rem 1.2rem;margin:1rem 0;font-size:1.03rem;line-height:1.65}
+.q{background:#F5F7FA;border-radius:16px;padding:1.1rem 1.3rem;margin:1.1rem 0;border:2px solid #E2E8F0}
+.opts{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0}
+.opt{font-family:inherit;font-weight:700;font-size:1.02rem;padding:.45rem 1rem;border-radius:12px;border:3px solid #C5CAE9;background:#fff;cursor:pointer}
+.opt:hover{background:#E8EAF6}.opt.right{background:#C8E6C9!important;border-color:#2E7D32!important}.opt.wrong{background:#FFCDD2!important;border-color:#C62828!important}.opt:disabled{cursor:default}
+.fb{font-weight:700;margin-top:.4rem;min-height:1.5em}.fb.ok{color:#2E7D32}.fb.no{color:#C62828}
+.nav2{display:flex;justify-content:space-between;gap:1rem;margin:2.2rem 0 1rem;flex-wrap:wrap}
+.word{background:var(--acbg);border-radius:8px;padding:.05rem .55rem;font-weight:800;color:var(--acdk)}
+table.t{border-collapse:collapse;margin:.8rem auto;font-size:1.05rem}table.t th,table.t td{border:2px solid #C5CAE9;padding:.4rem .9rem;text-align:center}table.t th{background:var(--acbg);color:var(--acdk)}
+.robotrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:.6rem 0}
+.robotrow button{font-family:inherit;font-weight:800;font-size:1.05rem;padding:.4rem 1rem;border-radius:12px;border:3px solid var(--ac);background:#fff;color:var(--acdk);cursor:pointer}
+.robotrow button.on{background:var(--ac);color:#fff}
+.center{text-align:center}.kid{font-size:1.05rem;color:#4A5568}
+</style>
+</head>
+<body>
+<header><a href="index.html" class="logo-container"><img src="logo.png" alt="KidRead Logo" class="logo-img"><h1 class="logo-text">Kid<span>Read</span></h1></a>
+<nav><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="slope.html">1 Steepness</a></li><li><a href="speed.html">2 Speed</a></li><li><a href="power-rule.html">3 Power Rule</a></li><li><a href="area.html" class="active">4 Area</a></li><li><a href="bridge.html">5 Big Link</a></li></ul></nav></header>
+<main><section class="hero"><div class="badge">MODULE 4 OF 5 • AREA 🍕</div>
+<h1>Area <span>= Integration!</span></h1>
+<p>Count pizza squares under a graph — the second half of calculus!</p></section>
+<div class="wrap">
+<div class="intro">🍕 Imagine a cheesy pizza slice trapped under a sloping line. How many cheese squares fit underneath? Counting squares under a graph is called <span class="word">integration</span>, and the answer is called an <span class="word">integral</span>.<br><br>The fancy sign <strong>∫</strong> is just a stretched-out letter <strong>S</strong> for <em>Sum</em> — add up all the tiny squares! ➕</div>
+<div class="demo"><h2>🎮 Demo 1: Count the Pizza Squares! 🍕</h2>
+<p>The line y = x from 0 to 4 makes a pizza triangle. Each grid square = 1 cheese square. Count them, then check the triangle shortcut!</p>
+<canvas id="pz" class="cvb" width="640" height="300"></canvas>
+<div class="big-eq">🟧 Filled squares = <span class="ans" id="cnt">?</span> &nbsp;•&nbsp; Shortcut ½ × 4 × 4 = <span class="ans">8</span></div>
+<p class="center kid">Half-squares pair up into wholes — the total is exactly 8! Area under y = x is an <strong>integral</strong>: ∫x dx = 8. ✨</p></div>
+<div class="ex">📖 <strong>Read the pizza:</strong> columns under y = x have heights 0,1,2,3,4. Stack them: 0+1+2+3+4 = 10… but each square is only HALF-filled at the diagonal! Pairs make 8 wholes. Shortcut: triangle area = <strong>½ × base × height = ½ × 4 × 4 = 8</strong>. Counting squares = <strong>integration</strong>! ➕</div>
+<div class="demo"><h2>🤖 Demo 2: Rectangle Robots!</h2>
+<p>Under the curve y = x² from 0 to 3. Skinny robots guess the area — more robots = better guess! True area = 9.</p>
+<canvas id="rb" class="cvb" width="640" height="300"></canvas>
+<div class="robotrow"><button onclick="setR(3,this)" class="on">3 robots</button><button onclick="setR(6,this)">6 robots</button><button onclick="setR(12,this)">12 robots</button></div>
+<div class="big-eq">🤖 Robots guess <span class="ans" id="ges">?</span> &nbsp;•&nbsp; Truth = <span class="ans">9</span> &nbsp;<span id="err" style="font-size:1rem"></span></div>
+<p class="center kid">Infinite robots = perfect answer. That limit idea powers all of integration! 🔬</p></div>
+<div class="demo"><h2>🧠 Quiz Time! (3 stars ⭐⭐⭐)</h2>
+<p>Score: <strong><span id="sc">0</span> / 3</strong></p>
+<div class="q"><p><strong>Q1.</strong> Area under y = 3 (flat line!) from x = 0 to 4 = ?</p><div class="opts"><button class="opt" onclick="mk(this,false,'f1')">7</button><button class="opt" onclick="mk(this,true,'f1')">3 × 4 = 12 ⭐</button><button class="opt" onclick="mk(this,false,'f1')">3 + 4 = 7</button></div><div class="fb" id="f1"></div></div>
+<div class="q"><p><strong>Q2.</strong> The ∫ sign is a stretched-out letter…</p><div class="opts"><button class="opt" onclick="mk(this,true,'f2')">S for Sum! ➕</button><button class="opt" onclick="mk(this,false,'f2')">A for Area</button><button class="opt" onclick="mk(this,false,'f2')">Z for Zigzag</button></div><div class="fb" id="f2"></div></div>
+<div class="q"><p><strong>Q3.</strong> Under y = x² (0 to 3), robots guess 11.1, 10.2, 9.6… The true area is near…</p><div class="opts"><button class="opt" onclick="mk(this,false,'f3')">12</button><button class="opt" onclick="mk(this,false,'f3')">6</button><button class="opt" onclick="mk(this,true,'f3')">9 ⭐ (guesses shrink toward it!)</button></div><div class="fb" id="f3"></div></div>
+<div class="fb center" id="win" style="font-size:1.2rem"></div></div>
+<div class="ex">🎓 <strong>Calculus word #3:</strong> <strong>integral</strong> = area under a curve; <strong>integration</strong> = the adding-up process. Finale next: slope and area UNDO each other! 🌉</div>
+<div class="nav2"><a href="power-rule.html" class="btn">← Module 3</a><a href="bridge.html" class="btn btn-primary">Finale: The Big Link! 🌉 →</a></div>
+<script>
+var score=0,done={};
+function mk(b,ok,id){var btns=b.parentElement.querySelectorAll('.opt');btns.forEach(function(o){o.disabled=true;});var f=document.getElementById(id);
+if(ok){b.classList.add('right');f.textContent='✅ Correct! Area thinking!';f.className='fb ok';if(!done[id]){done[id]=1;score++;document.getElementById('sc').textContent=score;}}
+else{b.classList.add('wrong');f.textContent='❌ Hmm — think rectangles: width × height, then add up!';f.className='fb no';}
+if(score>=3){document.getElementById('win').textContent='🎉 3/3! Area Ace! One module left — the Big Link! 🌉';document.getElementById('win').className='fb center ok';}}
+(function(){var c=document.getElementById('pz'),x=c.getContext('2d');
+var ox=90,oy=250,s=48;
+x.strokeStyle='#E2E8F0';x.fillStyle='#FFB74D';
+for(var i=0;i<4;i++){for(var j=0;j<4;j++){
+var under=(3-j)<i+0.001?1:((3-j)===i+1?0.5:0);
+var px=ox+i*s,py=oy-(4-j)*s;
+if(under===1){x.globalAlpha=0.85;x.fillStyle='#FFB74D';x.fillRect(px+1,py+1,s-2,s-2);}
+else if(under===0.5){x.globalAlpha=0.85;x.fillStyle='#FFD54F';x.fillRect(px+1,py+1,s-2,s-2);}
+x.globalAlpha=1;x.strokeStyle='#E2E8F0';x.lineWidth=1;x.strokeRect(px,py,s,s);}}
+x.strokeStyle='#00838F';x.lineWidth=5;x.beginPath();x.moveTo(ox,oy);x.lineTo(ox+4*s,oy-4*s);x.stroke();
+x.fillStyle='#1A202C';x.font='bold 15px Fredoka,sans-serif';x.fillText('y = x',ox+4*s+8,oy-4*s+5);x.fillText('0',ox-14,oy+5);x.fillText('4',ox+4*s-4,oy+22);
+document.getElementById('cnt').textContent='8';})();
+var RN=3;
+function setR(n,btn){RN=n;var bs=document.querySelectorAll('.robotrow button');bs.forEach(function(b){b.classList.remove('on');});btn.classList.add('on');drawR();}
+function drawR(){var c=document.getElementById('rb'),x=c.getContext('2d');
+function PX(v){return 50+v/3.2*560;}function PY(v){return 262-v/10*232;}
+x.clearRect(0,0,640,300);x.strokeStyle='#E2E8F0';x.lineWidth=1;
+for(var g=0;g<=6;g++){x.beginPath();x.moveTo(50,30+g*38);x.lineTo(610,30+g*38);x.stroke();}
+x.strokeStyle='#00838F';x.lineWidth=5;x.beginPath();
+for(var i=0;i<=80;i++){var vx=i/80*3,vy=vx*vx;var px=PX(vx),py=PY(vy);if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}x.stroke();
+var w=3/RN,tot=0;
+x.fillStyle='rgba(0,131,143,0.35)';x.strokeStyle='#00838F';x.lineWidth=2;
+for(var k=0;k<RN;k++){var xk=k*w,hk=xk*xk;tot+=hk*w;
+x.fillRect(PX(xk),PY(hk),PX(xk+w)-PX(xk),PY(0)-PY(hk));x.strokeRect(PX(xk),PY(hk),PX(xk+w)-PX(xk),PY(0)-PY(hk));}
+tot=Math.round(tot*10)/10;document.getElementById('ges').textContent=tot;
+document.getElementById('err').textContent='(off by '+(Math.round((tot-9)*10)/10)+')';}
+drawR();
+</script>
+</div></main>
+<footer><p>&copy; 2026 <span>KidRead</span>. Designed with &hearts; for curious young minds.</p></footer>
+</body></html>
